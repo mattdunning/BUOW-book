@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 Cleaning Capture Data 2000-2019 | Combining export files to send to SQL</title>
+  <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 Cleaning Capture Data 2000-2019 | Combining export files to send to SQL" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Cleaning Capture Data 2000-2019 | Combining export files to send to SQL" />
+  
+  <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  
+
+<meta name="author" content="Matthew Dunning" />
+
+
+<meta name="date" content="2024-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="cleaning-band-data-2020---august-2024.html"/>
+<link rel="next" href="cleaning-capture-data-2020---august-2024.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> About</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#usage"><i class="fa fa-check"></i><b>1.1</b> Usage</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html"><i class="fa fa-check"></i><b>2</b> Cleaning Band Data 2000-2019</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#cleaning-band"><i class="fa fa-check"></i><b>2.1</b> Cleaning Band</a></li>
+<li class="chapter" data-level="2.2" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#load-packages"><i class="fa fa-check"></i><b>2.2</b> Load packages</a></li>
+<li class="chapter" data-level="2.3" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#add-hyphens-in-the-correct-locations"><i class="fa fa-check"></i><b>2.3</b> Add hyphens in the correct locations</a></li>
+<li class="chapter" data-level="2.4" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#fix-some-capitalization-issues"><i class="fa fa-check"></i><b>2.4</b> Fix some capitalization issues</a></li>
+<li class="chapter" data-level="2.5" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#proofing-resights"><i class="fa fa-check"></i><b>2.5</b> Proofing resights</a></li>
+<li class="chapter" data-level="2.6" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#clean-the-sex-column"><i class="fa fa-check"></i><b>2.6</b> Clean the sex column</a></li>
+<li class="chapter" data-level="2.7" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#now-clean-the-usgs-band-info"><i class="fa fa-check"></i><b>2.7</b> Now clean the USGS band info</a></li>
+<li class="chapter" data-level="2.8" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#acraft-specific-cleaning"><i class="fa fa-check"></i><b>2.8</b> ACRAFT specific cleaning</a></li>
+<li class="chapter" data-level="2.9" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#color-band-sorting"><i class="fa fa-check"></i><b>2.9</b> Color band sorting</a></li>
+<li class="chapter" data-level="2.10" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#get-the-rest-of-the-bands-that-have-neither-acraft-nor-color-bands"><i class="fa fa-check"></i><b>2.10</b> Get the rest of the bands that have neither ACRAFT nor Color bands</a></li>
+<li class="chapter" data-level="2.11" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#finally-remove-all-unneccessary-dataframes-and-objects-to-keep-environment-tidy"><i class="fa fa-check"></i><b>2.11</b> Finally remove all unneccessary dataframes and objects to keep environment tidy</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html"><i class="fa fa-check"></i><b>3</b> Cleaning Band Data 2020 - August 2024</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#install-and-load-packages"><i class="fa fa-check"></i><b>3.1</b> Install and load packages</a></li>
+<li class="chapter" data-level="3.2" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#set-directory-and-load-data"><i class="fa fa-check"></i><b>3.2</b> Set directory and load data</a></li>
+<li class="chapter" data-level="3.3" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#add-hyphens-where-needed"><i class="fa fa-check"></i><b>3.3</b> Add hyphens where needed</a></li>
+<li class="chapter" data-level="3.4" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#move-colors-into-correct-columns"><i class="fa fa-check"></i><b>3.4</b> Move colors into correct columns</a></li>
+<li class="chapter" data-level="3.5" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#proof-and-edit-the-sex-column"><i class="fa fa-check"></i><b>3.5</b> Proof and Edit the sex column</a></li>
+<li class="chapter" data-level="3.6" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#export-data-and-remove-objects"><i class="fa fa-check"></i><b>3.6</b> Export data and remove objects</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html"><i class="fa fa-check"></i><b>4</b> Cleaning Capture Data 2000-2019</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#load-libraries"><i class="fa fa-check"></i><b>4.1</b> Load libraries</a></li>
+<li class="chapter" data-level="4.2" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#set-directory-and-load-data-1"><i class="fa fa-check"></i><b>4.2</b> Set directory and load data</a></li>
+<li class="chapter" data-level="4.3" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#fix-the-hyphens"><i class="fa fa-check"></i><b>4.3</b> Fix the hyphens</a></li>
+<li class="chapter" data-level="4.4" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#convert-latitude-and-longitude-from-utm"><i class="fa fa-check"></i><b>4.4</b> Convert latitude and longitude from UTM</a></li>
+<li class="chapter" data-level="4.5" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-data"><i class="fa fa-check"></i><b>4.5</b> Filter and clean data</a>
+<ul>
+<li class="chapter" data-level="4.5.1" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-parasite-column"><i class="fa fa-check"></i><b>4.5.1</b> Filter and clean parasite column</a></li>
+<li class="chapter" data-level="4.5.2" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-brood-patch-column"><i class="fa fa-check"></i><b>4.5.2</b> Filter and clean brood patch column</a></li>
+<li class="chapter" data-level="4.5.3" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-sex-column"><i class="fa fa-check"></i><b>4.5.3</b> Filter and clean sex column</a></li>
+<li class="chapter" data-level="4.5.4" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-hy-day-old-age"><i class="fa fa-check"></i><b>4.5.4</b> Filter and clean HY day old age</a></li>
+<li class="chapter" data-level="4.5.5" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#standardize-values"><i class="fa fa-check"></i><b>4.5.5</b> Standardize values</a></li>
+<li class="chapter" data-level="4.5.6" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#change-site-to-abbreviations-to-full-names"><i class="fa fa-check"></i><b>4.5.6</b> Change site to abbreviations to full names</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#prepare-data-for-export"><i class="fa fa-check"></i><b>4.6</b> Prepare data for export</a></li>
+<li class="chapter" data-level="4.7" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#cleaning-dobule-entried-rows"><i class="fa fa-check"></i><b>4.7</b> Cleaning dobule entried rows</a>
+<ul>
+<li class="chapter" data-level="4.7.1" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#import-data"><i class="fa fa-check"></i><b>4.7.1</b> Import Data</a></li>
+<li class="chapter" data-level="4.7.2" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#clean-data"><i class="fa fa-check"></i><b>4.7.2</b> Clean data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.8" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#prepare-data-for-export-1"><i class="fa fa-check"></i><b>4.8</b> Prepare data for export</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html"><i class="fa fa-check"></i><b>5</b> Cleaning Capture Data 2020 - August 2024</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#load-packages-and-data"><i class="fa fa-check"></i><b>5.1</b> Load packages and data</a></li>
+<li class="chapter" data-level="5.2" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#preapare-data"><i class="fa fa-check"></i><b>5.2</b> Preapare data</a></li>
+<li class="chapter" data-level="5.3" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#latitude-and-longitude-from-utms"><i class="fa fa-check"></i><b>5.3</b> Latitude and Longitude from UTMs</a></li>
+<li class="chapter" data-level="5.4" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#cleaning-data"><i class="fa fa-check"></i><b>5.4</b> Cleaning data</a></li>
+<li class="chapter" data-level="5.5" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#export-data"><i class="fa fa-check"></i><b>5.5</b> Export Data</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="create-sqllite-database-structure.html"><a href="create-sqllite-database-structure.html"><i class="fa fa-check"></i><b>6</b> Create SQLlite Database Structure</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="create-sqllite-database-structure.html"><a href="create-sqllite-database-structure.html#create-sqllite-database"><i class="fa fa-check"></i><b>6.1</b> Create SQLlite Database</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html"><i class="fa fa-check"></i><b>7</b> Import BUOW data into SQLlite</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#combine-all-band-tables"><i class="fa fa-check"></i><b>7.1</b> Combine All Band Tables</a></li>
+<li class="chapter" data-level="7.2" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#combine-all-capture-tables"><i class="fa fa-check"></i><b>7.2</b> Combine All Capture Tables</a></li>
+<li class="chapter" data-level="7.3" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#load-sites-table"><i class="fa fa-check"></i><b>7.3</b> Load Sites table</a></li>
+<li class="chapter" data-level="7.4" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#start-import-to-sql"><i class="fa fa-check"></i><b>7.4</b> Start import to SQL</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-band-table"><i class="fa fa-check"></i><b>7.4.1</b> Import band table</a></li>
+<li class="chapter" data-level="7.4.2" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-capture-table"><i class="fa fa-check"></i><b>7.4.2</b> Import Capture Table</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Combining export files to send to SQL</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="cleaning-capture-data-2000-2019" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Cleaning Capture Data 2000-2019<a href="cleaning-capture-data-2000-2019.html#cleaning-capture-data-2000-2019" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="load-libraries" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Load libraries<a href="cleaning-capture-data-2000-2019.html#load-libraries" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="cleaning-capture-data-2000-2019.html#cb30-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb30-2"><a href="cleaning-capture-data-2000-2019.html#cb30-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb30-3"><a href="cleaning-capture-data-2000-2019.html#cb30-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb30-4"><a href="cleaning-capture-data-2000-2019.html#cb30-4" tabindex="-1"></a><span class="fu">library</span>(elevatr)</span>
+<span id="cb30-5"><a href="cleaning-capture-data-2000-2019.html#cb30-5" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb30-6"><a href="cleaning-capture-data-2000-2019.html#cb30-6" tabindex="-1"></a><span class="fu">library</span>(tools)</span></code></pre></div>
+</div>
+<div id="set-directory-and-load-data-1" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Set directory and load data<a href="cleaning-capture-data-2000-2019.html#set-directory-and-load-data-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="cleaning-capture-data-2000-2019.html#cb31-1" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&quot;~/BUOW_Migration-Maps/data&quot;</span>)</span>
+<span id="cb31-2"><a href="cleaning-capture-data-2000-2019.html#cb31-2" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="cleaning-capture-data-2000-2019.html#cb31-3" tabindex="-1"></a>BUOW1 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;BUOW_Data2000-2019.csv&quot;</span>)</span>
+<span id="cb31-4"><a href="cleaning-capture-data-2000-2019.html#cb31-4" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="cleaning-capture-data-2000-2019.html#cb31-5" tabindex="-1"></a>bands <span class="ot">&lt;-</span> BUOW1 <span class="sc">%&gt;%</span></span>
+<span id="cb31-6"><a href="cleaning-capture-data-2000-2019.html#cb31-6" tabindex="-1"></a>  <span class="fu">select</span>(band, Obs, dateBanded, site, Country, State, Elevation, </span>
+<span id="cb31-7"><a href="cleaning-capture-data-2000-2019.html#cb31-7" tabindex="-1"></a>         <span class="st">&#39;Lat Deg&#39;</span>, <span class="st">&#39;Lat Min&#39;</span>, <span class="st">&#39;Lat Sec&#39;</span>, <span class="st">&#39;Long Deg&#39;</span>, <span class="st">&#39;Long Min&#39;</span>, <span class="st">&#39;Long Sec&#39;</span>, recap,</span>
+<span id="cb31-8"><a href="cleaning-capture-data-2000-2019.html#cb31-8" tabindex="-1"></a>         sex, Age, UTM_e,   UTM_n, UTM_zone, <span class="st">&#39;fleas/ecto-parasites&#39;</span>, parasites_1,</span>
+<span id="cb31-9"><a href="cleaning-capture-data-2000-2019.html#cb31-9" tabindex="-1"></a>         parasites_2, fat, muscle, broodPatch, brood_patch, HowSex, how_sexed,</span>
+<span id="cb31-10"><a href="cleaning-capture-data-2000-2019.html#cb31-10" tabindex="-1"></a>         bird_wt, <span class="st">`</span><span class="at">weight_1_(g)</span><span class="st">`</span>, <span class="st">`</span><span class="at">weight_2_(g)</span><span class="st">`</span>, left_wing, right_wing,</span>
+<span id="cb31-11"><a href="cleaning-capture-data-2000-2019.html#cb31-11" tabindex="-1"></a>         <span class="st">`</span><span class="at">left_metatarsus_(mm)</span><span class="st">`</span>, <span class="st">`</span><span class="at">right_metatarsus_(mm)</span><span class="st">`</span>, tail, <span class="st">`</span><span class="at">skull length</span><span class="st">`</span>,</span>
+<span id="cb31-12"><a href="cleaning-capture-data-2000-2019.html#cb31-12" tabindex="-1"></a>         <span class="st">`</span><span class="at">skull width</span><span class="st">`</span>, culmen, <span class="st">`</span><span class="at">toe_1_(mm)</span><span class="st">`</span>, <span class="st">`</span><span class="at">toe_2_(mm)</span><span class="st">`</span>, <span class="st">`</span><span class="at">toe_3_(mm)</span><span class="st">`</span>,</span>
+<span id="cb31-13"><a href="cleaning-capture-data-2000-2019.html#cb31-13" tabindex="-1"></a>         <span class="st">`</span><span class="at">toe_4_(mm)</span><span class="st">`</span>, <span class="st">`</span><span class="at">claw_1_(mm)</span><span class="st">`</span>, <span class="st">`</span><span class="at">claw_2_(mm)</span><span class="st">`</span>, <span class="st">`</span><span class="at">claw_3_(mm)</span><span class="st">`</span>,</span>
+<span id="cb31-14"><a href="cleaning-capture-data-2000-2019.html#cb31-14" tabindex="-1"></a>         <span class="st">`</span><span class="at">claw_4_(mm)</span><span class="st">`</span>, time_at_release, estimated_age_at_banding, juvieage,</span>
+<span id="cb31-15"><a href="cleaning-capture-data-2000-2019.html#cb31-15" tabindex="-1"></a>         <span class="st">`</span><span class="at">tarsus_(mm)</span><span class="st">`</span>, comments...<span class="dv">103</span>, meas_date_1) <span class="sc">%&gt;%</span></span>
+<span id="cb31-16"><a href="cleaning-capture-data-2000-2019.html#cb31-16" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">unique_key =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span>     <span class="co"># Adds a sequence number starting from 1</span></span>
+<span id="cb31-17"><a href="cleaning-capture-data-2000-2019.html#cb31-17" tabindex="-1"></a>  <span class="fu">select</span>(unique_key, <span class="fu">everything</span>())</span></code></pre></div>
+<p>Capitalize all letters in the observer column before moving forward</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="cleaning-capture-data-2000-2019.html#cb32-1" tabindex="-1"></a>bands <span class="ot">&lt;-</span> bands <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="cleaning-capture-data-2000-2019.html#cb32-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Obs =</span> <span class="fu">toupper</span>(Obs))</span></code></pre></div>
+</div>
+<div id="fix-the-hyphens" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Fix the hyphens<a href="cleaning-capture-data-2000-2019.html#fix-the-hyphens" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="cleaning-capture-data-2000-2019.html#cb33-1" tabindex="-1"></a><span class="co">#first need to add several criterias and conditions</span></span>
+<span id="cb33-2"><a href="cleaning-capture-data-2000-2019.html#cb33-2" tabindex="-1"></a>criteria1 <span class="ot">&lt;-</span> <span class="st">&quot;0844&quot;</span></span>
+<span id="cb33-3"><a href="cleaning-capture-data-2000-2019.html#cb33-3" tabindex="-1"></a>criteria2 <span class="ot">&lt;-</span> <span class="st">&quot;0934&quot;</span> <span class="co">#some bands already had a dash so now there is --</span></span>
+<span id="cb33-4"><a href="cleaning-capture-data-2000-2019.html#cb33-4" tabindex="-1"></a>criteria3 <span class="ot">&lt;-</span> <span class="st">&quot;0804&quot;</span></span>
+<span id="cb33-5"><a href="cleaning-capture-data-2000-2019.html#cb33-5" tabindex="-1"></a>criteria4 <span class="ot">&lt;-</span> <span class="st">&quot;1204&quot;</span></span>
+<span id="cb33-6"><a href="cleaning-capture-data-2000-2019.html#cb33-6" tabindex="-1"></a>criteria5 <span class="ot">&lt;-</span> <span class="st">&quot;0764&quot;</span></span>
+<span id="cb33-7"><a href="cleaning-capture-data-2000-2019.html#cb33-7" tabindex="-1"></a>criteria6 <span class="ot">&lt;-</span> <span class="st">&quot;0544&quot;</span></span>
+<span id="cb33-8"><a href="cleaning-capture-data-2000-2019.html#cb33-8" tabindex="-1"></a>criteria7 <span class="ot">&lt;-</span> <span class="st">&quot;0574&quot;</span></span>
+<span id="cb33-9"><a href="cleaning-capture-data-2000-2019.html#cb33-9" tabindex="-1"></a>criteria8 <span class="ot">&lt;-</span> <span class="st">&quot;0594&quot;</span></span>
+<span id="cb33-10"><a href="cleaning-capture-data-2000-2019.html#cb33-10" tabindex="-1"></a>criteria9 <span class="ot">&lt;-</span> <span class="st">&quot;0914&quot;</span></span>
+<span id="cb33-11"><a href="cleaning-capture-data-2000-2019.html#cb33-11" tabindex="-1"></a>criteria10 <span class="ot">&lt;-</span> <span class="st">&quot;1005&quot;</span></span>
+<span id="cb33-12"><a href="cleaning-capture-data-2000-2019.html#cb33-12" tabindex="-1"></a>criteria11 <span class="ot">&lt;-</span> <span class="st">&quot;934&quot;</span> <span class="co">#some bands already had a dash so now there is --</span></span>
+<span id="cb33-13"><a href="cleaning-capture-data-2000-2019.html#cb33-13" tabindex="-1"></a>criteria12 <span class="ot">&lt;-</span> <span class="st">&quot;844&quot;</span></span>
+<span id="cb33-14"><a href="cleaning-capture-data-2000-2019.html#cb33-14" tabindex="-1"></a>Condition1 <span class="ot">&lt;-</span> <span class="fu">grepl</span>(<span class="st">&quot;^AL-&quot;</span>, bands<span class="sc">$</span>band)</span>
+<span id="cb33-15"><a href="cleaning-capture-data-2000-2019.html#cb33-15" tabindex="-1"></a>criteria <span class="ot">&lt;-</span> <span class="fu">c</span>(criteria1, criteria2, criteria3, criteria4, criteria5, criteria6, criteria7,</span>
+<span id="cb33-16"><a href="cleaning-capture-data-2000-2019.html#cb33-16" tabindex="-1"></a>              criteria8, criteria9, criteria10)</span>
+<span id="cb33-17"><a href="cleaning-capture-data-2000-2019.html#cb33-17" tabindex="-1"></a>criteriax <span class="ot">&lt;-</span> <span class="fu">c</span>(criteria11, criteria12)</span>
+<span id="cb33-18"><a href="cleaning-capture-data-2000-2019.html#cb33-18" tabindex="-1"></a></span>
+<span id="cb33-19"><a href="cleaning-capture-data-2000-2019.html#cb33-19" tabindex="-1"></a>bands <span class="ot">&lt;-</span> bands <span class="sc">%&gt;%</span></span>
+<span id="cb33-20"><a href="cleaning-capture-data-2000-2019.html#cb33-20" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">band =</span> <span class="fu">case_when</span>(</span>
+<span id="cb33-21"><a href="cleaning-capture-data-2000-2019.html#cb33-21" tabindex="-1"></a>    <span class="fu">substr</span>(band, <span class="dv">1</span>, <span class="dv">4</span>) <span class="sc">%in%</span> criteria <span class="sc">~</span> {</span>
+<span id="cb33-22"><a href="cleaning-capture-data-2000-2019.html#cb33-22" tabindex="-1"></a>      <span class="co"># Remove existing hyphen if it exists</span></span>
+<span id="cb33-23"><a href="cleaning-capture-data-2000-2019.html#cb33-23" tabindex="-1"></a>      clean_band <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;-&quot;</span>, <span class="st">&quot;&quot;</span>, band)</span>
+<span id="cb33-24"><a href="cleaning-capture-data-2000-2019.html#cb33-24" tabindex="-1"></a>      <span class="co"># Ensure you&#39;re using the clean version</span></span>
+<span id="cb33-25"><a href="cleaning-capture-data-2000-2019.html#cb33-25" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="fu">substr</span>(clean_band, <span class="dv">1</span>, <span class="dv">4</span>), <span class="st">&quot;-&quot;</span>, <span class="fu">substr</span>(clean_band, <span class="dv">5</span>, <span class="fu">nchar</span>(clean_band)))</span>
+<span id="cb33-26"><a href="cleaning-capture-data-2000-2019.html#cb33-26" tabindex="-1"></a>    },</span>
+<span id="cb33-27"><a href="cleaning-capture-data-2000-2019.html#cb33-27" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> band  <span class="co"># Keep original band if no criteria match</span></span>
+<span id="cb33-28"><a href="cleaning-capture-data-2000-2019.html#cb33-28" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-29"><a href="cleaning-capture-data-2000-2019.html#cb33-29" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">band =</span> <span class="fu">case_when</span>(</span>
+<span id="cb33-30"><a href="cleaning-capture-data-2000-2019.html#cb33-30" tabindex="-1"></a>    <span class="fu">substr</span>(band, <span class="dv">1</span>, <span class="dv">3</span>) <span class="sc">%in%</span> criteriax <span class="sc">~</span> {</span>
+<span id="cb33-31"><a href="cleaning-capture-data-2000-2019.html#cb33-31" tabindex="-1"></a>      <span class="co"># Remove existing hyphen if it exists</span></span>
+<span id="cb33-32"><a href="cleaning-capture-data-2000-2019.html#cb33-32" tabindex="-1"></a>      clean_band <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;-&quot;</span>, <span class="st">&quot;&quot;</span>, band)</span>
+<span id="cb33-33"><a href="cleaning-capture-data-2000-2019.html#cb33-33" tabindex="-1"></a>      <span class="co"># Ensure you&#39;re using the clean version</span></span>
+<span id="cb33-34"><a href="cleaning-capture-data-2000-2019.html#cb33-34" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="fu">substr</span>(clean_band, <span class="dv">1</span>, <span class="dv">3</span>), <span class="st">&quot;-&quot;</span>, <span class="fu">substr</span>(clean_band, <span class="dv">4</span>, <span class="fu">nchar</span>(clean_band)))</span>
+<span id="cb33-35"><a href="cleaning-capture-data-2000-2019.html#cb33-35" tabindex="-1"></a>    },</span>
+<span id="cb33-36"><a href="cleaning-capture-data-2000-2019.html#cb33-36" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> band <span class="co"># Keep original band if no criteria match</span></span>
+<span id="cb33-37"><a href="cleaning-capture-data-2000-2019.html#cb33-37" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb33-38"><a href="cleaning-capture-data-2000-2019.html#cb33-38" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">band =</span><span class="fu">ifelse</span>(Condition1, <span class="fu">substr</span>(band, <span class="dv">4</span>, <span class="fu">nchar</span>(band)), band))</span>
+<span id="cb33-39"><a href="cleaning-capture-data-2000-2019.html#cb33-39" tabindex="-1"></a></span>
+<span id="cb33-40"><a href="cleaning-capture-data-2000-2019.html#cb33-40" tabindex="-1"></a><span class="fu">remove</span>(criteria, criteria1, criteria2, criteria3, criteria4, criteria5, criteria6,</span>
+<span id="cb33-41"><a href="cleaning-capture-data-2000-2019.html#cb33-41" tabindex="-1"></a>       criteria7, criteria8, criteria9, criteria10, criteria11, criteria12,</span>
+<span id="cb33-42"><a href="cleaning-capture-data-2000-2019.html#cb33-42" tabindex="-1"></a>       criteriax, Condition1)</span></code></pre></div>
+</div>
+<div id="convert-latitude-and-longitude-from-utm" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Convert latitude and longitude from UTM<a href="cleaning-capture-data-2000-2019.html#convert-latitude-and-longitude-from-utm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="cleaning-capture-data-2000-2019.html#cb34-1" tabindex="-1"></a>bandsutm <span class="ot">&lt;-</span> <span class="fu">select</span>(bands, unique_key, band, UTM_e, UTM_n, UTM_zone)  <span class="co"># Select existing columns</span></span>
+<span id="cb34-2"><a href="cleaning-capture-data-2000-2019.html#cb34-2" tabindex="-1"></a>bandsutm <span class="ot">&lt;-</span> bandsutm[bandsutm<span class="sc">$</span>band <span class="sc">!=</span> <span class="st">&quot;0914-56283&quot;</span>, ]</span>
+<span id="cb34-3"><a href="cleaning-capture-data-2000-2019.html#cb34-3" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="cleaning-capture-data-2000-2019.html#cb34-4" tabindex="-1"></a><span class="co">#Get LatLon from UTM####</span></span>
+<span id="cb34-5"><a href="cleaning-capture-data-2000-2019.html#cb34-5" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="cleaning-capture-data-2000-2019.html#cb34-6" tabindex="-1"></a><span class="co">#extract LatLong for zone 11</span></span>
+<span id="cb34-7"><a href="cleaning-capture-data-2000-2019.html#cb34-7" tabindex="-1"></a>bandsutm11 <span class="ot">&lt;-</span> bandsutm <span class="sc">%&gt;%</span></span>
+<span id="cb34-8"><a href="cleaning-capture-data-2000-2019.html#cb34-8" tabindex="-1"></a>  <span class="fu">filter</span>(UTM_zone <span class="sc">==</span> <span class="dv">11</span>)</span>
+<span id="cb34-9"><a href="cleaning-capture-data-2000-2019.html#cb34-9" tabindex="-1"></a>utm_converted <span class="ot">&lt;-</span> <span class="fu">utm2lonlat</span>(bandsutm11<span class="sc">$</span>UTM_e, bandsutm11<span class="sc">$</span>UTM_n, <span class="at">zone =</span> <span class="dv">11</span>, <span class="at">hemisphere =</span> <span class="st">&quot;N&quot;</span>)</span>
+<span id="cb34-10"><a href="cleaning-capture-data-2000-2019.html#cb34-10" tabindex="-1"></a>bandsutm11<span class="sc">$</span>Longitude <span class="ot">&lt;-</span> utm_converted<span class="sc">$</span>lon  <span class="co"># Extract longitude</span></span>
+<span id="cb34-11"><a href="cleaning-capture-data-2000-2019.html#cb34-11" tabindex="-1"></a>bandsutm11<span class="sc">$</span>Latitude <span class="ot">&lt;-</span> utm_converted<span class="sc">$</span>lat   <span class="co"># Extract latitude</span></span>
+<span id="cb34-12"><a href="cleaning-capture-data-2000-2019.html#cb34-12" tabindex="-1"></a></span>
+<span id="cb34-13"><a href="cleaning-capture-data-2000-2019.html#cb34-13" tabindex="-1"></a><span class="co">#extract LatLong for zone 12</span></span>
+<span id="cb34-14"><a href="cleaning-capture-data-2000-2019.html#cb34-14" tabindex="-1"></a>bandsutm12 <span class="ot">&lt;-</span> bandsutm <span class="sc">%&gt;%</span> </span>
+<span id="cb34-15"><a href="cleaning-capture-data-2000-2019.html#cb34-15" tabindex="-1"></a>  <span class="fu">filter</span>(UTM_zone <span class="sc">==</span> <span class="dv">12</span>)</span>
+<span id="cb34-16"><a href="cleaning-capture-data-2000-2019.html#cb34-16" tabindex="-1"></a>utm_converted <span class="ot">&lt;-</span> <span class="fu">utm2lonlat</span>(bandsutm12<span class="sc">$</span>UTM_e, bandsutm12<span class="sc">$</span>UTM_n, <span class="at">zone =</span> <span class="dv">12</span>, <span class="at">hemisphere =</span> <span class="st">&quot;N&quot;</span>)</span>
+<span id="cb34-17"><a href="cleaning-capture-data-2000-2019.html#cb34-17" tabindex="-1"></a>bandsutm12<span class="sc">$</span>Longitude <span class="ot">&lt;-</span> utm_converted<span class="sc">$</span>lon  <span class="co"># Extract longitude</span></span>
+<span id="cb34-18"><a href="cleaning-capture-data-2000-2019.html#cb34-18" tabindex="-1"></a>bandsutm12<span class="sc">$</span>Latitude <span class="ot">&lt;-</span> utm_converted<span class="sc">$</span>lat   <span class="co"># Extract latitude</span></span>
+<span id="cb34-19"><a href="cleaning-capture-data-2000-2019.html#cb34-19" tabindex="-1"></a></span>
+<span id="cb34-20"><a href="cleaning-capture-data-2000-2019.html#cb34-20" tabindex="-1"></a><span class="co">#extract LatLong for zone 13</span></span>
+<span id="cb34-21"><a href="cleaning-capture-data-2000-2019.html#cb34-21" tabindex="-1"></a>bandsutm13 <span class="ot">&lt;-</span> bandsutm <span class="sc">%&gt;%</span> </span>
+<span id="cb34-22"><a href="cleaning-capture-data-2000-2019.html#cb34-22" tabindex="-1"></a>  <span class="fu">filter</span>(UTM_zone <span class="sc">==</span> <span class="dv">13</span>)</span>
+<span id="cb34-23"><a href="cleaning-capture-data-2000-2019.html#cb34-23" tabindex="-1"></a>utm_converted <span class="ot">&lt;-</span> <span class="fu">utm2lonlat</span>(bandsutm13<span class="sc">$</span>UTM_e, bandsutm13<span class="sc">$</span>UTM_n, <span class="at">zone =</span> <span class="dv">13</span>, <span class="at">hemisphere =</span> <span class="st">&quot;N&quot;</span>)</span>
+<span id="cb34-24"><a href="cleaning-capture-data-2000-2019.html#cb34-24" tabindex="-1"></a>bandsutm13<span class="sc">$</span>Longitude <span class="ot">&lt;-</span> utm_converted<span class="sc">$</span>lon  <span class="co"># Extract longitude</span></span>
+<span id="cb34-25"><a href="cleaning-capture-data-2000-2019.html#cb34-25" tabindex="-1"></a>bandsutm13<span class="sc">$</span>Latitude <span class="ot">&lt;-</span> utm_converted<span class="sc">$</span>lat   <span class="co"># Extract latitude</span></span>
+<span id="cb34-26"><a href="cleaning-capture-data-2000-2019.html#cb34-26" tabindex="-1"></a></span>
+<span id="cb34-27"><a href="cleaning-capture-data-2000-2019.html#cb34-27" tabindex="-1"></a><span class="co"># Combine all the UTM zone data into a single dataframe</span></span>
+<span id="cb34-28"><a href="cleaning-capture-data-2000-2019.html#cb34-28" tabindex="-1"></a>bandsutm_combined <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(bandsutm11, bandsutm12, bandsutm13)</span>
+<span id="cb34-29"><a href="cleaning-capture-data-2000-2019.html#cb34-29" tabindex="-1"></a></span>
+<span id="cb34-30"><a href="cleaning-capture-data-2000-2019.html#cb34-30" tabindex="-1"></a><span class="co"># Merge the combined UTM data back into the original bands dataframe</span></span>
+<span id="cb34-31"><a href="cleaning-capture-data-2000-2019.html#cb34-31" tabindex="-1"></a>bands_final <span class="ot">&lt;-</span> bands <span class="sc">%&gt;%</span></span>
+<span id="cb34-32"><a href="cleaning-capture-data-2000-2019.html#cb34-32" tabindex="-1"></a>  <span class="fu">left_join</span>(bandsutm_combined, <span class="at">by =</span> <span class="st">&quot;unique_key&quot;</span>)</span>
+<span id="cb34-33"><a href="cleaning-capture-data-2000-2019.html#cb34-33" tabindex="-1"></a>bands <span class="ot">&lt;-</span> <span class="fu">select</span>(bands_final, <span class="sc">-</span>UTM_e.x, <span class="sc">-</span>UTM_n.x, <span class="sc">-</span>UTM_zone.x, <span class="sc">-</span>band.y, <span class="sc">-</span>UTM_e.y, <span class="sc">-</span>UTM_n.y, <span class="sc">-</span>UTM_zone.y)</span>
+<span id="cb34-34"><a href="cleaning-capture-data-2000-2019.html#cb34-34" tabindex="-1"></a></span>
+<span id="cb34-35"><a href="cleaning-capture-data-2000-2019.html#cb34-35" tabindex="-1"></a><span class="co"># remove objects</span></span>
+<span id="cb34-36"><a href="cleaning-capture-data-2000-2019.html#cb34-36" tabindex="-1"></a><span class="fu">remove</span>(bands_final, bandsutm, bandsutm_combined, bandsutm11, bandsutm12, </span>
+<span id="cb34-37"><a href="cleaning-capture-data-2000-2019.html#cb34-37" tabindex="-1"></a>       bandsutm13, utm_converted)</span>
+<span id="cb34-38"><a href="cleaning-capture-data-2000-2019.html#cb34-38" tabindex="-1"></a></span>
+<span id="cb34-39"><a href="cleaning-capture-data-2000-2019.html#cb34-39" tabindex="-1"></a></span>
+<span id="cb34-40"><a href="cleaning-capture-data-2000-2019.html#cb34-40" tabindex="-1"></a><span class="co">#Now convert latlon deg ####</span></span>
+<span id="cb34-41"><a href="cleaning-capture-data-2000-2019.html#cb34-41" tabindex="-1"></a>latlong <span class="ot">&lt;-</span> bands</span>
+<span id="cb34-42"><a href="cleaning-capture-data-2000-2019.html#cb34-42" tabindex="-1"></a>latlong<span class="sc">$</span>Latitude <span class="ot">&lt;-</span> bands<span class="sc">$</span><span class="st">`</span><span class="at">Lat Deg</span><span class="st">`</span> <span class="sc">+</span> (bands<span class="sc">$</span><span class="st">`</span><span class="at">Lat Min</span><span class="st">`</span> <span class="sc">/</span> <span class="dv">60</span>) <span class="sc">+</span> (bands<span class="sc">$</span><span class="st">`</span><span class="at">Lat Sec</span><span class="st">`</span> <span class="sc">/</span> <span class="dv">3600</span>)</span>
+<span id="cb34-43"><a href="cleaning-capture-data-2000-2019.html#cb34-43" tabindex="-1"></a>latlong<span class="sc">$</span>Longitude <span class="ot">&lt;-</span> (bands<span class="sc">$</span><span class="st">`</span><span class="at">Long Deg</span><span class="st">`</span> <span class="sc">+</span> (bands<span class="sc">$</span><span class="st">`</span><span class="at">Long Min</span><span class="st">`</span> <span class="sc">/</span> <span class="dv">60</span>) <span class="sc">+</span> (bands<span class="sc">$</span><span class="st">`</span><span class="at">Long Sec</span><span class="st">`</span> <span class="sc">/</span> <span class="dv">3600</span>)) <span class="sc">*</span> <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb34-44"><a href="cleaning-capture-data-2000-2019.html#cb34-44" tabindex="-1"></a></span>
+<span id="cb34-45"><a href="cleaning-capture-data-2000-2019.html#cb34-45" tabindex="-1"></a><span class="co"># Select only the columns that we need from &#39;latlong&#39;</span></span>
+<span id="cb34-46"><a href="cleaning-capture-data-2000-2019.html#cb34-46" tabindex="-1"></a>latlong_selected <span class="ot">&lt;-</span> latlong <span class="sc">%&gt;%</span></span>
+<span id="cb34-47"><a href="cleaning-capture-data-2000-2019.html#cb34-47" tabindex="-1"></a>  <span class="fu">select</span>(unique_key, <span class="at">Latitude_latlong =</span> Latitude, <span class="at">Longitude_latlong =</span> Longitude</span>
+<span id="cb34-48"><a href="cleaning-capture-data-2000-2019.html#cb34-48" tabindex="-1"></a>         )</span>
+<span id="cb34-49"><a href="cleaning-capture-data-2000-2019.html#cb34-49" tabindex="-1"></a></span>
+<span id="cb34-50"><a href="cleaning-capture-data-2000-2019.html#cb34-50" tabindex="-1"></a><span class="co"># Perform the left join by &#39;unique_key&#39;</span></span>
+<span id="cb34-51"><a href="cleaning-capture-data-2000-2019.html#cb34-51" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> bands <span class="sc">%&gt;%</span></span>
+<span id="cb34-52"><a href="cleaning-capture-data-2000-2019.html#cb34-52" tabindex="-1"></a>  <span class="fu">left_join</span>(latlong_selected, <span class="at">by =</span> <span class="st">&quot;unique_key&quot;</span></span>
+<span id="cb34-53"><a href="cleaning-capture-data-2000-2019.html#cb34-53" tabindex="-1"></a>            )</span>
+<span id="cb34-54"><a href="cleaning-capture-data-2000-2019.html#cb34-54" tabindex="-1"></a></span>
+<span id="cb34-55"><a href="cleaning-capture-data-2000-2019.html#cb34-55" tabindex="-1"></a><span class="co"># Combine Latitude and Longitude columns from both dataframes using coalesce()</span></span>
+<span id="cb34-56"><a href="cleaning-capture-data-2000-2019.html#cb34-56" tabindex="-1"></a>bands <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
+<span id="cb34-57"><a href="cleaning-capture-data-2000-2019.html#cb34-57" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb34-58"><a href="cleaning-capture-data-2000-2019.html#cb34-58" tabindex="-1"></a>    <span class="at">Latitude =</span> <span class="fu">coalesce</span>(Latitude, Latitude_latlong),  <span class="co"># Combine latitudes</span></span>
+<span id="cb34-59"><a href="cleaning-capture-data-2000-2019.html#cb34-59" tabindex="-1"></a>    <span class="at">Longitude =</span> <span class="fu">coalesce</span>(Longitude, Longitude_latlong) <span class="co"># Combine longitudes</span></span>
+<span id="cb34-60"><a href="cleaning-capture-data-2000-2019.html#cb34-60" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb34-61"><a href="cleaning-capture-data-2000-2019.html#cb34-61" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Latitude_latlong, <span class="sc">-</span>Longitude_latlong</span>
+<span id="cb34-62"><a href="cleaning-capture-data-2000-2019.html#cb34-62" tabindex="-1"></a>         )  <span class="co"># Drop the redundant lat/long columns</span></span>
+<span id="cb34-63"><a href="cleaning-capture-data-2000-2019.html#cb34-63" tabindex="-1"></a>bands <span class="ot">&lt;-</span> bands <span class="sc">%&gt;%</span> </span>
+<span id="cb34-64"><a href="cleaning-capture-data-2000-2019.html#cb34-64" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">band =</span> band.x) <span class="sc">%&gt;%</span> </span>
+<span id="cb34-65"><a href="cleaning-capture-data-2000-2019.html#cb34-65" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">Lat Deg</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Lat Min</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Lat Sec</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Long Deg</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Long Min</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Long Sec</span><span class="st">`</span></span>
+<span id="cb34-66"><a href="cleaning-capture-data-2000-2019.html#cb34-66" tabindex="-1"></a>         )</span></code></pre></div>
+</div>
+<div id="filter-and-clean-data" class="section level2 hasAnchor" number="4.5">
+<h2><span class="header-section-number">4.5</span> Filter and clean data<a href="cleaning-capture-data-2000-2019.html#filter-and-clean-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Some data from Umatilla had multiple capture events on the same row. I had to exclude these and
+process them later.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="cleaning-capture-data-2000-2019.html#cb35-1" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> bands <span class="sc">%&gt;%</span> </span>
+<span id="cb35-2"><a href="cleaning-capture-data-2000-2019.html#cb35-2" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(meas_date_1))</span></code></pre></div>
+<div id="filter-and-clean-parasite-column" class="section level3 hasAnchor" number="4.5.1">
+<h3><span class="header-section-number">4.5.1</span> Filter and clean parasite column<a href="cleaning-capture-data-2000-2019.html#filter-and-clean-parasite-column" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="cleaning-capture-data-2000-2019.html#cb36-1" tabindex="-1"></a>parasite <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands,</span>
+<span id="cb36-2"><a href="cleaning-capture-data-2000-2019.html#cb36-2" tabindex="-1"></a>                   unique_key,</span>
+<span id="cb36-3"><a href="cleaning-capture-data-2000-2019.html#cb36-3" tabindex="-1"></a>                   <span class="st">&#39;fleas/ecto-parasites&#39;</span></span>
+<span id="cb36-4"><a href="cleaning-capture-data-2000-2019.html#cb36-4" tabindex="-1"></a>                   )</span>
+<span id="cb36-5"><a href="cleaning-capture-data-2000-2019.html#cb36-5" tabindex="-1"></a>parasite <span class="ot">&lt;-</span> parasite <span class="sc">%&gt;%</span></span>
+<span id="cb36-6"><a href="cleaning-capture-data-2000-2019.html#cb36-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">&#39;fleas/ecto-parasites&#39;</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;y&quot;</span>, <span class="st">&quot;Y&quot;</span>, <span class="st">`</span><span class="at">fleas/ecto-parasites</span><span class="st">`</span>),</span>
+<span id="cb36-7"><a href="cleaning-capture-data-2000-2019.html#cb36-7" tabindex="-1"></a>         <span class="st">&#39;fleas/ecto-parasites&#39;</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;x&quot;</span>, <span class="cn">NA</span>, <span class="st">`</span><span class="at">fleas/ecto-parasites</span><span class="st">`</span>),</span>
+<span id="cb36-8"><a href="cleaning-capture-data-2000-2019.html#cb36-8" tabindex="-1"></a>         <span class="st">&#39;fleas/ecto-parasites&#39;</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;-&quot;</span>, <span class="cn">NA</span>, <span class="st">`</span><span class="at">fleas/ecto-parasites</span><span class="st">`</span>),</span>
+<span id="cb36-9"><a href="cleaning-capture-data-2000-2019.html#cb36-9" tabindex="-1"></a>         <span class="st">&#39;fleas/ecto-parasites&#39;</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;none&quot;</span>, <span class="st">&quot;0&quot;</span>, <span class="st">`</span><span class="at">fleas/ecto-parasites</span><span class="st">`</span>),</span>
+<span id="cb36-10"><a href="cleaning-capture-data-2000-2019.html#cb36-10" tabindex="-1"></a>         <span class="st">&#39;fleas/ecto-parasites&#39;</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;N&quot;</span>, <span class="st">&quot;0&quot;</span>, <span class="st">`</span><span class="at">fleas/ecto-parasites</span><span class="st">`</span>)</span>
+<span id="cb36-11"><a href="cleaning-capture-data-2000-2019.html#cb36-11" tabindex="-1"></a>         )</span>
+<span id="cb36-12"><a href="cleaning-capture-data-2000-2019.html#cb36-12" tabindex="-1"></a>parasite <span class="ot">&lt;-</span> <span class="fu">select</span>(parasite,</span>
+<span id="cb36-13"><a href="cleaning-capture-data-2000-2019.html#cb36-13" tabindex="-1"></a>                   unique_key,</span>
+<span id="cb36-14"><a href="cleaning-capture-data-2000-2019.html#cb36-14" tabindex="-1"></a>                   <span class="at">number_of_ectoparasites_categorical =</span> <span class="st">&#39;fleas/ecto-parasites&#39;</span>,</span>
+<span id="cb36-15"><a href="cleaning-capture-data-2000-2019.html#cb36-15" tabindex="-1"></a>                   )</span>
+<span id="cb36-16"><a href="cleaning-capture-data-2000-2019.html#cb36-16" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> newbands <span class="sc">%&gt;%</span> </span>
+<span id="cb36-17"><a href="cleaning-capture-data-2000-2019.html#cb36-17" tabindex="-1"></a>  <span class="fu">left_join</span>(parasite, <span class="at">by =</span> <span class="st">&quot;unique_key&quot;</span></span>
+<span id="cb36-18"><a href="cleaning-capture-data-2000-2019.html#cb36-18" tabindex="-1"></a>            )</span>
+<span id="cb36-19"><a href="cleaning-capture-data-2000-2019.html#cb36-19" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands,</span>
+<span id="cb36-20"><a href="cleaning-capture-data-2000-2019.html#cb36-20" tabindex="-1"></a>                   <span class="sc">-</span><span class="st">&#39;fleas/ecto-parasites&#39;</span></span>
+<span id="cb36-21"><a href="cleaning-capture-data-2000-2019.html#cb36-21" tabindex="-1"></a>                   )</span></code></pre></div>
+</div>
+<div id="filter-and-clean-brood-patch-column" class="section level3 hasAnchor" number="4.5.2">
+<h3><span class="header-section-number">4.5.2</span> Filter and clean brood patch column<a href="cleaning-capture-data-2000-2019.html#filter-and-clean-brood-patch-column" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="cleaning-capture-data-2000-2019.html#cb37-1" tabindex="-1"></a>broodpatch <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands, unique_key, sex, broodPatch, brood_patch</span>
+<span id="cb37-2"><a href="cleaning-capture-data-2000-2019.html#cb37-2" tabindex="-1"></a>                     )</span>
+<span id="cb37-3"><a href="cleaning-capture-data-2000-2019.html#cb37-3" tabindex="-1"></a>broodpatch <span class="ot">&lt;-</span> broodpatch <span class="sc">%&gt;%</span> </span>
+<span id="cb37-4"><a href="cleaning-capture-data-2000-2019.html#cb37-4" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">broodPatch =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(broodPatch), brood_patch, broodPatch))</span>
+<span id="cb37-5"><a href="cleaning-capture-data-2000-2019.html#cb37-5" tabindex="-1"></a>broodpatch <span class="ot">&lt;-</span> broodpatch <span class="sc">%&gt;%</span> </span>
+<span id="cb37-6"><a href="cleaning-capture-data-2000-2019.html#cb37-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;f&quot;</span>, <span class="st">&quot;F&quot;</span>, broodPatch),</span>
+<span id="cb37-7"><a href="cleaning-capture-data-2000-2019.html#cb37-7" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;Yes&quot;</span>, <span class="st">&quot;P&quot;</span>, broodPatch),</span>
+<span id="cb37-8"><a href="cleaning-capture-data-2000-2019.html#cb37-8" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;YES&quot;</span>, <span class="st">&quot;P&quot;</span>, broodPatch),</span>
+<span id="cb37-9"><a href="cleaning-capture-data-2000-2019.html#cb37-9" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;p&quot;</span>, <span class="st">&quot;P&quot;</span>, broodPatch),</span>
+<span id="cb37-10"><a href="cleaning-capture-data-2000-2019.html#cb37-10" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;Y&quot;</span>, <span class="st">&quot;P&quot;</span>, broodPatch),</span>
+<span id="cb37-11"><a href="cleaning-capture-data-2000-2019.html#cb37-11" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;y&quot;</span>, <span class="st">&quot;P&quot;</span>, broodPatch),</span>
+<span id="cb37-12"><a href="cleaning-capture-data-2000-2019.html#cb37-12" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;v&quot;</span>, <span class="st">&quot;V&quot;</span>, broodPatch),</span>
+<span id="cb37-13"><a href="cleaning-capture-data-2000-2019.html#cb37-13" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;r&quot;</span>, <span class="st">&quot;R&quot;</span>, broodPatch),</span>
+<span id="cb37-14"><a href="cleaning-capture-data-2000-2019.html#cb37-14" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;w&quot;</span>, <span class="st">&quot;W&quot;</span>, broodPatch),</span>
+<span id="cb37-15"><a href="cleaning-capture-data-2000-2019.html#cb37-15" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;s&quot;</span>, <span class="st">&quot;S&quot;</span>, broodPatch),</span>
+<span id="cb37-16"><a href="cleaning-capture-data-2000-2019.html#cb37-16" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;NO&quot;</span>, <span class="st">&quot;0&quot;</span>, broodPatch),</span>
+<span id="cb37-17"><a href="cleaning-capture-data-2000-2019.html#cb37-17" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;No&quot;</span>, <span class="st">&quot;0&quot;</span>, broodPatch),</span>
+<span id="cb37-18"><a href="cleaning-capture-data-2000-2019.html#cb37-18" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, broodPatch),</span>
+<span id="cb37-19"><a href="cleaning-capture-data-2000-2019.html#cb37-19" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;x&quot;</span>, <span class="cn">NA</span>, broodPatch),</span>
+<span id="cb37-20"><a href="cleaning-capture-data-2000-2019.html#cb37-20" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;-&quot;</span>, <span class="cn">NA</span>, broodPatch),</span>
+<span id="cb37-21"><a href="cleaning-capture-data-2000-2019.html#cb37-21" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;N/A&quot;</span>, <span class="cn">NA</span>, broodPatch),</span>
+<span id="cb37-22"><a href="cleaning-capture-data-2000-2019.html#cb37-22" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;j&quot;</span>, <span class="cn">NA</span>, broodPatch),</span>
+<span id="cb37-23"><a href="cleaning-capture-data-2000-2019.html#cb37-23" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;n&quot;</span>, <span class="st">&quot;0&quot;</span>, broodPatch),</span>
+<span id="cb37-24"><a href="cleaning-capture-data-2000-2019.html#cb37-24" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;U&quot;</span>, <span class="cn">NA</span>, broodPatch),</span>
+<span id="cb37-25"><a href="cleaning-capture-data-2000-2019.html#cb37-25" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;N&quot;</span>, <span class="st">&quot;0&quot;</span>, broodPatch),</span>
+<span id="cb37-26"><a href="cleaning-capture-data-2000-2019.html#cb37-26" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;V YES&quot;</span>, <span class="st">&quot;V&quot;</span>, broodPatch),</span>
+<span id="cb37-27"><a href="cleaning-capture-data-2000-2019.html#cb37-27" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;O&quot;</span>, <span class="st">&quot;0&quot;</span>, broodPatch),</span>
+<span id="cb37-28"><a href="cleaning-capture-data-2000-2019.html#cb37-28" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;V P&quot;</span>, <span class="st">&quot;V&quot;</span>, broodPatch),</span>
+<span id="cb37-29"><a href="cleaning-capture-data-2000-2019.html#cb37-29" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;V</span><span class="sc">\\</span><span class="st">?&quot;</span>, <span class="st">&quot;V&quot;</span>, broodPatch),  <span class="co"># &#39;V?&#39; matches &#39;V&#39; or &#39;V?&#39;</span></span>
+<span id="cb37-30"><a href="cleaning-capture-data-2000-2019.html#cb37-30" tabindex="-1"></a>         <span class="at">broodPatch =</span> <span class="fu">gsub</span>(<span class="st">&quot;P/V&quot;</span>, <span class="st">&quot;V&quot;</span>, broodPatch) <span class="co"># Replaces &#39;P/V&#39; with &#39;V&#39;</span></span>
+<span id="cb37-31"><a href="cleaning-capture-data-2000-2019.html#cb37-31" tabindex="-1"></a>         )  </span>
+<span id="cb37-32"><a href="cleaning-capture-data-2000-2019.html#cb37-32" tabindex="-1"></a></span>
+<span id="cb37-33"><a href="cleaning-capture-data-2000-2019.html#cb37-33" tabindex="-1"></a></span>
+<span id="cb37-34"><a href="cleaning-capture-data-2000-2019.html#cb37-34" tabindex="-1"></a>broodpatch <span class="ot">&lt;-</span> <span class="fu">select</span>(broodpatch, </span>
+<span id="cb37-35"><a href="cleaning-capture-data-2000-2019.html#cb37-35" tabindex="-1"></a>                     unique_key,</span>
+<span id="cb37-36"><a href="cleaning-capture-data-2000-2019.html#cb37-36" tabindex="-1"></a>                     <span class="at">BROODPATCH =</span> broodPatch</span>
+<span id="cb37-37"><a href="cleaning-capture-data-2000-2019.html#cb37-37" tabindex="-1"></a>                     )</span>
+<span id="cb37-38"><a href="cleaning-capture-data-2000-2019.html#cb37-38" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> newbands <span class="sc">%&gt;%</span> </span>
+<span id="cb37-39"><a href="cleaning-capture-data-2000-2019.html#cb37-39" tabindex="-1"></a>  <span class="fu">left_join</span>(broodpatch, <span class="at">by =</span> <span class="st">&quot;unique_key&quot;</span>)</span>
+<span id="cb37-40"><a href="cleaning-capture-data-2000-2019.html#cb37-40" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands,</span>
+<span id="cb37-41"><a href="cleaning-capture-data-2000-2019.html#cb37-41" tabindex="-1"></a>                   <span class="sc">-</span>broodPatch,</span>
+<span id="cb37-42"><a href="cleaning-capture-data-2000-2019.html#cb37-42" tabindex="-1"></a>                   <span class="sc">-</span>brood_patch</span>
+<span id="cb37-43"><a href="cleaning-capture-data-2000-2019.html#cb37-43" tabindex="-1"></a>                   )</span></code></pre></div>
+</div>
+<div id="filter-and-clean-sex-column" class="section level3 hasAnchor" number="4.5.3">
+<h3><span class="header-section-number">4.5.3</span> Filter and clean sex column<a href="cleaning-capture-data-2000-2019.html#filter-and-clean-sex-column" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="cleaning-capture-data-2000-2019.html#cb38-1" tabindex="-1"></a>howsexed <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands, unique_key, sex, HowSex, how_sexed</span>
+<span id="cb38-2"><a href="cleaning-capture-data-2000-2019.html#cb38-2" tabindex="-1"></a>                   )</span>
+<span id="cb38-3"><a href="cleaning-capture-data-2000-2019.html#cb38-3" tabindex="-1"></a>howsexed <span class="ot">&lt;-</span> howsexed <span class="sc">%&gt;%</span> </span>
+<span id="cb38-4"><a href="cleaning-capture-data-2000-2019.html#cb38-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">HowSex =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(HowSex), how_sexed, HowSex)</span>
+<span id="cb38-5"><a href="cleaning-capture-data-2000-2019.html#cb38-5" tabindex="-1"></a>         )</span>
+<span id="cb38-6"><a href="cleaning-capture-data-2000-2019.html#cb38-6" tabindex="-1"></a>howsexed <span class="ot">&lt;-</span> <span class="fu">select</span>(howsexed,</span>
+<span id="cb38-7"><a href="cleaning-capture-data-2000-2019.html#cb38-7" tabindex="-1"></a>                   unique_key,</span>
+<span id="cb38-8"><a href="cleaning-capture-data-2000-2019.html#cb38-8" tabindex="-1"></a>                   <span class="at">how_sexedID =</span> HowSex</span>
+<span id="cb38-9"><a href="cleaning-capture-data-2000-2019.html#cb38-9" tabindex="-1"></a>                   )</span>
+<span id="cb38-10"><a href="cleaning-capture-data-2000-2019.html#cb38-10" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="cleaning-capture-data-2000-2019.html#cb38-11" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> newbands <span class="sc">%&gt;%</span> </span>
+<span id="cb38-12"><a href="cleaning-capture-data-2000-2019.html#cb38-12" tabindex="-1"></a>  <span class="fu">left_join</span>(howsexed, <span class="at">by =</span> <span class="st">&quot;unique_key&quot;</span>)</span>
+<span id="cb38-13"><a href="cleaning-capture-data-2000-2019.html#cb38-13" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands,</span>
+<span id="cb38-14"><a href="cleaning-capture-data-2000-2019.html#cb38-14" tabindex="-1"></a>                   <span class="sc">-</span>HowSex,</span>
+<span id="cb38-15"><a href="cleaning-capture-data-2000-2019.html#cb38-15" tabindex="-1"></a>                   <span class="sc">-</span>how_sexed</span>
+<span id="cb38-16"><a href="cleaning-capture-data-2000-2019.html#cb38-16" tabindex="-1"></a>                   )</span></code></pre></div>
+</div>
+<div id="filter-and-clean-hy-day-old-age" class="section level3 hasAnchor" number="4.5.4">
+<h3><span class="header-section-number">4.5.4</span> Filter and clean HY day old age<a href="cleaning-capture-data-2000-2019.html#filter-and-clean-hy-day-old-age" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="cleaning-capture-data-2000-2019.html#cb39-1" tabindex="-1"></a>juvage <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands, unique_key, juvieage, estimated_age_at_banding</span>
+<span id="cb39-2"><a href="cleaning-capture-data-2000-2019.html#cb39-2" tabindex="-1"></a>                 )</span>
+<span id="cb39-3"><a href="cleaning-capture-data-2000-2019.html#cb39-3" tabindex="-1"></a>juvage <span class="ot">&lt;-</span> juvage <span class="sc">%&gt;%</span> </span>
+<span id="cb39-4"><a href="cleaning-capture-data-2000-2019.html#cb39-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">juvieage =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(juvieage), estimated_age_at_banding, juvieage)</span>
+<span id="cb39-5"><a href="cleaning-capture-data-2000-2019.html#cb39-5" tabindex="-1"></a>         )</span>
+<span id="cb39-6"><a href="cleaning-capture-data-2000-2019.html#cb39-6" tabindex="-1"></a>juvage <span class="ot">&lt;-</span> juvage <span class="sc">%&gt;%</span> </span>
+<span id="cb39-7"><a href="cleaning-capture-data-2000-2019.html#cb39-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;13-Nov&quot;</span>, <span class="st">&quot;11-13&quot;</span>, juvieage),</span>
+<span id="cb39-8"><a href="cleaning-capture-data-2000-2019.html#cb39-8" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;13-Dec&quot;</span>, <span class="st">&quot;12-13&quot;</span>, juvieage),</span>
+<span id="cb39-9"><a href="cleaning-capture-data-2000-2019.html#cb39-9" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;12-Sep&quot;</span>, <span class="st">&quot;11-12&quot;</span>, juvieage),</span>
+<span id="cb39-10"><a href="cleaning-capture-data-2000-2019.html#cb39-10" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;12-Oct&quot;</span>, <span class="st">&quot;12&quot;</span>, juvieage),</span>
+<span id="cb39-11"><a href="cleaning-capture-data-2000-2019.html#cb39-11" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;15-Sep&quot;</span>, <span class="st">&quot;11-15&quot;</span>, juvieage),</span>
+<span id="cb39-12"><a href="cleaning-capture-data-2000-2019.html#cb39-12" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;11-Aug&quot;</span>, <span class="st">&quot;9-11&quot;</span>, juvieage),</span>
+<span id="cb39-13"><a href="cleaning-capture-data-2000-2019.html#cb39-13" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;10-Aug&quot;</span>, <span class="st">&quot;8-10&quot;</span>, juvieage),</span>
+<span id="cb39-14"><a href="cleaning-capture-data-2000-2019.html#cb39-14" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;11-Sep&quot;</span>, <span class="st">&quot;11&quot;</span>, juvieage),</span>
+<span id="cb39-15"><a href="cleaning-capture-data-2000-2019.html#cb39-15" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;15-Dec&quot;</span>, <span class="st">&quot;12-15&quot;</span>, juvieage),</span>
+<span id="cb39-16"><a href="cleaning-capture-data-2000-2019.html#cb39-16" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;14-Dec&quot;</span>, <span class="st">&quot;12-14&quot;</span>, juvieage),</span>
+<span id="cb39-17"><a href="cleaning-capture-data-2000-2019.html#cb39-17" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;x&quot;</span>, <span class="cn">NA</span>, juvieage),</span>
+<span id="cb39-18"><a href="cleaning-capture-data-2000-2019.html#cb39-18" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, juvieage),</span>
+<span id="cb39-19"><a href="cleaning-capture-data-2000-2019.html#cb39-19" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;~&quot;</span>, <span class="st">&quot;&quot;</span>, juvieage),</span>
+<span id="cb39-20"><a href="cleaning-capture-data-2000-2019.html#cb39-20" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot; d&quot;</span>, <span class="st">&quot;&quot;</span>, juvieage),</span>
+<span id="cb39-21"><a href="cleaning-capture-data-2000-2019.html#cb39-21" tabindex="-1"></a>         <span class="at">juvieage =</span> <span class="fu">gsub</span>(<span class="st">&quot;(</span><span class="sc">\\</span><span class="st">d+)</span><span class="sc">\\</span><span class="st">+&quot;</span>, <span class="st">&quot;&gt;</span><span class="sc">\\</span><span class="st">1&quot;</span>, juvieage)</span>
+<span id="cb39-22"><a href="cleaning-capture-data-2000-2019.html#cb39-22" tabindex="-1"></a>  )</span>
+<span id="cb39-23"><a href="cleaning-capture-data-2000-2019.html#cb39-23" tabindex="-1"></a><span class="fu">unique</span>(juvage<span class="sc">$</span>juvieage)</span>
+<span id="cb39-24"><a href="cleaning-capture-data-2000-2019.html#cb39-24" tabindex="-1"></a>juvage <span class="ot">&lt;-</span> <span class="fu">select</span>(juvage,</span>
+<span id="cb39-25"><a href="cleaning-capture-data-2000-2019.html#cb39-25" tabindex="-1"></a>                 unique_key,</span>
+<span id="cb39-26"><a href="cleaning-capture-data-2000-2019.html#cb39-26" tabindex="-1"></a>                 <span class="st">&quot;juvenile_estimated_usage(days)&quot;</span> <span class="ot">=</span> juvieage</span>
+<span id="cb39-27"><a href="cleaning-capture-data-2000-2019.html#cb39-27" tabindex="-1"></a>                 )</span>
+<span id="cb39-28"><a href="cleaning-capture-data-2000-2019.html#cb39-28" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> newbands <span class="sc">%&gt;%</span> </span>
+<span id="cb39-29"><a href="cleaning-capture-data-2000-2019.html#cb39-29" tabindex="-1"></a>  <span class="fu">left_join</span>(juvage, <span class="at">by =</span> <span class="st">&quot;unique_key&quot;</span></span>
+<span id="cb39-30"><a href="cleaning-capture-data-2000-2019.html#cb39-30" tabindex="-1"></a>            )</span>
+<span id="cb39-31"><a href="cleaning-capture-data-2000-2019.html#cb39-31" tabindex="-1"></a></span>
+<span id="cb39-32"><a href="cleaning-capture-data-2000-2019.html#cb39-32" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands,</span>
+<span id="cb39-33"><a href="cleaning-capture-data-2000-2019.html#cb39-33" tabindex="-1"></a>                   <span class="sc">-</span>juvieage,</span>
+<span id="cb39-34"><a href="cleaning-capture-data-2000-2019.html#cb39-34" tabindex="-1"></a>                   <span class="sc">-</span>estimated_age_at_banding</span>
+<span id="cb39-35"><a href="cleaning-capture-data-2000-2019.html#cb39-35" tabindex="-1"></a>                   )</span></code></pre></div>
+</div>
+<div id="standardize-values" class="section level3 hasAnchor" number="4.5.5">
+<h3><span class="header-section-number">4.5.5</span> Standardize values<a href="cleaning-capture-data-2000-2019.html#standardize-values" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="cleaning-capture-data-2000-2019.html#cb40-1" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> newbands <span class="sc">%&gt;%</span> </span>
+<span id="cb40-2"><a href="cleaning-capture-data-2000-2019.html#cb40-2" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb40-3"><a href="cleaning-capture-data-2000-2019.html#cb40-3" tabindex="-1"></a>    <span class="at">fat =</span> <span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>, <span class="cn">NA</span>, fat),</span>
+<span id="cb40-4"><a href="cleaning-capture-data-2000-2019.html#cb40-4" tabindex="-1"></a>    <span class="at">fat =</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, fat),</span>
+<span id="cb40-5"><a href="cleaning-capture-data-2000-2019.html#cb40-5" tabindex="-1"></a>    <span class="at">muscle =</span> <span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>, <span class="cn">NA</span>, muscle),</span>
+<span id="cb40-6"><a href="cleaning-capture-data-2000-2019.html#cb40-6" tabindex="-1"></a>    <span class="at">muscle =</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, muscle),</span>
+<span id="cb40-7"><a href="cleaning-capture-data-2000-2019.html#cb40-7" tabindex="-1"></a>    <span class="at">right_wing =</span> <span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>, <span class="cn">NA</span>, right_wing),</span>
+<span id="cb40-8"><a href="cleaning-capture-data-2000-2019.html#cb40-8" tabindex="-1"></a>    <span class="at">right_wing =</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, right_wing),</span>
+<span id="cb40-9"><a href="cleaning-capture-data-2000-2019.html#cb40-9" tabindex="-1"></a>    <span class="st">`</span><span class="at">tarsus_(mm)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>, <span class="cn">NA</span>, <span class="st">`</span><span class="at">tarsus_(mm)</span><span class="st">`</span>),</span>
+<span id="cb40-10"><a href="cleaning-capture-data-2000-2019.html#cb40-10" tabindex="-1"></a>    <span class="st">`</span><span class="at">tarsus_(mm)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, <span class="st">`</span><span class="at">tarsus_(mm)</span><span class="st">`</span>),</span>
+<span id="cb40-11"><a href="cleaning-capture-data-2000-2019.html#cb40-11" tabindex="-1"></a>    <span class="at">tail =</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, tail),</span>
+<span id="cb40-12"><a href="cleaning-capture-data-2000-2019.html#cb40-12" tabindex="-1"></a>    <span class="at">tail =</span> <span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>, <span class="cn">NA</span>, tail),</span>
+<span id="cb40-13"><a href="cleaning-capture-data-2000-2019.html#cb40-13" tabindex="-1"></a>    <span class="st">`</span><span class="at">skull length</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, <span class="st">`</span><span class="at">skull length</span><span class="st">`</span>),</span>
+<span id="cb40-14"><a href="cleaning-capture-data-2000-2019.html#cb40-14" tabindex="-1"></a>    <span class="st">`</span><span class="at">skull length</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>, <span class="cn">NA</span>, <span class="st">`</span><span class="at">skull length</span><span class="st">`</span>),</span>
+<span id="cb40-15"><a href="cleaning-capture-data-2000-2019.html#cb40-15" tabindex="-1"></a>    <span class="st">`</span><span class="at">skull width</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, <span class="st">`</span><span class="at">skull width</span><span class="st">`</span>),</span>
+<span id="cb40-16"><a href="cleaning-capture-data-2000-2019.html#cb40-16" tabindex="-1"></a>    <span class="st">`</span><span class="at">skull width</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>, <span class="cn">NA</span>, <span class="st">`</span><span class="at">skull width</span><span class="st">`</span>),</span>
+<span id="cb40-17"><a href="cleaning-capture-data-2000-2019.html#cb40-17" tabindex="-1"></a>    <span class="at">culmen =</span> <span class="fu">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="cn">NA</span>, culmen),</span>
+<span id="cb40-18"><a href="cleaning-capture-data-2000-2019.html#cb40-18" tabindex="-1"></a>    <span class="at">culmen =</span> <span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>, <span class="cn">NA</span>, culmen),</span>
+<span id="cb40-19"><a href="cleaning-capture-data-2000-2019.html#cb40-19" tabindex="-1"></a>    <span class="at">time_at_release =</span> <span class="fu">gsub</span>(<span class="st">&quot;~&quot;</span>, <span class="st">&quot;&quot;</span>, time_at_release),</span>
+<span id="cb40-20"><a href="cleaning-capture-data-2000-2019.html#cb40-20" tabindex="-1"></a>    <span class="at">time_at_release =</span> <span class="fu">gsub</span>(<span class="st">&quot;:&quot;</span>, <span class="st">&quot;&quot;</span>, time_at_release),</span>
+<span id="cb40-21"><a href="cleaning-capture-data-2000-2019.html#cb40-21" tabindex="-1"></a>    <span class="at">recap =</span> <span class="fu">gsub</span>(<span class="st">&quot;yes&quot;</span>, <span class="st">&quot;Y&quot;</span>, recap),</span>
+<span id="cb40-22"><a href="cleaning-capture-data-2000-2019.html#cb40-22" tabindex="-1"></a>    <span class="at">recap =</span> <span class="fu">gsub</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;N&quot;</span>, recap),</span>
+<span id="cb40-23"><a href="cleaning-capture-data-2000-2019.html#cb40-23" tabindex="-1"></a>    <span class="at">Country =</span><span class="fu">gsub</span>(<span class="st">&quot;MX&quot;</span>, <span class="st">&quot;Mexico&quot;</span>, Country)</span>
+<span id="cb40-24"><a href="cleaning-capture-data-2000-2019.html#cb40-24" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="change-site-to-abbreviations-to-full-names" class="section level3 hasAnchor" number="4.5.6">
+<h3><span class="header-section-number">4.5.6</span> Change site to abbreviations to full names<a href="cleaning-capture-data-2000-2019.html#change-site-to-abbreviations-to-full-names" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="cleaning-capture-data-2000-2019.html#cb41-1" tabindex="-1"></a>newbands <span class="ot">&lt;-</span> newbands <span class="sc">%&gt;%</span> </span>
+<span id="cb41-2"><a href="cleaning-capture-data-2000-2019.html#cb41-2" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb41-3"><a href="cleaning-capture-data-2000-2019.html#cb41-3" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;KAFB&quot;</span>, <span class="st">&quot;Kirtland Air Force Base&quot;</span>, site),</span>
+<span id="cb41-4"><a href="cleaning-capture-data-2000-2019.html#cb41-4" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;DESERET CHEMICAL DEPOT (TEAD)&quot;</span>, <span class="st">&quot;Tooele Army Depot&quot;</span>, site),</span>
+<span id="cb41-5"><a href="cleaning-capture-data-2000-2019.html#cb41-5" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;TEAD&quot;</span>, <span class="st">&quot;Tooele Army Depot&quot;</span>, site),</span>
+<span id="cb41-6"><a href="cleaning-capture-data-2000-2019.html#cb41-6" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">bTHUNDER</span><span class="sc">\\</span><span class="st">b(?!</span><span class="sc">\\</span><span class="st">s+</span><span class="sc">\\</span><span class="st">w+)&quot;</span>, <span class="st">&quot;Thunder Basin&quot;</span>, site, <span class="at">perl =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb41-7"><a href="cleaning-capture-data-2000-2019.html#cb41-7" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;PUEBLOCD&quot;</span>, <span class="st">&quot;Pueblo Chemical Depot&quot;</span>, site),</span>
+<span id="cb41-8"><a href="cleaning-capture-data-2000-2019.html#cb41-8" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;SSNWR&quot;</span>, <span class="st">&quot;Salton Sea National Wildlife Refuge&quot;</span>, site),</span>
+<span id="cb41-9"><a href="cleaning-capture-data-2000-2019.html#cb41-9" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;SFC&quot;</span>, <span class="st">&quot;Salmon Falls Creek&quot;</span>, site),</span>
+<span id="cb41-10"><a href="cleaning-capture-data-2000-2019.html#cb41-10" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;NELLISAFB&quot;</span>, <span class="st">&quot;Nellis Air Force Base&quot;</span>, site),</span>
+<span id="cb41-11"><a href="cleaning-capture-data-2000-2019.html#cb41-11" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;DIXNRS&quot;</span>, <span class="st">&quot;Dixon Naval Radio Transmitter Facility&quot;</span>, site),</span>
+<span id="cb41-12"><a href="cleaning-capture-data-2000-2019.html#cb41-12" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;ML&quot;</span>, <span class="st">&quot;Moses Lake&quot;</span>, site),</span>
+<span id="cb41-13"><a href="cleaning-capture-data-2000-2019.html#cb41-13" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;YTC&quot;</span>, <span class="st">&quot;Yakima Training Center&quot;</span>, site),</span>
+<span id="cb41-14"><a href="cleaning-capture-data-2000-2019.html#cb41-14" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">bTC</span><span class="sc">\\</span><span class="st">b&quot;</span>, <span class="st">&quot;Tri-Cities&quot;</span>, site),</span>
+<span id="cb41-15"><a href="cleaning-capture-data-2000-2019.html#cb41-15" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;NEVTS&quot;</span>, <span class="st">&quot;Nevada National Security Site&quot;</span>, site),</span>
+<span id="cb41-16"><a href="cleaning-capture-data-2000-2019.html#cb41-16" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;NASLEM&quot;</span>, <span class="st">&quot;Naval Air Station Lemoore &quot;</span>, site),</span>
+<span id="cb41-17"><a href="cleaning-capture-data-2000-2019.html#cb41-17" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;LAS CIENEGAS NCA&quot;</span>, <span class="st">&quot;Las Cienegas National Conservation Area&quot;</span>, site),</span>
+<span id="cb41-18"><a href="cleaning-capture-data-2000-2019.html#cb41-18" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;DUGWAYPG&quot;</span>, <span class="st">&quot;Dugway Proving Ground&quot;</span>, site),</span>
+<span id="cb41-19"><a href="cleaning-capture-data-2000-2019.html#cb41-19" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;ANTELOPEISLAND&quot;</span>, <span class="st">&quot;Antelope Island&quot;</span>, site),</span>
+<span id="cb41-20"><a href="cleaning-capture-data-2000-2019.html#cb41-20" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;WSMRNM&quot;</span>, <span class="st">&quot;White Sands Missile Range&quot;</span>, site),</span>
+<span id="cb41-21"><a href="cleaning-capture-data-2000-2019.html#cb41-21" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;CG&quot;</span>, <span class="st">&quot;Casa Grande&quot;</span>, site),</span>
+<span id="cb41-22"><a href="cleaning-capture-data-2000-2019.html#cb41-22" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;NASNI&quot;</span>, <span class="st">&quot;Naval Air Station North Island&quot;</span>, site),</span>
+<span id="cb41-23"><a href="cleaning-capture-data-2000-2019.html#cb41-23" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;NAFELCEN&quot;</span>, <span class="st">&quot;Naval Air Facility El Centro&quot;</span>, site),</span>
+<span id="cb41-24"><a href="cleaning-capture-data-2000-2019.html#cb41-24" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;EDWARDSAFB&quot;</span>, <span class="st">&quot;Edwards Air Force Base&quot;</span>, site),</span>
+<span id="cb41-25"><a href="cleaning-capture-data-2000-2019.html#cb41-25" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;MARCHARB&quot;</span>, <span class="st">&quot;March Air Reserve Base&quot;</span>, site),</span>
+<span id="cb41-26"><a href="cleaning-capture-data-2000-2019.html#cb41-26" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;PINIONCMS&quot;</span>, <span class="st">&quot;Piñon Canyon Maneuver Site&quot;</span>, site),</span>
+<span id="cb41-27"><a href="cleaning-capture-data-2000-2019.html#cb41-27" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;FTCARSON&quot;</span>, <span class="st">&quot;Fort Carson&quot;</span>, site),</span>
+<span id="cb41-28"><a href="cleaning-capture-data-2000-2019.html#cb41-28" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;BUCKLEYAFB&quot;</span>, <span class="st">&quot;Buckley Space Force Base&quot;</span>, site),</span>
+<span id="cb41-29"><a href="cleaning-capture-data-2000-2019.html#cb41-29" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;SCHRIEAFB&quot;</span>, <span class="st">&quot;Schriever Space Force Base&quot;</span>, site),</span>
+<span id="cb41-30"><a href="cleaning-capture-data-2000-2019.html#cb41-30" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;RCKYMNTARS&quot;</span>, <span class="st">&quot;Rocky Mountain Arsenal&quot;</span>, site),</span>
+<span id="cb41-31"><a href="cleaning-capture-data-2000-2019.html#cb41-31" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;YPGYAZ&quot;</span>, <span class="st">&quot;Yuma Proving Ground&quot;</span>, site),</span>
+<span id="cb41-32"><a href="cleaning-capture-data-2000-2019.html#cb41-32" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;YMCAS&quot;</span>, <span class="st">&quot;Yuma Marine Corps Air Station&quot;</span>, site),</span>
+<span id="cb41-33"><a href="cleaning-capture-data-2000-2019.html#cb41-33" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;MTHOMEAFB&quot;</span>, <span class="st">&quot;Mountain Home Air Force Base&quot;</span>, site),</span>
+<span id="cb41-34"><a href="cleaning-capture-data-2000-2019.html#cb41-34" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;CROOKCRRNCH&quot;</span>, <span class="st">&quot;Crooked Creek Ranch&quot;</span>, site),</span>
+<span id="cb41-35"><a href="cleaning-capture-data-2000-2019.html#cb41-35" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;BLACKFT&quot;</span>, <span class="st">&quot;Hwy 26/Blackfoot &quot;</span>, site),</span>
+<span id="cb41-36"><a href="cleaning-capture-data-2000-2019.html#cb41-36" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;HILLAFB&quot;</span>, <span class="st">&quot;Hill Air Force Base&quot;</span>, site),</span>
+<span id="cb41-37"><a href="cleaning-capture-data-2000-2019.html#cb41-37" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;MATAMORAS&quot;</span>, <span class="st">&quot;Matamoros&quot;</span>, site),</span>
+<span id="cb41-38"><a href="cleaning-capture-data-2000-2019.html#cb41-38" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;KENMINCO&quot;</span>, <span class="st">&quot;Kennecott Mining Co., Saltair&quot;</span>, site),</span>
+<span id="cb41-39"><a href="cleaning-capture-data-2000-2019.html#cb41-39" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;STGEORGE&quot;</span>, <span class="st">&quot;St. George&quot;</span>, site),</span>
+<span id="cb41-40"><a href="cleaning-capture-data-2000-2019.html#cb41-40" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;SHARPEDEP&quot;</span>, <span class="st">&quot;Sharpe Depot&quot;</span>, site),</span>
+<span id="cb41-41"><a href="cleaning-capture-data-2000-2019.html#cb41-41" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;TRAVISAFB&quot;</span>, <span class="st">&quot;Travis Air Force Base&quot;</span>, site),</span>
+<span id="cb41-42"><a href="cleaning-capture-data-2000-2019.html#cb41-42" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;ELMORE&quot;</span>, <span class="st">&quot;Elmore County&quot;</span>, site),</span>
+<span id="cb41-43"><a href="cleaning-capture-data-2000-2019.html#cb41-43" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;UTTR&quot;</span>, <span class="st">&quot;Utah Test and Training Range&quot;</span>, site),</span>
+<span id="cb41-44"><a href="cleaning-capture-data-2000-2019.html#cb41-44" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;MOUNTAIN HOME&quot;</span>, <span class="st">&quot;Mountain Home Air Force Base&quot;</span>, site),</span>
+<span id="cb41-45"><a href="cleaning-capture-data-2000-2019.html#cb41-45" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;MHAFB&quot;</span>, <span class="st">&quot;Mountain Home Air Force Base&quot;</span>, site),</span>
+<span id="cb41-46"><a href="cleaning-capture-data-2000-2019.html#cb41-46" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;Grand View&quot;</span>, <span class="st">&quot;Grand View&quot;</span>, site),</span>
+<span id="cb41-47"><a href="cleaning-capture-data-2000-2019.html#cb41-47" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;PUEBLO CHEM DEPOT&quot;</span>, <span class="st">&quot;Pueblo Chemical Depot&quot;</span>, site),</span>
+<span id="cb41-48"><a href="cleaning-capture-data-2000-2019.html#cb41-48" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;UAD&quot;</span>, <span class="st">&quot;Umatilla Army Depot&quot;</span>, site),</span>
+<span id="cb41-49"><a href="cleaning-capture-data-2000-2019.html#cb41-49" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;OTR&quot;</span>, <span class="st">&quot;Orchard Combat Training Center&quot;</span>, site),</span>
+<span id="cb41-50"><a href="cleaning-capture-data-2000-2019.html#cb41-50" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;BOARDBR&quot;</span>, <span class="st">&quot;Boardman Bombing Range&quot;</span>, site),</span>
+<span id="cb41-51"><a href="cleaning-capture-data-2000-2019.html#cb41-51" tabindex="-1"></a>    <span class="co"># Step 1: Convert all text to lowercase first</span></span>
+<span id="cb41-52"><a href="cleaning-capture-data-2000-2019.html#cb41-52" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">tolower</span>(site),</span>
+<span id="cb41-53"><a href="cleaning-capture-data-2000-2019.html#cb41-53" tabindex="-1"></a>    <span class="co"># Step 2: Capitalize the first letter of each word</span></span>
+<span id="cb41-54"><a href="cleaning-capture-data-2000-2019.html#cb41-54" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">b(</span><span class="sc">\\</span><span class="st">w)&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">U</span><span class="sc">\\</span><span class="st">1&quot;</span>, site, <span class="at">perl =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-55"><a href="cleaning-capture-data-2000-2019.html#cb41-55" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+</div>
+<div id="prepare-data-for-export" class="section level2 hasAnchor" number="4.6">
+<h2><span class="header-section-number">4.6</span> Prepare data for export<a href="cleaning-capture-data-2000-2019.html#prepare-data-for-export" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="cleaning-capture-data-2000-2019.html#cb42-1" tabindex="-1"></a>exportcapturesall <span class="ot">&lt;-</span> <span class="fu">select</span>(newbands,</span>
+<span id="cb42-2"><a href="cleaning-capture-data-2000-2019.html#cb42-2" tabindex="-1"></a>                 band,</span>
+<span id="cb42-3"><a href="cleaning-capture-data-2000-2019.html#cb42-3" tabindex="-1"></a>                 <span class="at">observer =</span> Obs,</span>
+<span id="cb42-4"><a href="cleaning-capture-data-2000-2019.html#cb42-4" tabindex="-1"></a>                 <span class="at">date =</span> dateBanded,</span>
+<span id="cb42-5"><a href="cleaning-capture-data-2000-2019.html#cb42-5" tabindex="-1"></a>                 site,</span>
+<span id="cb42-6"><a href="cleaning-capture-data-2000-2019.html#cb42-6" tabindex="-1"></a>                 <span class="at">country =</span> Country,</span>
+<span id="cb42-7"><a href="cleaning-capture-data-2000-2019.html#cb42-7" tabindex="-1"></a>                 <span class="at">state =</span> State,</span>
+<span id="cb42-8"><a href="cleaning-capture-data-2000-2019.html#cb42-8" tabindex="-1"></a>                 <span class="at">elevation_ft =</span> Elevation,</span>
+<span id="cb42-9"><a href="cleaning-capture-data-2000-2019.html#cb42-9" tabindex="-1"></a>                 <span class="at">lat =</span> Latitude,</span>
+<span id="cb42-10"><a href="cleaning-capture-data-2000-2019.html#cb42-10" tabindex="-1"></a>                 <span class="at">long =</span> Longitude,</span>
+<span id="cb42-11"><a href="cleaning-capture-data-2000-2019.html#cb42-11" tabindex="-1"></a>                 <span class="at">recapture =</span> recap,</span>
+<span id="cb42-12"><a href="cleaning-capture-data-2000-2019.html#cb42-12" tabindex="-1"></a>                 <span class="st">`</span><span class="at">juvenile_estimated_age(days)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;juvenile_estimated_usage(days)&quot;</span>,</span>
+<span id="cb42-13"><a href="cleaning-capture-data-2000-2019.html#cb42-13" tabindex="-1"></a>                 <span class="at">age_at_capture =</span> Age,</span>
+<span id="cb42-14"><a href="cleaning-capture-data-2000-2019.html#cb42-14" tabindex="-1"></a>                 <span class="at">sex_at_capture =</span> sex,</span>
+<span id="cb42-15"><a href="cleaning-capture-data-2000-2019.html#cb42-15" tabindex="-1"></a>                 how_sexedID,</span>
+<span id="cb42-16"><a href="cleaning-capture-data-2000-2019.html#cb42-16" tabindex="-1"></a>                 <span class="at">brood_patch =</span> BROODPATCH,</span>
+<span id="cb42-17"><a href="cleaning-capture-data-2000-2019.html#cb42-17" tabindex="-1"></a>                 number_of_ectoparasites_categorical,</span>
+<span id="cb42-18"><a href="cleaning-capture-data-2000-2019.html#cb42-18" tabindex="-1"></a>                 <span class="at">fat_score =</span> fat,</span>
+<span id="cb42-19"><a href="cleaning-capture-data-2000-2019.html#cb42-19" tabindex="-1"></a>                 <span class="at">muscle_score =</span> muscle,</span>
+<span id="cb42-20"><a href="cleaning-capture-data-2000-2019.html#cb42-20" tabindex="-1"></a>                 <span class="at">weight_g =</span> bird_wt,</span>
+<span id="cb42-21"><a href="cleaning-capture-data-2000-2019.html#cb42-21" tabindex="-1"></a>                 <span class="at">left_wing_cord_mm =</span> left_wing,</span>
+<span id="cb42-22"><a href="cleaning-capture-data-2000-2019.html#cb42-22" tabindex="-1"></a>                 <span class="at">righ_wing_cord_mm =</span> right_wing,</span>
+<span id="cb42-23"><a href="cleaning-capture-data-2000-2019.html#cb42-23" tabindex="-1"></a>                 <span class="at">tail_length_mm =</span> tail,</span>
+<span id="cb42-24"><a href="cleaning-capture-data-2000-2019.html#cb42-24" tabindex="-1"></a>                 <span class="at">tarsus_mm =</span> <span class="st">`</span><span class="at">tarsus_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-25"><a href="cleaning-capture-data-2000-2019.html#cb42-25" tabindex="-1"></a>                 <span class="at">left_tarsus_mm =</span> <span class="st">`</span><span class="at">left_metatarsus_(mm)</span><span class="st">`</span>, </span>
+<span id="cb42-26"><a href="cleaning-capture-data-2000-2019.html#cb42-26" tabindex="-1"></a>                 <span class="at">right_tarsus_mm =</span> <span class="st">`</span><span class="at">right_metatarsus_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-27"><a href="cleaning-capture-data-2000-2019.html#cb42-27" tabindex="-1"></a>                 <span class="at">head_length_mm =</span> <span class="st">`</span><span class="at">skull length</span><span class="st">`</span>,</span>
+<span id="cb42-28"><a href="cleaning-capture-data-2000-2019.html#cb42-28" tabindex="-1"></a>                 <span class="at">head_width_mm =</span> <span class="st">`</span><span class="at">skull width</span><span class="st">`</span>, </span>
+<span id="cb42-29"><a href="cleaning-capture-data-2000-2019.html#cb42-29" tabindex="-1"></a>                 culmen,</span>
+<span id="cb42-30"><a href="cleaning-capture-data-2000-2019.html#cb42-30" tabindex="-1"></a>                 <span class="at">toe_1_mm =</span> <span class="st">`</span><span class="at">toe_1_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-31"><a href="cleaning-capture-data-2000-2019.html#cb42-31" tabindex="-1"></a>                 <span class="at">toe_2_mm =</span> <span class="st">`</span><span class="at">toe_2_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-32"><a href="cleaning-capture-data-2000-2019.html#cb42-32" tabindex="-1"></a>                 <span class="at">toe_3_mm =</span> <span class="st">`</span><span class="at">toe_3_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-33"><a href="cleaning-capture-data-2000-2019.html#cb42-33" tabindex="-1"></a>                 <span class="at">toe_4_mm =</span> <span class="st">`</span><span class="at">toe_4_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-34"><a href="cleaning-capture-data-2000-2019.html#cb42-34" tabindex="-1"></a>                 <span class="at">claw_1_mm =</span> <span class="st">`</span><span class="at">claw_1_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-35"><a href="cleaning-capture-data-2000-2019.html#cb42-35" tabindex="-1"></a>                 <span class="at">claw_2_mm =</span> <span class="st">`</span><span class="at">claw_2_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-36"><a href="cleaning-capture-data-2000-2019.html#cb42-36" tabindex="-1"></a>                 <span class="at">claw_3_mm =</span> <span class="st">`</span><span class="at">claw_3_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-37"><a href="cleaning-capture-data-2000-2019.html#cb42-37" tabindex="-1"></a>                 <span class="at">claw_4_mm =</span> <span class="st">`</span><span class="at">claw_4_(mm)</span><span class="st">`</span>,</span>
+<span id="cb42-38"><a href="cleaning-capture-data-2000-2019.html#cb42-38" tabindex="-1"></a>                 <span class="at">time_released =</span> time_at_release,</span>
+<span id="cb42-39"><a href="cleaning-capture-data-2000-2019.html#cb42-39" tabindex="-1"></a>                 <span class="at">comments =</span> comments...<span class="dv">103</span>)</span></code></pre></div>
+<p>Sometimes the sex and age can be inferred from one another so this code makes those inferences
+and standardizes values</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="cleaning-capture-data-2000-2019.html#cb43-1" tabindex="-1"></a>exportcapturesall <span class="ot">&lt;-</span> exportcapturesall <span class="sc">%&gt;%</span></span>
+<span id="cb43-2"><a href="cleaning-capture-data-2000-2019.html#cb43-2" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb43-3"><a href="cleaning-capture-data-2000-2019.html#cb43-3" tabindex="-1"></a>    <span class="at">age_at_capture =</span> <span class="fu">if_else</span>(sex_at_capture <span class="sc">==</span> <span class="st">&quot;J&quot;</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(age_at_capture), <span class="st">&quot;HY&quot;</span>,</span>
+<span id="cb43-4"><a href="cleaning-capture-data-2000-2019.html#cb43-4" tabindex="-1"></a>                             age_at_capture),</span>
+<span id="cb43-5"><a href="cleaning-capture-data-2000-2019.html#cb43-5" tabindex="-1"></a>    <span class="at">age_at_capture =</span> <span class="fu">if_else</span>(sex_at_capture <span class="sc">==</span> <span class="st">&quot;F&quot;</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(age_at_capture), <span class="st">&quot;AHY&quot;</span>,</span>
+<span id="cb43-6"><a href="cleaning-capture-data-2000-2019.html#cb43-6" tabindex="-1"></a>                             age_at_capture),</span>
+<span id="cb43-7"><a href="cleaning-capture-data-2000-2019.html#cb43-7" tabindex="-1"></a>    <span class="at">age_at_capture =</span> <span class="fu">if_else</span>(sex_at_capture <span class="sc">==</span> <span class="st">&quot;M&quot;</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(age_at_capture), <span class="st">&quot;AHY&quot;</span>,</span>
+<span id="cb43-8"><a href="cleaning-capture-data-2000-2019.html#cb43-8" tabindex="-1"></a>                             age_at_capture),</span>
+<span id="cb43-9"><a href="cleaning-capture-data-2000-2019.html#cb43-9" tabindex="-1"></a>    <span class="at">sex_at_capture =</span> <span class="fu">if_else</span>(age_at_capture <span class="sc">==</span> <span class="st">&quot;HY&quot;</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(sex_at_capture), <span class="st">&quot;J&quot;</span>,</span>
+<span id="cb43-10"><a href="cleaning-capture-data-2000-2019.html#cb43-10" tabindex="-1"></a>                             sex_at_capture),</span>
+<span id="cb43-11"><a href="cleaning-capture-data-2000-2019.html#cb43-11" tabindex="-1"></a>    <span class="at">sex_at_capture =</span> <span class="fu">if_else</span>(age_at_capture <span class="sc">==</span> <span class="st">&quot;L&quot;</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(sex_at_capture), <span class="st">&quot;J&quot;</span>,</span>
+<span id="cb43-12"><a href="cleaning-capture-data-2000-2019.html#cb43-12" tabindex="-1"></a>                             sex_at_capture),</span>
+<span id="cb43-13"><a href="cleaning-capture-data-2000-2019.html#cb43-13" tabindex="-1"></a>    <span class="at">sex_at_capture =</span> <span class="fu">gsub</span>(<span class="st">&quot;J&quot;</span>, <span class="st">&quot;U&quot;</span>, sex_at_capture))</span></code></pre></div>
+<p>Some of the column data structures need to be changed for final import into SQL</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="cleaning-capture-data-2000-2019.html#cb44-1" tabindex="-1"></a>exportcapturesall<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(exportcapturesall<span class="sc">$</span>date, <span class="at">format =</span> <span class="st">&quot;%d-%b-%y&quot;</span>)</span>
+<span id="cb44-2"><a href="cleaning-capture-data-2000-2019.html#cb44-2" tabindex="-1"></a>exportcapturesall<span class="sc">$</span>righ_wing_cord_mm <span class="ot">&lt;-</span> <span class="fu">as.double</span>(exportcapturesall<span class="sc">$</span>righ_wing_cord_mm)</span>
+<span id="cb44-3"><a href="cleaning-capture-data-2000-2019.html#cb44-3" tabindex="-1"></a>exportcapturesall<span class="sc">$</span>tail_length_mm <span class="ot">&lt;-</span> <span class="fu">as.double</span>(exportcapturesall<span class="sc">$</span>tail_length_mm)</span>
+<span id="cb44-4"><a href="cleaning-capture-data-2000-2019.html#cb44-4" tabindex="-1"></a>exportcapturesall<span class="sc">$</span>tarsus_mm <span class="ot">&lt;-</span> <span class="fu">as.double</span>(exportcapturesall<span class="sc">$</span>tarsus_mm)</span>
+<span id="cb44-5"><a href="cleaning-capture-data-2000-2019.html#cb44-5" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="cleaning-capture-data-2000-2019.html#cb44-6" tabindex="-1"></a>exportcapturesall[<span class="fu">c</span>(<span class="st">&quot;righ_wing_cord_mm&quot;</span>, <span class="st">&quot;tail_length_mm&quot;</span>, <span class="st">&quot;tarsus_mm&quot;</span>, </span>
+<span id="cb44-7"><a href="cleaning-capture-data-2000-2019.html#cb44-7" tabindex="-1"></a>                    <span class="st">&quot;head_length_mm&quot;</span>, <span class="st">&quot;head_width_mm&quot;</span>, <span class="st">&quot;right_tarsus_mm&quot;</span>, <span class="st">&quot;culmen&quot;</span>)] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(</span>
+<span id="cb44-8"><a href="cleaning-capture-data-2000-2019.html#cb44-8" tabindex="-1"></a>                      exportcapturesall[<span class="fu">c</span>(<span class="st">&quot;righ_wing_cord_mm&quot;</span>, <span class="st">&quot;tail_length_mm&quot;</span>, <span class="st">&quot;tarsus_mm&quot;</span>, </span>
+<span id="cb44-9"><a href="cleaning-capture-data-2000-2019.html#cb44-9" tabindex="-1"></a>                                          <span class="st">&quot;head_length_mm&quot;</span>, <span class="st">&quot;head_width_mm&quot;</span>, <span class="st">&quot;right_tarsus_mm&quot;</span>, <span class="st">&quot;culmen&quot;</span>)], </span>
+<span id="cb44-10"><a href="cleaning-capture-data-2000-2019.html#cb44-10" tabindex="-1"></a>                      <span class="cf">function</span>(x) <span class="fu">round</span>(<span class="fu">as.double</span>(x), <span class="dv">1</span>)</span>
+<span id="cb44-11"><a href="cleaning-capture-data-2000-2019.html#cb44-11" tabindex="-1"></a>                    )</span>
+<span id="cb44-12"><a href="cleaning-capture-data-2000-2019.html#cb44-12" tabindex="-1"></a></span>
+<span id="cb44-13"><a href="cleaning-capture-data-2000-2019.html#cb44-13" tabindex="-1"></a>exportcapturesall<span class="sc">$</span>time_released <span class="ot">&lt;-</span> <span class="fu">strptime</span>(exportcapturesall<span class="sc">$</span>time_released, <span class="at">format=</span><span class="st">&quot;%H%M%S&quot;</span>)</span>
+<span id="cb44-14"><a href="cleaning-capture-data-2000-2019.html#cb44-14" tabindex="-1"></a></span>
+<span id="cb44-15"><a href="cleaning-capture-data-2000-2019.html#cb44-15" tabindex="-1"></a><span class="co"># Remove date, timezone, and seconds, keeping only HH:MM format</span></span>
+<span id="cb44-16"><a href="cleaning-capture-data-2000-2019.html#cb44-16" tabindex="-1"></a>exportcapturesall<span class="sc">$</span>time_released <span class="ot">&lt;-</span> <span class="fu">format</span>(exportcapturesall<span class="sc">$</span>time_released, <span class="at">format=</span><span class="st">&quot;%H:%M&quot;</span>)</span>
+<span id="cb44-17"><a href="cleaning-capture-data-2000-2019.html#cb44-17" tabindex="-1"></a></span>
+<span id="cb44-18"><a href="cleaning-capture-data-2000-2019.html#cb44-18" tabindex="-1"></a></span>
+<span id="cb44-19"><a href="cleaning-capture-data-2000-2019.html#cb44-19" tabindex="-1"></a><span class="fu">remove</span>(bands, broodpatch, BUOW1, howsexed, juvage, latlong, latlong_selected, merged_data, newbands, parasite)</span></code></pre></div>
+
+</div>
+<div id="cleaning-dobule-entried-rows" class="section level2 hasAnchor" number="4.7">
+<h2><span class="header-section-number">4.7</span> Cleaning dobule entried rows<a href="cleaning-capture-data-2000-2019.html#cleaning-dobule-entried-rows" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="import-data" class="section level3 hasAnchor" number="4.7.1">
+<h3><span class="header-section-number">4.7.1</span> Import Data<a href="cleaning-capture-data-2000-2019.html#import-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>This is a continuation of the from the previous chapter. This code is to seperate the multiple
+capture evetns in a row to make new rows.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="cleaning-capture-data-2000-2019.html#cb45-1" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&quot;~/BUOW_Migration-Maps/data&quot;</span>)</span>
+<span id="cb45-2"><a href="cleaning-capture-data-2000-2019.html#cb45-2" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="cleaning-capture-data-2000-2019.html#cb45-3" tabindex="-1"></a>BUOW1 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;BUOW_Data2000-2019.csv&quot;</span>)</span></code></pre></div>
+<p>We need to select the rows with that have multiple entries. We then make two seperate
+data frame to prepare the data.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="cleaning-capture-data-2000-2019.html#cb46-1" tabindex="-1"></a>buow1_with_date <span class="ot">&lt;-</span> BUOW1 <span class="sc">%&gt;%</span></span>
+<span id="cb46-2"><a href="cleaning-capture-data-2000-2019.html#cb46-2" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(meas_date_1))  <span class="co"># Keep only rows where &#39;meas_date_1&#39; is not NA</span></span>
+<span id="cb46-3"><a href="cleaning-capture-data-2000-2019.html#cb46-3" tabindex="-1"></a>  </span>
+<span id="cb46-4"><a href="cleaning-capture-data-2000-2019.html#cb46-4" tabindex="-1"></a>row1 <span class="ot">&lt;-</span> buow1_with_date</span>
+<span id="cb46-5"><a href="cleaning-capture-data-2000-2019.html#cb46-5" tabindex="-1"></a>row2 <span class="ot">&lt;-</span> buow1_with_date</span>
+<span id="cb46-6"><a href="cleaning-capture-data-2000-2019.html#cb46-6" tabindex="-1"></a></span>
+<span id="cb46-7"><a href="cleaning-capture-data-2000-2019.html#cb46-7" tabindex="-1"></a>row1 <span class="ot">&lt;-</span> <span class="fu">select</span>(row1, </span>
+<span id="cb46-8"><a href="cleaning-capture-data-2000-2019.html#cb46-8" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">meas_date_2</span><span class="st">`</span>, </span>
+<span id="cb46-9"><a href="cleaning-capture-data-2000-2019.html#cb46-9" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">est_age_2_(days)</span><span class="st">`</span>, </span>
+<span id="cb46-10"><a href="cleaning-capture-data-2000-2019.html#cb46-10" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">tarsometatarsus_length_2_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-11"><a href="cleaning-capture-data-2000-2019.html#cb46-11" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">weight_2_(g)</span><span class="st">`</span>,</span>
+<span id="cb46-12"><a href="cleaning-capture-data-2000-2019.html#cb46-12" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">wing_2_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-13"><a href="cleaning-capture-data-2000-2019.html#cb46-13" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">tail_2_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-14"><a href="cleaning-capture-data-2000-2019.html#cb46-14" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">parasites_2</span><span class="st">`</span>,</span>
+<span id="cb46-15"><a href="cleaning-capture-data-2000-2019.html#cb46-15" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">comments...103</span><span class="st">`</span>,</span>
+<span id="cb46-16"><a href="cleaning-capture-data-2000-2019.html#cb46-16" tabindex="-1"></a>               <span class="sc">-</span>eggs,</span>
+<span id="cb46-17"><a href="cleaning-capture-data-2000-2019.html#cb46-17" tabindex="-1"></a>               <span class="sc">-</span>chicks)</span>
+<span id="cb46-18"><a href="cleaning-capture-data-2000-2019.html#cb46-18" tabindex="-1"></a>row1 <span class="ot">&lt;-</span> row1 <span class="sc">%&gt;%</span> </span>
+<span id="cb46-19"><a href="cleaning-capture-data-2000-2019.html#cb46-19" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">unique_key =</span> <span class="fu">row_number</span>())</span>
+<span id="cb46-20"><a href="cleaning-capture-data-2000-2019.html#cb46-20" tabindex="-1"></a>row1 <span class="ot">&lt;-</span> row1 <span class="sc">%&gt;%</span> </span>
+<span id="cb46-21"><a href="cleaning-capture-data-2000-2019.html#cb46-21" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb46-22"><a href="cleaning-capture-data-2000-2019.html#cb46-22" tabindex="-1"></a>    <span class="at">meas_date =</span> <span class="st">`</span><span class="at">meas_date_1</span><span class="st">`</span>,</span>
+<span id="cb46-23"><a href="cleaning-capture-data-2000-2019.html#cb46-23" tabindex="-1"></a>    <span class="at">est_age =</span> <span class="st">`</span><span class="at">est_age_1_(days)</span><span class="st">`</span>,</span>
+<span id="cb46-24"><a href="cleaning-capture-data-2000-2019.html#cb46-24" tabindex="-1"></a>    <span class="at">tarsometatarsus_length =</span> <span class="st">`</span><span class="at">tarsometatarsus_length_1_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-25"><a href="cleaning-capture-data-2000-2019.html#cb46-25" tabindex="-1"></a>    <span class="at">weight_g =</span> <span class="st">`</span><span class="at">weight_1_(g)</span><span class="st">`</span>,</span>
+<span id="cb46-26"><a href="cleaning-capture-data-2000-2019.html#cb46-26" tabindex="-1"></a>    <span class="at">wing_mm =</span> <span class="st">`</span><span class="at">wing_1_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-27"><a href="cleaning-capture-data-2000-2019.html#cb46-27" tabindex="-1"></a>    <span class="at">tail_mm =</span> <span class="st">`</span><span class="at">tail_1_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-28"><a href="cleaning-capture-data-2000-2019.html#cb46-28" tabindex="-1"></a>    <span class="at">parasites =</span> <span class="st">`</span><span class="at">parasites_1</span><span class="st">`</span>,</span>
+<span id="cb46-29"><a href="cleaning-capture-data-2000-2019.html#cb46-29" tabindex="-1"></a>    <span class="at">comments =</span> <span class="st">`</span><span class="at">comments...93</span><span class="st">`</span></span>
+<span id="cb46-30"><a href="cleaning-capture-data-2000-2019.html#cb46-30" tabindex="-1"></a>  )</span>
+<span id="cb46-31"><a href="cleaning-capture-data-2000-2019.html#cb46-31" tabindex="-1"></a></span>
+<span id="cb46-32"><a href="cleaning-capture-data-2000-2019.html#cb46-32" tabindex="-1"></a>row2 <span class="ot">&lt;-</span> <span class="fu">select</span>(row2,</span>
+<span id="cb46-33"><a href="cleaning-capture-data-2000-2019.html#cb46-33" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">meas_date_1</span><span class="st">`</span>,</span>
+<span id="cb46-34"><a href="cleaning-capture-data-2000-2019.html#cb46-34" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">est_age_1_(days)</span><span class="st">`</span>,</span>
+<span id="cb46-35"><a href="cleaning-capture-data-2000-2019.html#cb46-35" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">tarsometatarsus_length_1_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-36"><a href="cleaning-capture-data-2000-2019.html#cb46-36" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">weight_1_(g)</span><span class="st">`</span>,</span>
+<span id="cb46-37"><a href="cleaning-capture-data-2000-2019.html#cb46-37" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">wing_1_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-38"><a href="cleaning-capture-data-2000-2019.html#cb46-38" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">tail_1_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-39"><a href="cleaning-capture-data-2000-2019.html#cb46-39" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">parasites_1</span><span class="st">`</span>,</span>
+<span id="cb46-40"><a href="cleaning-capture-data-2000-2019.html#cb46-40" tabindex="-1"></a>               <span class="sc">-</span><span class="st">`</span><span class="at">comments...93</span><span class="st">`</span>,</span>
+<span id="cb46-41"><a href="cleaning-capture-data-2000-2019.html#cb46-41" tabindex="-1"></a>               <span class="sc">-</span>eggs,</span>
+<span id="cb46-42"><a href="cleaning-capture-data-2000-2019.html#cb46-42" tabindex="-1"></a>               <span class="sc">-</span>chicks)</span>
+<span id="cb46-43"><a href="cleaning-capture-data-2000-2019.html#cb46-43" tabindex="-1"></a>row2 <span class="ot">&lt;-</span> row2 <span class="sc">%&gt;%</span></span>
+<span id="cb46-44"><a href="cleaning-capture-data-2000-2019.html#cb46-44" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">unique_key =</span> <span class="fu">row_number</span>() <span class="sc">+</span> <span class="dv">4999</span>)</span>
+<span id="cb46-45"><a href="cleaning-capture-data-2000-2019.html#cb46-45" tabindex="-1"></a>row2 <span class="ot">&lt;-</span> row2 <span class="sc">%&gt;%</span> </span>
+<span id="cb46-46"><a href="cleaning-capture-data-2000-2019.html#cb46-46" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb46-47"><a href="cleaning-capture-data-2000-2019.html#cb46-47" tabindex="-1"></a>    <span class="at">meas_date =</span> <span class="st">`</span><span class="at">meas_date_2</span><span class="st">`</span>,</span>
+<span id="cb46-48"><a href="cleaning-capture-data-2000-2019.html#cb46-48" tabindex="-1"></a>    <span class="at">est_age =</span> <span class="st">`</span><span class="at">est_age_2_(days)</span><span class="st">`</span>,</span>
+<span id="cb46-49"><a href="cleaning-capture-data-2000-2019.html#cb46-49" tabindex="-1"></a>    <span class="at">tarsometatarsus_length =</span> <span class="st">`</span><span class="at">tarsometatarsus_length_2_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-50"><a href="cleaning-capture-data-2000-2019.html#cb46-50" tabindex="-1"></a>    <span class="at">weight_g =</span> <span class="st">`</span><span class="at">weight_2_(g)</span><span class="st">`</span>,</span>
+<span id="cb46-51"><a href="cleaning-capture-data-2000-2019.html#cb46-51" tabindex="-1"></a>    <span class="at">wing_mm =</span> <span class="st">`</span><span class="at">wing_2_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-52"><a href="cleaning-capture-data-2000-2019.html#cb46-52" tabindex="-1"></a>    <span class="at">tail_mm =</span> <span class="st">`</span><span class="at">tail_2_(mm)</span><span class="st">`</span>,</span>
+<span id="cb46-53"><a href="cleaning-capture-data-2000-2019.html#cb46-53" tabindex="-1"></a>    <span class="at">parasites =</span> <span class="st">`</span><span class="at">parasites_2</span><span class="st">`</span>,</span>
+<span id="cb46-54"><a href="cleaning-capture-data-2000-2019.html#cb46-54" tabindex="-1"></a>    <span class="at">comments =</span> <span class="st">`</span><span class="at">comments...103</span><span class="st">`</span></span>
+<span id="cb46-55"><a href="cleaning-capture-data-2000-2019.html#cb46-55" tabindex="-1"></a>  )</span></code></pre></div>
+<p>This code is to turn specific columns to numeric for future cleaning and filtering</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="cleaning-capture-data-2000-2019.html#cb47-1" tabindex="-1"></a>row1 <span class="ot">&lt;-</span> row1 <span class="sc">%&gt;%</span></span>
+<span id="cb47-2"><a href="cleaning-capture-data-2000-2019.html#cb47-2" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">vars</span>(tarsometatarsus_length, weight_g, wing_mm, tail_mm, parasites), as.numeric)</span>
+<span id="cb47-3"><a href="cleaning-capture-data-2000-2019.html#cb47-3" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="cleaning-capture-data-2000-2019.html#cb47-4" tabindex="-1"></a>row2 <span class="ot">&lt;-</span> row2 <span class="sc">%&gt;%</span></span>
+<span id="cb47-5"><a href="cleaning-capture-data-2000-2019.html#cb47-5" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">vars</span>(tarsometatarsus_length, weight_g, wing_mm, tail_mm, parasites), as.numeric)</span>
+<span id="cb47-6"><a href="cleaning-capture-data-2000-2019.html#cb47-6" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="cleaning-capture-data-2000-2019.html#cb47-7" tabindex="-1"></a><span class="co">#Now combine the rows into a single data frame.</span></span>
+<span id="cb47-8"><a href="cleaning-capture-data-2000-2019.html#cb47-8" tabindex="-1"></a>combined_rows <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(row1, row2)</span></code></pre></div>
+</div>
+<div id="clean-data" class="section level3 hasAnchor" number="4.7.2">
+<h3><span class="header-section-number">4.7.2</span> Clean data<a href="cleaning-capture-data-2000-2019.html#clean-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="cleaning-capture-data-2000-2019.html#cb48-1" tabindex="-1"></a><span class="co">#clean HY days</span></span>
+<span id="cb48-2"><a href="cleaning-capture-data-2000-2019.html#cb48-2" tabindex="-1"></a>juvage <span class="ot">&lt;-</span> <span class="fu">select</span>(combined_rows,</span>
+<span id="cb48-3"><a href="cleaning-capture-data-2000-2019.html#cb48-3" tabindex="-1"></a>                 unique_key,</span>
+<span id="cb48-4"><a href="cleaning-capture-data-2000-2019.html#cb48-4" tabindex="-1"></a>                 est_age)</span>
+<span id="cb48-5"><a href="cleaning-capture-data-2000-2019.html#cb48-5" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="cleaning-capture-data-2000-2019.html#cb48-6" tabindex="-1"></a>juvage <span class="ot">&lt;-</span> juvage <span class="sc">%&gt;%</span> </span>
+<span id="cb48-7"><a href="cleaning-capture-data-2000-2019.html#cb48-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">est_age =</span> <span class="fu">gsub</span>(<span class="st">&quot; days&quot;</span>, <span class="st">&quot;&quot;</span>, est_age),</span>
+<span id="cb48-8"><a href="cleaning-capture-data-2000-2019.html#cb48-8" tabindex="-1"></a>         <span class="at">est_age =</span> <span class="fu">gsub</span>(<span class="st">&quot;not found&quot;</span>, <span class="cn">NA</span>, est_age),</span>
+<span id="cb48-9"><a href="cleaning-capture-data-2000-2019.html#cb48-9" tabindex="-1"></a>         <span class="at">est_age =</span> <span class="fu">gsub</span>(<span class="st">&quot;not present&quot;</span>, <span class="cn">NA</span>, est_age),</span>
+<span id="cb48-10"><a href="cleaning-capture-data-2000-2019.html#cb48-10" tabindex="-1"></a>         <span class="at">est_age =</span> <span class="fu">gsub</span>(<span class="st">&quot;UNB&quot;</span>, <span class="cn">NA</span>, est_age),</span>
+<span id="cb48-11"><a href="cleaning-capture-data-2000-2019.html#cb48-11" tabindex="-1"></a>         <span class="at">est_age =</span> <span class="fu">gsub</span>(<span class="st">&quot;(</span><span class="sc">\\</span><span class="st">d+)</span><span class="sc">\\</span><span class="st">+&quot;</span>, <span class="st">&quot;&gt;</span><span class="sc">\\</span><span class="st">1&quot;</span>, est_age),</span>
+<span id="cb48-12"><a href="cleaning-capture-data-2000-2019.html#cb48-12" tabindex="-1"></a>         <span class="at">est_age =</span> <span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;&quot;</span>, est_age),</span>
+<span id="cb48-13"><a href="cleaning-capture-data-2000-2019.html#cb48-13" tabindex="-1"></a>         <span class="at">est_age =</span> <span class="fu">gsub</span>(<span class="st">&quot;6orless&quot;</span>, <span class="st">&quot;&lt;6&quot;</span>, est_age)</span>
+<span id="cb48-14"><a href="cleaning-capture-data-2000-2019.html#cb48-14" tabindex="-1"></a>  )</span>
+<span id="cb48-15"><a href="cleaning-capture-data-2000-2019.html#cb48-15" tabindex="-1"></a>juvage <span class="ot">&lt;-</span> <span class="fu">select</span>(juvage,</span>
+<span id="cb48-16"><a href="cleaning-capture-data-2000-2019.html#cb48-16" tabindex="-1"></a>                 unique_key,</span>
+<span id="cb48-17"><a href="cleaning-capture-data-2000-2019.html#cb48-17" tabindex="-1"></a>                 <span class="st">&quot;juvenile_estimated_age(days)&quot;</span> <span class="ot">=</span> est_age)</span>
+<span id="cb48-18"><a href="cleaning-capture-data-2000-2019.html#cb48-18" tabindex="-1"></a></span>
+<span id="cb48-19"><a href="cleaning-capture-data-2000-2019.html#cb48-19" tabindex="-1"></a>combined_rows <span class="ot">&lt;-</span> combined_rows <span class="sc">%&gt;%</span> </span>
+<span id="cb48-20"><a href="cleaning-capture-data-2000-2019.html#cb48-20" tabindex="-1"></a>  <span class="fu">left_join</span>(juvage, <span class="at">by =</span> <span class="st">&quot;unique_key&quot;</span>)</span>
+<span id="cb48-21"><a href="cleaning-capture-data-2000-2019.html#cb48-21" tabindex="-1"></a></span>
+<span id="cb48-22"><a href="cleaning-capture-data-2000-2019.html#cb48-22" tabindex="-1"></a>combined_rows <span class="ot">&lt;-</span> <span class="fu">select</span>(combined_rows,</span>
+<span id="cb48-23"><a href="cleaning-capture-data-2000-2019.html#cb48-23" tabindex="-1"></a>                   <span class="sc">-</span>est_age)</span>
+<span id="cb48-24"><a href="cleaning-capture-data-2000-2019.html#cb48-24" tabindex="-1"></a></span>
+<span id="cb48-25"><a href="cleaning-capture-data-2000-2019.html#cb48-25" tabindex="-1"></a></span>
+<span id="cb48-26"><a href="cleaning-capture-data-2000-2019.html#cb48-26" tabindex="-1"></a><span class="co">#clean site names</span></span>
+<span id="cb48-27"><a href="cleaning-capture-data-2000-2019.html#cb48-27" tabindex="-1"></a>combined_rows <span class="ot">&lt;-</span> combined_rows <span class="sc">%&gt;%</span> </span>
+<span id="cb48-28"><a href="cleaning-capture-data-2000-2019.html#cb48-28" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb48-29"><a href="cleaning-capture-data-2000-2019.html#cb48-29" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;TEAD&quot;</span>, <span class="st">&quot;Tooele Army Depot&quot;</span>, site),</span>
+<span id="cb48-30"><a href="cleaning-capture-data-2000-2019.html#cb48-30" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;UAD&quot;</span>, <span class="st">&quot;Umatilla Army Depot&quot;</span>, site),</span>
+<span id="cb48-31"><a href="cleaning-capture-data-2000-2019.html#cb48-31" tabindex="-1"></a>    <span class="at">site =</span> <span class="fu">gsub</span>(<span class="st">&quot;SSNWR&quot;</span>, <span class="st">&quot;Salton Sea National Wildlife Refuge&quot;</span>, site)</span>
+<span id="cb48-32"><a href="cleaning-capture-data-2000-2019.html#cb48-32" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+</div>
+<div id="prepare-data-for-export-1" class="section level2 hasAnchor" number="4.8">
+<h2><span class="header-section-number">4.8</span> Prepare data for export<a href="cleaning-capture-data-2000-2019.html#prepare-data-for-export-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="cleaning-capture-data-2000-2019.html#cb49-1" tabindex="-1"></a>exportumatillacaptures <span class="ot">&lt;-</span> <span class="fu">select</span>(combined_rows,</span>
+<span id="cb49-2"><a href="cleaning-capture-data-2000-2019.html#cb49-2" tabindex="-1"></a>                 band,</span>
+<span id="cb49-3"><a href="cleaning-capture-data-2000-2019.html#cb49-3" tabindex="-1"></a>                 <span class="at">date =</span> <span class="st">`</span><span class="at">meas_date</span><span class="st">`</span>,</span>
+<span id="cb49-4"><a href="cleaning-capture-data-2000-2019.html#cb49-4" tabindex="-1"></a>                 site,</span>
+<span id="cb49-5"><a href="cleaning-capture-data-2000-2019.html#cb49-5" tabindex="-1"></a>                 <span class="at">country =</span> Country,</span>
+<span id="cb49-6"><a href="cleaning-capture-data-2000-2019.html#cb49-6" tabindex="-1"></a>                 <span class="at">state =</span> State,</span>
+<span id="cb49-7"><a href="cleaning-capture-data-2000-2019.html#cb49-7" tabindex="-1"></a>                 <span class="st">&quot;juvenile_estimated_age(days)&quot;</span>,</span>
+<span id="cb49-8"><a href="cleaning-capture-data-2000-2019.html#cb49-8" tabindex="-1"></a>                 <span class="at">number_of_ectoparasites_categorical =</span> parasites,</span>
+<span id="cb49-9"><a href="cleaning-capture-data-2000-2019.html#cb49-9" tabindex="-1"></a>                 weight_g,</span>
+<span id="cb49-10"><a href="cleaning-capture-data-2000-2019.html#cb49-10" tabindex="-1"></a>                 <span class="at">wing_cord_mm =</span> wing_mm,</span>
+<span id="cb49-11"><a href="cleaning-capture-data-2000-2019.html#cb49-11" tabindex="-1"></a>                 <span class="at">tail_length_mm =</span> tail_mm,</span>
+<span id="cb49-12"><a href="cleaning-capture-data-2000-2019.html#cb49-12" tabindex="-1"></a>                 <span class="at">tarsus_mm =</span> tarsometatarsus_length,</span>
+<span id="cb49-13"><a href="cleaning-capture-data-2000-2019.html#cb49-13" tabindex="-1"></a>                 comments)</span>
+<span id="cb49-14"><a href="cleaning-capture-data-2000-2019.html#cb49-14" tabindex="-1"></a></span>
+<span id="cb49-15"><a href="cleaning-capture-data-2000-2019.html#cb49-15" tabindex="-1"></a>exportumatillacaptures<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(exportumatillacaptures<span class="sc">$</span>date, <span class="at">format =</span> <span class="st">&quot;%d-%b-%y&quot;</span>)</span>
+<span id="cb49-16"><a href="cleaning-capture-data-2000-2019.html#cb49-16" tabindex="-1"></a>exportumatillacaptures<span class="sc">$</span>number_of_ectoparasites_categorical <span class="ot">&lt;-</span> <span class="fu">as.character</span>(exportumatillacaptures<span class="sc">$</span>number_of_ectoparasites_categorical)</span>
+<span id="cb49-17"><a href="cleaning-capture-data-2000-2019.html#cb49-17" tabindex="-1"></a></span>
+<span id="cb49-18"><a href="cleaning-capture-data-2000-2019.html#cb49-18" tabindex="-1"></a></span>
+<span id="cb49-19"><a href="cleaning-capture-data-2000-2019.html#cb49-19" tabindex="-1"></a><span class="fu">remove</span>(BUOW1, buow1_with_date, combined_rows, juvage, row1, row2)</span></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="cleaning-band-data-2020---august-2024.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="cleaning-capture-data-2020---august-2024.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-CaptureCleaningpt.1.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

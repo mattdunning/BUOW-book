@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Create SQLlite Database Structure | Combining export files to send to SQL</title>
+  <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Create SQLlite Database Structure | Combining export files to send to SQL" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Create SQLlite Database Structure | Combining export files to send to SQL" />
+  
+  <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  
+
+<meta name="author" content="Matthew Dunning" />
+
+
+<meta name="date" content="2024-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="cleaning-capture-data-2020---august-2024.html"/>
+<link rel="next" href="import-buow-data-into-sqllite.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> About</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#usage"><i class="fa fa-check"></i><b>1.1</b> Usage</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html"><i class="fa fa-check"></i><b>2</b> Cleaning Band Data 2000-2019</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#cleaning-band"><i class="fa fa-check"></i><b>2.1</b> Cleaning Band</a></li>
+<li class="chapter" data-level="2.2" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#load-packages"><i class="fa fa-check"></i><b>2.2</b> Load packages</a></li>
+<li class="chapter" data-level="2.3" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#add-hyphens-in-the-correct-locations"><i class="fa fa-check"></i><b>2.3</b> Add hyphens in the correct locations</a></li>
+<li class="chapter" data-level="2.4" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#fix-some-capitalization-issues"><i class="fa fa-check"></i><b>2.4</b> Fix some capitalization issues</a></li>
+<li class="chapter" data-level="2.5" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#proofing-resights"><i class="fa fa-check"></i><b>2.5</b> Proofing resights</a></li>
+<li class="chapter" data-level="2.6" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#clean-the-sex-column"><i class="fa fa-check"></i><b>2.6</b> Clean the sex column</a></li>
+<li class="chapter" data-level="2.7" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#now-clean-the-usgs-band-info"><i class="fa fa-check"></i><b>2.7</b> Now clean the USGS band info</a></li>
+<li class="chapter" data-level="2.8" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#acraft-specific-cleaning"><i class="fa fa-check"></i><b>2.8</b> ACRAFT specific cleaning</a></li>
+<li class="chapter" data-level="2.9" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#color-band-sorting"><i class="fa fa-check"></i><b>2.9</b> Color band sorting</a></li>
+<li class="chapter" data-level="2.10" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#get-the-rest-of-the-bands-that-have-neither-acraft-nor-color-bands"><i class="fa fa-check"></i><b>2.10</b> Get the rest of the bands that have neither ACRAFT nor Color bands</a></li>
+<li class="chapter" data-level="2.11" data-path="cleaning-band-data-2000-2019.html"><a href="cleaning-band-data-2000-2019.html#finally-remove-all-unneccessary-dataframes-and-objects-to-keep-environment-tidy"><i class="fa fa-check"></i><b>2.11</b> Finally remove all unneccessary dataframes and objects to keep environment tidy</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html"><i class="fa fa-check"></i><b>3</b> Cleaning Band Data 2020 - August 2024</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#install-and-load-packages"><i class="fa fa-check"></i><b>3.1</b> Install and load packages</a></li>
+<li class="chapter" data-level="3.2" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#set-directory-and-load-data"><i class="fa fa-check"></i><b>3.2</b> Set directory and load data</a></li>
+<li class="chapter" data-level="3.3" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#add-hyphens-where-needed"><i class="fa fa-check"></i><b>3.3</b> Add hyphens where needed</a></li>
+<li class="chapter" data-level="3.4" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#move-colors-into-correct-columns"><i class="fa fa-check"></i><b>3.4</b> Move colors into correct columns</a></li>
+<li class="chapter" data-level="3.5" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#proof-and-edit-the-sex-column"><i class="fa fa-check"></i><b>3.5</b> Proof and Edit the sex column</a></li>
+<li class="chapter" data-level="3.6" data-path="cleaning-band-data-2020---august-2024.html"><a href="cleaning-band-data-2020---august-2024.html#export-data-and-remove-objects"><i class="fa fa-check"></i><b>3.6</b> Export data and remove objects</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html"><i class="fa fa-check"></i><b>4</b> Cleaning Capture Data 2000-2019</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#load-libraries"><i class="fa fa-check"></i><b>4.1</b> Load libraries</a></li>
+<li class="chapter" data-level="4.2" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#set-directory-and-load-data-1"><i class="fa fa-check"></i><b>4.2</b> Set directory and load data</a></li>
+<li class="chapter" data-level="4.3" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#fix-the-hyphens"><i class="fa fa-check"></i><b>4.3</b> Fix the hyphens</a></li>
+<li class="chapter" data-level="4.4" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#convert-latitude-and-longitude-from-utm"><i class="fa fa-check"></i><b>4.4</b> Convert latitude and longitude from UTM</a></li>
+<li class="chapter" data-level="4.5" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-data"><i class="fa fa-check"></i><b>4.5</b> Filter and clean data</a>
+<ul>
+<li class="chapter" data-level="4.5.1" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-parasite-column"><i class="fa fa-check"></i><b>4.5.1</b> Filter and clean parasite column</a></li>
+<li class="chapter" data-level="4.5.2" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-brood-patch-column"><i class="fa fa-check"></i><b>4.5.2</b> Filter and clean brood patch column</a></li>
+<li class="chapter" data-level="4.5.3" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-sex-column"><i class="fa fa-check"></i><b>4.5.3</b> Filter and clean sex column</a></li>
+<li class="chapter" data-level="4.5.4" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#filter-and-clean-hy-day-old-age"><i class="fa fa-check"></i><b>4.5.4</b> Filter and clean HY day old age</a></li>
+<li class="chapter" data-level="4.5.5" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#standardize-values"><i class="fa fa-check"></i><b>4.5.5</b> Standardize values</a></li>
+<li class="chapter" data-level="4.5.6" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#change-site-to-abbreviations-to-full-names"><i class="fa fa-check"></i><b>4.5.6</b> Change site to abbreviations to full names</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#prepare-data-for-export"><i class="fa fa-check"></i><b>4.6</b> Prepare data for export</a></li>
+<li class="chapter" data-level="4.7" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#cleaning-dobule-entried-rows"><i class="fa fa-check"></i><b>4.7</b> Cleaning dobule entried rows</a>
+<ul>
+<li class="chapter" data-level="4.7.1" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#import-data"><i class="fa fa-check"></i><b>4.7.1</b> Import Data</a></li>
+<li class="chapter" data-level="4.7.2" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#clean-data"><i class="fa fa-check"></i><b>4.7.2</b> Clean data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.8" data-path="cleaning-capture-data-2000-2019.html"><a href="cleaning-capture-data-2000-2019.html#prepare-data-for-export-1"><i class="fa fa-check"></i><b>4.8</b> Prepare data for export</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html"><i class="fa fa-check"></i><b>5</b> Cleaning Capture Data 2020 - August 2024</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#load-packages-and-data"><i class="fa fa-check"></i><b>5.1</b> Load packages and data</a></li>
+<li class="chapter" data-level="5.2" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#preapare-data"><i class="fa fa-check"></i><b>5.2</b> Preapare data</a></li>
+<li class="chapter" data-level="5.3" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#latitude-and-longitude-from-utms"><i class="fa fa-check"></i><b>5.3</b> Latitude and Longitude from UTMs</a></li>
+<li class="chapter" data-level="5.4" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#cleaning-data"><i class="fa fa-check"></i><b>5.4</b> Cleaning data</a></li>
+<li class="chapter" data-level="5.5" data-path="cleaning-capture-data-2020---august-2024.html"><a href="cleaning-capture-data-2020---august-2024.html#export-data"><i class="fa fa-check"></i><b>5.5</b> Export Data</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="create-sqllite-database-structure.html"><a href="create-sqllite-database-structure.html"><i class="fa fa-check"></i><b>6</b> Create SQLlite Database Structure</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="create-sqllite-database-structure.html"><a href="create-sqllite-database-structure.html#create-sqllite-database"><i class="fa fa-check"></i><b>6.1</b> Create SQLlite Database</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html"><i class="fa fa-check"></i><b>7</b> Import BUOW data into SQLlite</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#combine-all-band-tables"><i class="fa fa-check"></i><b>7.1</b> Combine All Band Tables</a></li>
+<li class="chapter" data-level="7.2" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#combine-all-capture-tables"><i class="fa fa-check"></i><b>7.2</b> Combine All Capture Tables</a></li>
+<li class="chapter" data-level="7.3" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#load-sites-table"><i class="fa fa-check"></i><b>7.3</b> Load Sites table</a></li>
+<li class="chapter" data-level="7.4" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#start-import-to-sql"><i class="fa fa-check"></i><b>7.4</b> Start import to SQL</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-band-table"><i class="fa fa-check"></i><b>7.4.1</b> Import band table</a></li>
+<li class="chapter" data-level="7.4.2" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-capture-table"><i class="fa fa-check"></i><b>7.4.2</b> Import Capture Table</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Combining export files to send to SQL</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="create-sqllite-database-structure" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Create SQLlite Database Structure<a href="create-sqllite-database-structure.html#create-sqllite-database-structure" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="create-sqllite-database" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Create SQLlite Database<a href="create-sqllite-database-structure.html#create-sqllite-database" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>First load packages in r</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="create-sqllite-database-structure.html#cb58-1" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb58-2"><a href="create-sqllite-database-structure.html#cb58-2" tabindex="-1"></a><span class="fu">library</span>(RSQLite)</span></code></pre></div>
+<p>Next run the code to create the database</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="create-sqllite-database-structure.html#cb59-1" tabindex="-1"></a>Burrowing_Owls <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), <span class="st">&quot;Burrowing_Owls.db&quot;</span>)</span>
+<span id="cb59-2"><a href="create-sqllite-database-structure.html#cb59-2" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="create-sqllite-database-structure.html#cb59-3" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;</span></span>
+<span id="cb59-4"><a href="create-sqllite-database-structure.html#cb59-4" tabindex="-1"></a><span class="st">CREATE TABLE Burrowing_Owls (</span></span>
+<span id="cb59-5"><a href="create-sqllite-database-structure.html#cb59-5" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30) NOT NULL,</span></span>
+<span id="cb59-6"><a href="create-sqllite-database-structure.html#cb59-6" tabindex="-1"></a><span class="st">    top_left_band VARCHAR(30) CHECK (top_left_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
+<span id="cb59-7"><a href="create-sqllite-database-structure.html#cb59-7" tabindex="-1"></a><span class="st">    bottom_left_band VARCHAR(30) CHECK (bottom_left_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
+<span id="cb59-8"><a href="create-sqllite-database-structure.html#cb59-8" tabindex="-1"></a><span class="st">    top_right_band VARCHAR(30) CHECK (top_right_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
+<span id="cb59-9"><a href="create-sqllite-database-structure.html#cb59-9" tabindex="-1"></a><span class="st">    bottom_right_band VARCHAR(30) CHECK (bottom_right_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Brown&#39;, &#39;Blue&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
+<span id="cb59-10"><a href="create-sqllite-database-structure.html#cb59-10" tabindex="-1"></a><span class="st">    left_leg VARCHAR(30) CHECK (left_leg IN (&#39;USGS&#39;, &#39;ACRAFT&#39;)),</span></span>
+<span id="cb59-11"><a href="create-sqllite-database-structure.html#cb59-11" tabindex="-1"></a><span class="st">    right_leg VARCHAR(30) CHECK (right_leg IN (&#39;USGS&#39;, &#39;ACRAFT&#39;)),</span></span>
+<span id="cb59-12"><a href="create-sqllite-database-structure.html#cb59-12" tabindex="-1"></a><span class="st">    ACRAFT_color VARCHAR(20) CHECK (ACRAFT_color IN (&#39;Black&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Red/Black&#39;, &#39;Purple&#39;, &#39;Orange&#39;, &#39;Green&#39;, &#39;Brown&#39;, &#39;Blue&#39;)),</span></span>
+<span id="cb59-13"><a href="create-sqllite-database-structure.html#cb59-13" tabindex="-1"></a><span class="st">    ACRAFT_first_code VARCHAR(20),</span></span>
+<span id="cb59-14"><a href="create-sqllite-database-structure.html#cb59-14" tabindex="-1"></a><span class="st">    ACRAFT_layout VARCHAR(20),</span></span>
+<span id="cb59-15"><a href="create-sqllite-database-structure.html#cb59-15" tabindex="-1"></a><span class="st">    ACRAFT_second_code VARCHAR(10),</span></span>
+<span id="cb59-16"><a href="create-sqllite-database-structure.html#cb59-16" tabindex="-1"></a><span class="st">    sex CHAR(1) CHECK (sex IN (&#39;M&#39;, &#39;F&#39;, &#39;U&#39;, &#39;C&#39;)),</span></span>
+<span id="cb59-17"><a href="create-sqllite-database-structure.html#cb59-17" tabindex="-1"></a><span class="st">    PRIMARY KEY (BUOW_USGS_ID)</span></span>
+<span id="cb59-18"><a href="create-sqllite-database-structure.html#cb59-18" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb59-19"><a href="create-sqllite-database-structure.html#cb59-19" tabindex="-1"></a></span>
+<span id="cb59-20"><a href="create-sqllite-database-structure.html#cb59-20" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE tags (</span></span>
+<span id="cb59-21"><a href="create-sqllite-database-structure.html#cb59-21" tabindex="-1"></a><span class="st">    tag_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb59-22"><a href="create-sqllite-database-structure.html#cb59-22" tabindex="-1"></a><span class="st">    brand VARCHAR(50),</span></span>
+<span id="cb59-23"><a href="create-sqllite-database-structure.html#cb59-23" tabindex="-1"></a><span class="st">    version VARCHAR(50)</span></span>
+<span id="cb59-24"><a href="create-sqllite-database-structure.html#cb59-24" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb59-25"><a href="create-sqllite-database-structure.html#cb59-25" tabindex="-1"></a></span>
+<span id="cb59-26"><a href="create-sqllite-database-structure.html#cb59-26" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;</span></span>
+<span id="cb59-27"><a href="create-sqllite-database-structure.html#cb59-27" tabindex="-1"></a><span class="st">CREATE TABLE captures (</span></span>
+<span id="cb59-28"><a href="create-sqllite-database-structure.html#cb59-28" tabindex="-1"></a><span class="st">    capture_event INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb59-29"><a href="create-sqllite-database-structure.html#cb59-29" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
+<span id="cb59-30"><a href="create-sqllite-database-structure.html#cb59-30" tabindex="-1"></a><span class="st">    observer VARCHAR(20),</span></span>
+<span id="cb59-31"><a href="create-sqllite-database-structure.html#cb59-31" tabindex="-1"></a><span class="st">    date TEXT,</span></span>
+<span id="cb59-32"><a href="create-sqllite-database-structure.html#cb59-32" tabindex="-1"></a><span class="st">    site VARCHAR(100),</span></span>
+<span id="cb59-33"><a href="create-sqllite-database-structure.html#cb59-33" tabindex="-1"></a><span class="st">    country VARCHAR(50),</span></span>
+<span id="cb59-34"><a href="create-sqllite-database-structure.html#cb59-34" tabindex="-1"></a><span class="st">    state VARCHAR(50),</span></span>
+<span id="cb59-35"><a href="create-sqllite-database-structure.html#cb59-35" tabindex="-1"></a><span class="st">    elevation_m INTEGER,</span></span>
+<span id="cb59-36"><a href="create-sqllite-database-structure.html#cb59-36" tabindex="-1"></a><span class="st">    lat REAL,</span></span>
+<span id="cb59-37"><a href="create-sqllite-database-structure.html#cb59-37" tabindex="-1"></a><span class="st">    long REAL,</span></span>
+<span id="cb59-38"><a href="create-sqllite-database-structure.html#cb59-38" tabindex="-1"></a><span class="st">    recapture CHAR(1) CHECK (recapture IN (&#39;Y&#39;, &#39;N&#39;, &#39;U&#39;, &#39;I&#39;)),</span></span>
+<span id="cb59-39"><a href="create-sqllite-database-structure.html#cb59-39" tabindex="-1"></a><span class="st">    age_at_capture VARCHAR(10),</span></span>
+<span id="cb59-40"><a href="create-sqllite-database-structure.html#cb59-40" tabindex="-1"></a><span class="st">    juvenile_estimated_age_days VARCHAR(10),</span></span>
+<span id="cb59-41"><a href="create-sqllite-database-structure.html#cb59-41" tabindex="-1"></a><span class="st">    sex_at_capture VARCHAR(2) CHECK (sex_at_capture IN (&#39;U&#39;, &#39;M&#39;, &#39;F&#39;, &#39;UA&#39;)),</span></span>
+<span id="cb59-42"><a href="create-sqllite-database-structure.html#cb59-42" tabindex="-1"></a><span class="st">    how_sexedID VARCHAR(10),</span></span>
+<span id="cb59-43"><a href="create-sqllite-database-structure.html#cb59-43" tabindex="-1"></a><span class="st">    brood_patch CHAR(1) CHECK (brood_patch IN (&#39;0&#39;, &#39;W/R&#39;, &#39;W&#39;, &#39;R&#39;, &#39;P&#39;, &#39;V&#39;, &#39;W/V&#39;, &#39;F&#39;, &#39;S&#39;)),</span></span>
+<span id="cb59-44"><a href="create-sqllite-database-structure.html#cb59-44" tabindex="-1"></a><span class="st">    number_of_ectoparasites_categorical VARCHAR(5),</span></span>
+<span id="cb59-45"><a href="create-sqllite-database-structure.html#cb59-45" tabindex="-1"></a><span class="st">    fat_score INTEGER CHECK (fat_score IN (1, 2, 3, 4, 5, 0)),</span></span>
+<span id="cb59-46"><a href="create-sqllite-database-structure.html#cb59-46" tabindex="-1"></a><span class="st">    muscle_score INTEGER CHECK (muscle_score IN (1, 2, 3, 4, 5, 0)),</span></span>
+<span id="cb59-47"><a href="create-sqllite-database-structure.html#cb59-47" tabindex="-1"></a><span class="st">    weight_g REAL,</span></span>
+<span id="cb59-48"><a href="create-sqllite-database-structure.html#cb59-48" tabindex="-1"></a><span class="st">    wing_cord_mm REAL,</span></span>
+<span id="cb59-49"><a href="create-sqllite-database-structure.html#cb59-49" tabindex="-1"></a><span class="st">    left_wing_cord_mm REAL,</span></span>
+<span id="cb59-50"><a href="create-sqllite-database-structure.html#cb59-50" tabindex="-1"></a><span class="st">    right_wing_cord_mm REAL,</span></span>
+<span id="cb59-51"><a href="create-sqllite-database-structure.html#cb59-51" tabindex="-1"></a><span class="st">    tail_length_mm REAL,</span></span>
+<span id="cb59-52"><a href="create-sqllite-database-structure.html#cb59-52" tabindex="-1"></a><span class="st">    tarsus_mm REAL,</span></span>
+<span id="cb59-53"><a href="create-sqllite-database-structure.html#cb59-53" tabindex="-1"></a><span class="st">    right_metatarsus_mm REAL,</span></span>
+<span id="cb59-54"><a href="create-sqllite-database-structure.html#cb59-54" tabindex="-1"></a><span class="st">    left_metatarsus_mm REAL,</span></span>
+<span id="cb59-55"><a href="create-sqllite-database-structure.html#cb59-55" tabindex="-1"></a><span class="st">    head_length_mm REAL,</span></span>
+<span id="cb59-56"><a href="create-sqllite-database-structure.html#cb59-56" tabindex="-1"></a><span class="st">    head_width_mm REAL,</span></span>
+<span id="cb59-57"><a href="create-sqllite-database-structure.html#cb59-57" tabindex="-1"></a><span class="st">    culmen_mm REAL,</span></span>
+<span id="cb59-58"><a href="create-sqllite-database-structure.html#cb59-58" tabindex="-1"></a><span class="st">    P9_length_mm REAL,</span></span>
+<span id="cb59-59"><a href="create-sqllite-database-structure.html#cb59-59" tabindex="-1"></a><span class="st">    toe_1_mm REAL,</span></span>
+<span id="cb59-60"><a href="create-sqllite-database-structure.html#cb59-60" tabindex="-1"></a><span class="st">    toe_2_mm REAL,</span></span>
+<span id="cb59-61"><a href="create-sqllite-database-structure.html#cb59-61" tabindex="-1"></a><span class="st">    toe_3_mm REAL,</span></span>
+<span id="cb59-62"><a href="create-sqllite-database-structure.html#cb59-62" tabindex="-1"></a><span class="st">    toe_4_mm REAL,</span></span>
+<span id="cb59-63"><a href="create-sqllite-database-structure.html#cb59-63" tabindex="-1"></a><span class="st">    claw_1_mm REAL,</span></span>
+<span id="cb59-64"><a href="create-sqllite-database-structure.html#cb59-64" tabindex="-1"></a><span class="st">    claw_2_mm REAL,</span></span>
+<span id="cb59-65"><a href="create-sqllite-database-structure.html#cb59-65" tabindex="-1"></a><span class="st">    claw_3_mm REAL,</span></span>
+<span id="cb59-66"><a href="create-sqllite-database-structure.html#cb59-66" tabindex="-1"></a><span class="st">    claw_4_mm REAL,</span></span>
+<span id="cb59-67"><a href="create-sqllite-database-structure.html#cb59-67" tabindex="-1"></a><span class="st">    time_released TIME,</span></span>
+<span id="cb59-68"><a href="create-sqllite-database-structure.html#cb59-68" tabindex="-1"></a><span class="st">    comments VARCHAR(300),</span></span>
+<span id="cb59-69"><a href="create-sqllite-database-structure.html#cb59-69" tabindex="-1"></a><span class="st">    FOREIGN KEY (BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
+<span id="cb59-70"><a href="create-sqllite-database-structure.html#cb59-70" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb59-71"><a href="create-sqllite-database-structure.html#cb59-71" tabindex="-1"></a></span>
+<span id="cb59-72"><a href="create-sqllite-database-structure.html#cb59-72" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE deployments (</span></span>
+<span id="cb59-73"><a href="create-sqllite-database-structure.html#cb59-73" tabindex="-1"></a><span class="st">    deployment_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb59-74"><a href="create-sqllite-database-structure.html#cb59-74" tabindex="-1"></a><span class="st">    tag_ID INTEGER,</span></span>
+<span id="cb59-75"><a href="create-sqllite-database-structure.html#cb59-75" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
+<span id="cb59-76"><a href="create-sqllite-database-structure.html#cb59-76" tabindex="-1"></a><span class="st">    start_deployment DATE,</span></span>
+<span id="cb59-77"><a href="create-sqllite-database-structure.html#cb59-77" tabindex="-1"></a><span class="st">    end_deployment DATE,</span></span>
+<span id="cb59-78"><a href="create-sqllite-database-structure.html#cb59-78" tabindex="-1"></a><span class="st">    tag_status VARCHAR(50),</span></span>
+<span id="cb59-79"><a href="create-sqllite-database-structure.html#cb59-79" tabindex="-1"></a><span class="st">    associated_project VARCHAR(50),</span></span>
+<span id="cb59-80"><a href="create-sqllite-database-structure.html#cb59-80" tabindex="-1"></a><span class="st">    FOREIGN KEY(tag_ID) REFERENCES tags(tag_ID),</span></span>
+<span id="cb59-81"><a href="create-sqllite-database-structure.html#cb59-81" tabindex="-1"></a><span class="st">    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
+<span id="cb59-82"><a href="create-sqllite-database-structure.html#cb59-82" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb59-83"><a href="create-sqllite-database-structure.html#cb59-83" tabindex="-1"></a></span>
+<span id="cb59-84"><a href="create-sqllite-database-structure.html#cb59-84" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE mortality (</span></span>
+<span id="cb59-85"><a href="create-sqllite-database-structure.html#cb59-85" tabindex="-1"></a><span class="st">    mortality_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb59-86"><a href="create-sqllite-database-structure.html#cb59-86" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
+<span id="cb59-87"><a href="create-sqllite-database-structure.html#cb59-87" tabindex="-1"></a><span class="st">    death_date DATE,</span></span>
+<span id="cb59-88"><a href="create-sqllite-database-structure.html#cb59-88" tabindex="-1"></a><span class="st">    probable_cause VARCHAR(50),</span></span>
+<span id="cb59-89"><a href="create-sqllite-database-structure.html#cb59-89" tabindex="-1"></a><span class="st">    recovered CHAR(1) CHECK (recovered IN (&#39;Y&#39;, &#39;N&#39;)),</span></span>
+<span id="cb59-90"><a href="create-sqllite-database-structure.html#cb59-90" tabindex="-1"></a><span class="st">    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
+<span id="cb59-91"><a href="create-sqllite-database-structure.html#cb59-91" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb59-92"><a href="create-sqllite-database-structure.html#cb59-92" tabindex="-1"></a></span>
+<span id="cb59-93"><a href="create-sqllite-database-structure.html#cb59-93" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE sites (</span></span>
+<span id="cb59-94"><a href="create-sqllite-database-structure.html#cb59-94" tabindex="-1"></a><span class="st">    site_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb59-95"><a href="create-sqllite-database-structure.html#cb59-95" tabindex="-1"></a><span class="st">    site VARCHAR(100),</span></span>
+<span id="cb59-96"><a href="create-sqllite-database-structure.html#cb59-96" tabindex="-1"></a><span class="st">    country VARCHAR(10),</span></span>
+<span id="cb59-97"><a href="create-sqllite-database-structure.html#cb59-97" tabindex="-1"></a><span class="st">    state VARCHAR(20),</span></span>
+<span id="cb59-98"><a href="create-sqllite-database-structure.html#cb59-98" tabindex="-1"></a><span class="st">    lat REAL,</span></span>
+<span id="cb59-99"><a href="create-sqllite-database-structure.html#cb59-99" tabindex="-1"></a><span class="st">    long REAL,</span></span>
+<span id="cb59-100"><a href="create-sqllite-database-structure.html#cb59-100" tabindex="-1"></a><span class="st">    elevation_m INTEGER,</span></span>
+<span id="cb59-101"><a href="create-sqllite-database-structure.html#cb59-101" tabindex="-1"></a><span class="st">    abbreviation_1 VARCHAR(30),</span></span>
+<span id="cb59-102"><a href="create-sqllite-database-structure.html#cb59-102" tabindex="-1"></a><span class="st">    abbreviation_2 VARCHAR(30),</span></span>
+<span id="cb59-103"><a href="create-sqllite-database-structure.html#cb59-103" tabindex="-1"></a><span class="st">    comments VARCHAR(300),</span></span>
+<span id="cb59-104"><a href="create-sqllite-database-structure.html#cb59-104" tabindex="-1"></a><span class="st">    FOREIGN KEY(site) REFERENCES captures(site)</span></span>
+<span id="cb59-105"><a href="create-sqllite-database-structure.html#cb59-105" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb59-106"><a href="create-sqllite-database-structure.html#cb59-106" tabindex="-1"></a></span>
+<span id="cb59-107"><a href="create-sqllite-database-structure.html#cb59-107" tabindex="-1"></a><span class="co"># Enable Foreign Key Constraints</span></span>
+<span id="cb59-108"><a href="create-sqllite-database-structure.html#cb59-108" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;PRAGMA foreign_keys = ON;&quot;</span>)</span></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="cleaning-capture-data-2020---august-2024.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="import-buow-data-into-sqllite.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/06-DatabaseCreation.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
