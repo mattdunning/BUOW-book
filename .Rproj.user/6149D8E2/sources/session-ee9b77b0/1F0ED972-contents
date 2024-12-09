@@ -1,0 +1,414 @@
+---
+title: "Conway BUOW Band Table Cleaning
+**2000 - 2019**"
+author: "Matthew Dunning"
+date: "2024-12-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Cleaning Band Data
+
+This section is to clean all burrowing data from 2000 - July 2024. This section is only focused on getting
+
+```{r install r packages, eval = FALSE, echo = TRUE}
+install.packages("tidyverse")
+install.packages("readxl")
+install.packages()
+```
+
+## Load packages
+
+load packages needed
+
+```{r load libraries, eval = FALSE, echo = TRUE}
+library(tidyverse)
+library(readxl)
+```
+
+First lets clean the data from 2000-2019. First lets import the data into r and then create a new data frame with only the needed columns.
+
+```{r import 2000-2029 data, eval = FALSE, echo = TRUE}
+setwd("~/BUOW_Migration-Maps/data")
+BUOW1 <- read_csv("BUOW_Data2000-2019.csv")
+bands <- select(BUOW1, band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, right_top, right_bottom, left_top, left_bottom, sex)
+```
+
+## Add hyphens in the correct locations
+
+First we need to add some criteria and conditions
+
+```{r add several criteria and conditions, eval = FALSE, echo = TRUE}
+#first need to add several criteria and conditions
+criteria1 <- "0844"
+criteria2 <- "0934" #some bands already had a dash so now there is --
+criteria3 <- "804"
+criteria4 <- "1204"
+criteria5 <- "764"
+criteria6 <- "544"
+criteria7 <- "574"
+criteria8 <- "594"
+criteria9 <- "914"
+criteria10 <- "1005"
+criteria11 <- "934" #some bands already had a dash so now there is --
+criteria12 <- "844"
+Condition1 <- grepl("^AL-", bands$band)
+criteria <- c(criteria1, criteria2, criteria4,  criteria10)
+criteriax <- c(criteria11, criteria12, criteria3, criteria5, criteria6, criteria7,
+               criteria8, criteria9)
+```
+
+Next run the code
+
+```{r code to fix band hyphens, eval = FALSE, echo = TRUE}
+practice_band <- bands %>%
+  mutate(band = case_when(
+    substr(band, 1, 4) %in% criteria ~ {
+      # Remove existing hyphen if it exists
+      clean_band <- gsub("-", "", band)
+      # Ensure you're using the clean version
+      paste0(substr(clean_band, 1, 4), "-", substr(clean_band, 5, nchar(clean_band)))
+    },
+    TRUE ~ band  # Keep original band if no criteria match
+  )) %>% 
+  mutate(band = case_when(
+    substr(band, 1, 3) %in% criteriax ~ {
+      # Remove existing hyphen if it exists
+      clean_band <- gsub("-", "", band)
+      # Ensure you're using the clean version
+      paste0(substr(clean_band, 1, 3), "-", substr(clean_band, 4, nchar(clean_band)))
+    },
+    TRUE ~ band # Keep original band if no criteria match
+  )) %>%
+  mutate(band =ifelse(Condition1, substr(band, 4, nchar(band)), band)
+         )
+```
+
+remove the criteria and conditions to keep the r environment tidy
+
+```{r remove criteria and conditions for band hyphens, eval = FALSE, echo = TRUE}
+remove(criteria, criteria1, criteria2, criteria3, criteria4, criteria5, criteria6,
+       criteria7, criteria8, criteria9, criteria10, criteria11, criteria12,
+       criteriax, Condition1)
+```
+
+## Fix some capitalization issues
+
+```{r fix spelling in acraft and left_top, eval = FALSE, echo = TRUE}
+practice_band <- practice_band %>%
+  mutate(acraftSecondCode = str_replace_all(acraftSecondCode, "w", "W")
+         )
+
+practice_band <- practice_band %>%
+  mutate(left_top = str_replace_all(left_top, "E", "e")
+         )
+```
+
+## Proofing resights
+This code can be used to proof the resights
+
+```{r proofing re-sights, eval = FALSE, echo = TRUE}
+columns_to_check <- c("USGSLeg", "acraftColor", "acraftFirstCode", 
+                      "acraftType", "acraftSecondCode", "AcraftLeg", 
+                      "right_top", "right_bottom", "left_top", 
+                      "left_bottom"
+                      )
+repeating_values <- practice_band %>%
+  group_by(band) %>%
+  filter(any(sapply(columns_to_check, function(col) n_distinct(get(col)) > 1))) %>% 
+  ungroup()
+#values that have contradictory info about band position should be edited
+#values that are U and M/F/J/UA should default to M/F
+```
+
+## Clean the sex column
+
+```{r Change the Sex column,  eval = FALSE, echo = TRUE}
+#First make all other values U
+practice_band <- practice_band %>%
+  mutate(
+    sex = case_when(
+      sex %in% c("J", "UA") ~ "U",  # Replace "J" and "UA" with "U"
+      is.na(sex) ~ "U",             # Replace NA with "U"
+      TRUE ~ sex                    # Keep all other values unchanged
+    )
+  )
+
+#Make all bands that contain both M and F into C. This also makes U a C in these cases.
+bands_with_both <- practice_band %>%
+  filter(sex %in% c("M", "F")) %>%  # Filter rows with "M" or "F"
+  group_by(band) %>%                # Group by band
+  filter(n_distinct(sex) == 2) %>%  # Ensure the band contains both "M" and "F"
+  ungroup() %>%                     # Ungroup after filtering
+  pull(band)                        # Extract the band names
+
+# Step 2: Replace "M", "F", and "U" with "C" only for bands that contain both "M" and "F"
+practice_band <- practice_band %>%
+  mutate(
+    sex = case_when(
+      band %in% bands_with_both & sex %in% c("M", "F", "U") ~ "C",  # Replace "M", "F", "U" with "C" if band has both "M" and "F"
+      TRUE ~ sex  # Leave all other values unchanged
+    )
+  )
+
+#changes MU and FU combos to M or F
+bands_with_m_u <- practice_band %>%
+  filter(sex %in% c("M", "U")) %>%  # Focus on "M" and "U"
+  group_by(band) %>%
+  filter(any(sex == "M") & any(sex == "U")) %>%  # Band must have both "M" and "U"
+  ungroup() %>%
+  pull(band)  # Extract the band names
+
+bands_with_f_u <- practice_band %>%
+  filter(sex %in% c("F", "U")) %>%  # Focus on "F" and "U"
+  group_by(band) %>%
+  filter(any(sex == "F") & any(sex == "U")) %>%  # Band must have both "F" and "U"
+  ungroup() %>%
+  pull(band)  # Extract the band names
+
+# Step 2: Mutate the sex column to replace "U" with "M" or "F" based on the logic above
+practice_band <- practice_band %>%
+  mutate(
+    sex = case_when(
+      band %in% bands_with_m_u & sex == "U" ~ "M",  # If band has both "M" and "U", change "U" to "M"
+      band %in% bands_with_f_u & sex == "U" ~ "F",  # If band has both "F" and "U", change "U" to "F"
+      TRUE ~ sex  # Otherwise, keep the original value of sex
+    )
+  )
+```
+
+## Now clean the USGS band info
+
+```{r Now changing the USGSLeg, eval = FALSE, echo = TRUE}
+# Update the USGSLeg values to "C" if both "Right" and "Left" are present in the same band
+bands_to_change <- practice_band %>%
+  group_by(band) %>%
+  filter(any(USGSLeg == "Right") & any(USGSLeg == "Left")) %>%
+  pull(band)  # Extract the band names that meet the condition
+
+# Now mutate 'USGSLeg' to "C" for the identified bands
+practice_band <- practice_band %>%
+  mutate(
+    USGSLeg = if_else(
+      band %in% bands_to_change,  # Check if the band is in the list of bands to change
+      "C",  # Change to "C"
+      USGSLeg  # Otherwise, keep original value
+    )
+  )
+
+#change the NA to right/left in USGSLeg
+bands_to_fix <- practice_band %>%
+  group_by(band) %>%
+  filter(any(is.na(USGSLeg)) & any(USGSLeg == "Right")) %>%  # Check for bands with both NA and "Right"
+  ungroup() %>%
+  pull(band)  # Extract the band names that meet the condition
+
+# Step 2: Apply the changes to 'USGSLeg' for these identified bands
+practice_band <- practice_band %>%
+  group_by(band) %>%
+  mutate(
+    USGSLeg = case_when(
+      band %in% bands_to_fix & is.na(USGSLeg) & any(USGSLeg == "Right") ~ "Right",  # Replace NA with "Right" if "Right" exists in the band
+      TRUE ~ USGSLeg  # Keep other values unchanged
+    )
+  ) %>%
+  ungroup()  # Ungroup after applying the update
+
+#Now the Left Leg
+bands_to_fix <- practice_band %>%
+  group_by(band) %>%
+  filter(any(is.na(USGSLeg)) & any(USGSLeg == "Left")) %>%  # Check for bands with both NA and "Left"
+  ungroup() %>%
+  pull(band)  # Extract the band names that meet the condition
+
+# Step 2: Apply the changes to 'USGSLeg' for these identified bands
+practice_band <- practice_band %>%
+  group_by(band) %>%
+  mutate(
+    USGSLeg = case_when(
+      band %in% bands_to_fix & is.na(USGSLeg) & any(USGSLeg == "Left") ~ "Left",  # Replace NA with "Left" if "Left" exists in the band
+      TRUE ~ USGSLeg  # Keep other values unchanged
+    )
+  ) %>%
+  ungroup()  # Ungroup after applying the update
+```
+
+## ACRAFT specific cleaning
+
+First we only want to pull the bands that have ACRAFT bands associated with them.
+
+```{r pull acraft bands from bands, eval = FALSE, echo = TRUE}
+#Lets make all NA values say "no auxiliary band"
+bands_to_fix <- practice_band %>%
+  group_by(band) %>%
+  filter(any(acraftType == "no auxiliary band") & any(is.na(acraftType))) %>%
+  pull(band)
+
+# Apply the change to the acraftType column
+practice_band <- practice_band %>%
+  group_by(band) %>%
+  mutate(
+    acraftType = case_when(
+      band %in% bands_to_fix & is.na(acraftType) ~ "no auxiliary band",  # Replace NA with "no auxiliary band" where necessary
+      TRUE ~ acraftType  # Keep other values unchanged
+    )
+  ) %>%
+  ungroup()  # Remove grouping after applying the changes
+```
+
+```{some facts about edits, echo = FALSE}
+#there are only 3 bands found that started as unbanded and were given a acraft band late.
+#there are several acraft birds that do not have USGS bands.
+#there are several birds from umatilla that were also no band, 2017.
+#939-90924 is should be 934-90924 fixed within excel sheet. MD 10/26/24.
+#0914-58717 had to be removed and replaced as 934-78740. MD 10/26/24
+#0914-56412 had to be removed and replaced as 0914-56414. also had to change the year from 2015 to 2014
+# actually the previous issue could not be resolved so is set aside both bands. MD 10/26/24
+```
+
+```{r acraft export, eval = FALSE, echo = TRUE}
+#filter only the columns we want for ACRAFT bands
+acraft <- practice_band %>% 
+  select(band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, sex) %>% 
+  filter(acraftType != "no auxilary") %>% 
+  filter(acraftType != "no auxiliary band") %>% 
+  filter(acraftType != "plastic") %>% 
+  filter(!is.na(acraftType))
+
+#Remove all duplicate bands from recapture events
+distinct_bands_all_columns <- acraft %>%
+  distinct(band, USGSLeg, acraftColor, acraftFirstCode, acraftType,
+           acraftSecondCode, AcraftLeg, sex)
+
+acraft <- distinct_bands_all_columns %>%
+  mutate(left_leg = case_when(
+    grepl("Left", AcraftLeg, ignore.case = TRUE) ~ "Acraft",    # If "Left" in AcraftLeg, set 'Acraft'
+    grepl("Left", USGSLeg, ignore.case = TRUE) ~ "USGS",         # If "Left" in USGSLeg, set 'USGS'
+    is.na(USGSLeg) ~ NA_character_,                              # Leave NA as NA if USGSLeg is NA
+    TRUE ~ as.character(USGSLeg)                                  # Leave other values unchanged (like "Right")
+  ))
+
+acraft <- acraft %>%
+  mutate(right_leg = case_when(
+    grepl("Right", AcraftLeg, ignore.case = TRUE) ~ "Acraft",    # If "Right" in AcraftLeg, set 'Acraft'
+    grepl("Right", USGSLeg, ignore.case = TRUE) ~ "USGS",         # If "Right" in USGSLeg, set 'USGS'
+    is.na(USGSLeg) ~ NA_character_,                              # Leave NA as NA if USGSLeg is NA
+    TRUE ~ as.character(USGSLeg)                                  # Leave other values unchanged (like "Left")
+  ))
+
+#export the acraft bands as a data frame to be added to database
+export_acraft <- acraft %>% 
+  rename(
+    BUOW_USGS_ID = band,
+    ACRAFT_color = acraftColor,
+    ACRAFT_first_code = acraftFirstCode,
+    ACRAFT_second_code = acraftSecondCode,
+    ACRAFT_layout = acraftType
+  )
+
+export_acraft <- export_acraft %>% 
+  select(
+    BUOW_USGS_ID,                  
+    left_leg,               
+    right_leg,            
+    ACRAFT_color,           
+    ACRAFT_first_code,       
+    ACRAFT_layout,            
+    ACRAFT_second_code,   
+    sex,
+  )
+```
+
+## Color band sorting
+
+```{r color band sorting code, eval = FALSE, echo = TRUE}
+#first select the columns needed for color bands
+color_bands <- practice_band %>% 
+  select(band, USGSLeg, acraftType, right_top, right_bottom, left_top, left_bottom, sex) %>% 
+  filter(acraftType != "no auxilary") %>% 
+  filter(acraftType != "no auxiliary band") %>% 
+  filter(acraftType != "plastic-numeric") %>% 
+  filter(acraftType != "bar") %>% 
+  filter(acraftType != "normal") %>% 
+  filter(acraftType != "over") %>% 
+  filter(acraftType != "vbar") %>% 
+  filter(!is.na(acraftType)
+         )
+
+#next we need to exclude recaptures and get distinct band numbers
+color_bands <- color_bands %>%
+  distinct(band, USGSLeg, acraftType, right_top, right_bottom, left_top,
+           left_bottom, sex)
+
+#next renambe the columns to match the database in SQL
+export_color <- color_bands %>% 
+  rename(
+    BUOW_USGS_ID = band,
+    top_left_band = left_top,
+    bottom_left_band = left_bottom,
+    top_right_band = right_top,
+    bottom_right_band = right_bottom
+  )
+
+#finally pick all columns needed for export
+export_color <- export_color %>% 
+  select(BUOW_USGS_ID,
+         top_left_band,
+         bottom_left_band,
+         top_right_band,
+         bottom_right_band,
+         sex)
+
+```
+
+## Get the rest of the bands that have neither ACRAFT nor Color bands
+
+```{r export all other bands, eval = FALSE, echo = TRUE}
+#select all columns needed for all other bands
+all_other_bands <- practice_band %>%
+  select(band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, sex) %>%
+  filter(!acraftType %in% c("plastic", "plastic-numeric", "bar", "normal", "over", "vbar") | is.na(acraftType))
+
+#remove all recaptures and only get distinct band numbers
+all_other_bands <- all_other_bands %>%
+  distinct(band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, sex)
+
+#code that assigns left or right to indicate which leg the USGS band is placed
+all_other_bands <- all_other_bands %>%
+  mutate(
+    left_leg = case_when(
+      grepl("Left", USGSLeg, ignore.case = TRUE) ~ "USGS",         # If "Left" in USGSLeg, set 'USGS'
+      grepl("Left", AcraftLeg, ignore.case = TRUE) ~ "USGS",        # If "Left" in AcraftLeg, set 'USGS'
+      TRUE ~ NA_character_                                         # Otherwise, set 'NA'
+    ),
+    right_leg = case_when(
+      grepl("Right", USGSLeg, ignore.case = TRUE) ~ "USGS",        # If "Right" in USGSLeg, set 'USGS'
+      grepl("Right", AcraftLeg, ignore.case = TRUE) ~ "USGS",       # If "Right" in AcraftLeg, set 'USGS'
+      TRUE ~ NA_character_                                         # Otherwise, set 'NA'
+    )
+  )
+
+#rename columns to match SQL database
+export_all_other_bands <- all_other_bands %>% 
+  rename(BUOW_USGS_ID = band)
+    
+#select all columns for export to SQL    
+export_all_other_bands <- export_all_other_bands %>% 
+  select(
+    BUOW_USGS_ID,                  
+    left_leg,               
+    right_leg,
+    sex
+  )
+```
+
+## Finally remove all unneccessary dataframes and objects to keep environment tidy
+
+```{r remove objects and values, eval = FALSE, echo = TRUE}
+remove(distinct_bands_all_columns, all_other_bands, test, acraft, bands, BUOW1, color_bands, repeating_values)
+remove(bands_to_change, bands_to_fix, bands_with_both, bands_with_f_u, bands_with_m_u, columns_to_check)
+remove(BUOW1, bands, color_bands, distinct_bands_all_columns, practice_band, repeating_values, test, acraft, all_other_bands)
+```

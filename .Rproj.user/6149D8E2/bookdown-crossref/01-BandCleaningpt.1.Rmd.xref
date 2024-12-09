@@ -1,0 +1,13 @@
+h1:cleaning-band-data-2000-2019 Cleaning Band Data 2000-2019
+h2:cleaning-band Cleaning Band
+h2:load-packages Load packages
+h2:add-hyphens-in-the-correct-locations Add hyphens in the correct locations
+h2:fix-some-capitalization-issues Fix some capitalization issues
+h2:proofing-resights Proofing resights
+h2:clean-the-sex-column Clean the sex column
+h2:now-clean-the-usgs-band-info Now clean the USGS band info
+h2:acraft-specific-cleaning ACRAFT specific cleaning
+h2:color-band-sorting Color band sorting
+h2:get-the-rest-of-the-bands-that-have-neither-acraft-nor-color-bands Get the rest of the bands that have neither ACRAFT nor Color bands
+h2:finally-remove-all-unneccessary-dataframes-and-objects-to-keep-environment-tidy Finally remove all unneccessary dataframes and objects to keep environment tidy
+

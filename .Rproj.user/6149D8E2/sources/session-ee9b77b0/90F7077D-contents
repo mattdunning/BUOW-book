@@ -1,0 +1,2010 @@
+--- 
+title: "Conway BUOW Data Managment"
+author: "Matthew Dunning"
+date: "12/9/2024"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  This is a minimal example of using the bookdown package to write a book.
+  The HTML output format for this example is bookdown::gitbook,
+  set in the _output.yml file.
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+---
+
+# About
+
+This book was originally written to document efforts taken to proof and consolidate all 
+burrowing owl data from the Conway lab. Future uses will include generating figures and maps.
+
+## Usage 
+
+Each **bookdown** chapter includes the steps taken to clean data sheets and then import into SQLlite.
+The code only needs to be run once so the purpose of publishing it is to reference how a task was completed
+for future database cleaning projects. 
+
+## Render book
+
+You can render the HTML version of this example book without changing anything:
+
+1. Find the **Build** pane in the RStudio IDE, and
+
+1. Click on **Build Book**, then select your output format, or select "All formats" if you'd like to use multiple formats from the same book source files.
+
+Or build the book from the R console:
+
+```{r, eval=FALSE}
+bookdown::render_book()
+```
+
+To render this example to PDF as a `bookdown::pdf_book`, you'll need to install XeLaTeX. You are recommended to install TinyTeX (which includes XeLaTeX): <https://yihui.org/tinytex/>.
+
+## Preview book
+
+As you work, you may start a local server to live preview this HTML book. This preview will update as you edit the book when you save individual .Rmd files. You can start the server in a work session by using the RStudio add-in "Preview book", or from the R console:
+
+```{r eval=FALSE}
+bookdown::serve_book()
+```
+
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+<!--chapter:end:index.Rmd-->
+
+---
+title: "Conway BUOW Band Table Cleaning
+**2000 - 2019**"
+author: "Matthew Dunning"
+date: "2024-12-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Cleaning Band Data
+
+This section is to clean all burrowing data from 2000 - July 2024. This section is only focused on getting
+
+```{r install r packages, eval = FALSE, echo = TRUE}
+install.packages("tidyverse")
+install.packages("readxl")
+install.packages()
+```
+
+## Load packages
+
+load packages needed
+
+```{r load libraries, eval = FALSE, echo = TRUE}
+library(tidyverse)
+library(readxl)
+```
+
+First lets clean the data from 2000-2019. First lets import the data into r and then create a new data frame with only the needed columns.
+
+```{r import 2000-2029 data, eval = FALSE, echo = TRUE}
+setwd("~/BUOW_Migration-Maps/data")
+BUOW1 <- read_csv("BUOW_Data2000-2019.csv")
+bands <- select(BUOW1, band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, right_top, right_bottom, left_top, left_bottom, sex)
+```
+
+## Add hyphens in the correct locations
+
+First we need to add some criteria and conditions
+
+```{r add several criteria and conditions, eval = FALSE, echo = TRUE}
+#first need to add several criteria and conditions
+criteria1 <- "0844"
+criteria2 <- "0934" #some bands already had a dash so now there is --
+criteria3 <- "804"
+criteria4 <- "1204"
+criteria5 <- "764"
+criteria6 <- "544"
+criteria7 <- "574"
+criteria8 <- "594"
+criteria9 <- "914"
+criteria10 <- "1005"
+criteria11 <- "934" #some bands already had a dash so now there is --
+criteria12 <- "844"
+Condition1 <- grepl("^AL-", bands$band)
+criteria <- c(criteria1, criteria2, criteria4,  criteria10)
+criteriax <- c(criteria11, criteria12, criteria3, criteria5, criteria6, criteria7,
+               criteria8, criteria9)
+```
+
+Next run the code
+
+```{r code to fix band hyphens, eval = FALSE, echo = TRUE}
+practice_band <- bands %>%
+  mutate(band = case_when(
+    substr(band, 1, 4) %in% criteria ~ {
+      # Remove existing hyphen if it exists
+      clean_band <- gsub("-", "", band)
+      # Ensure you're using the clean version
+      paste0(substr(clean_band, 1, 4), "-", substr(clean_band, 5, nchar(clean_band)))
+    },
+    TRUE ~ band  # Keep original band if no criteria match
+  )) %>% 
+  mutate(band = case_when(
+    substr(band, 1, 3) %in% criteriax ~ {
+      # Remove existing hyphen if it exists
+      clean_band <- gsub("-", "", band)
+      # Ensure you're using the clean version
+      paste0(substr(clean_band, 1, 3), "-", substr(clean_band, 4, nchar(clean_band)))
+    },
+    TRUE ~ band # Keep original band if no criteria match
+  )) %>%
+  mutate(band =ifelse(Condition1, substr(band, 4, nchar(band)), band)
+         )
+```
+
+remove the criteria and conditions to keep the r environment tidy
+
+```{r remove criteria and conditions for band hyphens, eval = FALSE, echo = TRUE}
+remove(criteria, criteria1, criteria2, criteria3, criteria4, criteria5, criteria6,
+       criteria7, criteria8, criteria9, criteria10, criteria11, criteria12,
+       criteriax, Condition1)
+```
+
+## Fix some capitalization issues
+
+```{r fix spelling in acraft and left_top, eval = FALSE, echo = TRUE}
+practice_band <- practice_band %>%
+  mutate(acraftSecondCode = str_replace_all(acraftSecondCode, "w", "W")
+         )
+
+practice_band <- practice_band %>%
+  mutate(left_top = str_replace_all(left_top, "E", "e")
+         )
+```
+
+## Proofing resights
+This code can be used to proof the resights
+
+```{r proofing re-sights, eval = FALSE, echo = TRUE}
+columns_to_check <- c("USGSLeg", "acraftColor", "acraftFirstCode", 
+                      "acraftType", "acraftSecondCode", "AcraftLeg", 
+                      "right_top", "right_bottom", "left_top", 
+                      "left_bottom"
+                      )
+repeating_values <- practice_band %>%
+  group_by(band) %>%
+  filter(any(sapply(columns_to_check, function(col) n_distinct(get(col)) > 1))) %>% 
+  ungroup()
+#values that have contradictory info about band position should be edited
+#values that are U and M/F/J/UA should default to M/F
+```
+
+## Clean the sex column
+
+```{r Change the Sex column,  eval = FALSE, echo = TRUE}
+#First make all other values U
+practice_band <- practice_band %>%
+  mutate(
+    sex = case_when(
+      sex %in% c("J", "UA") ~ "U",  # Replace "J" and "UA" with "U"
+      is.na(sex) ~ "U",             # Replace NA with "U"
+      TRUE ~ sex                    # Keep all other values unchanged
+    )
+  )
+
+#Make all bands that contain both M and F into C. This also makes U a C in these cases.
+bands_with_both <- practice_band %>%
+  filter(sex %in% c("M", "F")) %>%  # Filter rows with "M" or "F"
+  group_by(band) %>%                # Group by band
+  filter(n_distinct(sex) == 2) %>%  # Ensure the band contains both "M" and "F"
+  ungroup() %>%                     # Ungroup after filtering
+  pull(band)                        # Extract the band names
+
+# Step 2: Replace "M", "F", and "U" with "C" only for bands that contain both "M" and "F"
+practice_band <- practice_band %>%
+  mutate(
+    sex = case_when(
+      band %in% bands_with_both & sex %in% c("M", "F", "U") ~ "C",  # Replace "M", "F", "U" with "C" if band has both "M" and "F"
+      TRUE ~ sex  # Leave all other values unchanged
+    )
+  )
+
+#changes MU and FU combos to M or F
+bands_with_m_u <- practice_band %>%
+  filter(sex %in% c("M", "U")) %>%  # Focus on "M" and "U"
+  group_by(band) %>%
+  filter(any(sex == "M") & any(sex == "U")) %>%  # Band must have both "M" and "U"
+  ungroup() %>%
+  pull(band)  # Extract the band names
+
+bands_with_f_u <- practice_band %>%
+  filter(sex %in% c("F", "U")) %>%  # Focus on "F" and "U"
+  group_by(band) %>%
+  filter(any(sex == "F") & any(sex == "U")) %>%  # Band must have both "F" and "U"
+  ungroup() %>%
+  pull(band)  # Extract the band names
+
+# Step 2: Mutate the sex column to replace "U" with "M" or "F" based on the logic above
+practice_band <- practice_band %>%
+  mutate(
+    sex = case_when(
+      band %in% bands_with_m_u & sex == "U" ~ "M",  # If band has both "M" and "U", change "U" to "M"
+      band %in% bands_with_f_u & sex == "U" ~ "F",  # If band has both "F" and "U", change "U" to "F"
+      TRUE ~ sex  # Otherwise, keep the original value of sex
+    )
+  )
+```
+
+## Now clean the USGS band info
+
+```{r Now changing the USGSLeg, eval = FALSE, echo = TRUE}
+# Update the USGSLeg values to "C" if both "Right" and "Left" are present in the same band
+bands_to_change <- practice_band %>%
+  group_by(band) %>%
+  filter(any(USGSLeg == "Right") & any(USGSLeg == "Left")) %>%
+  pull(band)  # Extract the band names that meet the condition
+
+# Now mutate 'USGSLeg' to "C" for the identified bands
+practice_band <- practice_band %>%
+  mutate(
+    USGSLeg = if_else(
+      band %in% bands_to_change,  # Check if the band is in the list of bands to change
+      "C",  # Change to "C"
+      USGSLeg  # Otherwise, keep original value
+    )
+  )
+
+#change the NA to right/left in USGSLeg
+bands_to_fix <- practice_band %>%
+  group_by(band) %>%
+  filter(any(is.na(USGSLeg)) & any(USGSLeg == "Right")) %>%  # Check for bands with both NA and "Right"
+  ungroup() %>%
+  pull(band)  # Extract the band names that meet the condition
+
+# Step 2: Apply the changes to 'USGSLeg' for these identified bands
+practice_band <- practice_band %>%
+  group_by(band) %>%
+  mutate(
+    USGSLeg = case_when(
+      band %in% bands_to_fix & is.na(USGSLeg) & any(USGSLeg == "Right") ~ "Right",  # Replace NA with "Right" if "Right" exists in the band
+      TRUE ~ USGSLeg  # Keep other values unchanged
+    )
+  ) %>%
+  ungroup()  # Ungroup after applying the update
+
+#Now the Left Leg
+bands_to_fix <- practice_band %>%
+  group_by(band) %>%
+  filter(any(is.na(USGSLeg)) & any(USGSLeg == "Left")) %>%  # Check for bands with both NA and "Left"
+  ungroup() %>%
+  pull(band)  # Extract the band names that meet the condition
+
+# Step 2: Apply the changes to 'USGSLeg' for these identified bands
+practice_band <- practice_band %>%
+  group_by(band) %>%
+  mutate(
+    USGSLeg = case_when(
+      band %in% bands_to_fix & is.na(USGSLeg) & any(USGSLeg == "Left") ~ "Left",  # Replace NA with "Left" if "Left" exists in the band
+      TRUE ~ USGSLeg  # Keep other values unchanged
+    )
+  ) %>%
+  ungroup()  # Ungroup after applying the update
+```
+
+## ACRAFT specific cleaning
+
+First we only want to pull the bands that have ACRAFT bands associated with them.
+
+```{r pull acraft bands from bands, eval = FALSE, echo = TRUE}
+#Lets make all NA values say "no auxiliary band"
+bands_to_fix <- practice_band %>%
+  group_by(band) %>%
+  filter(any(acraftType == "no auxiliary band") & any(is.na(acraftType))) %>%
+  pull(band)
+
+# Apply the change to the acraftType column
+practice_band <- practice_band %>%
+  group_by(band) %>%
+  mutate(
+    acraftType = case_when(
+      band %in% bands_to_fix & is.na(acraftType) ~ "no auxiliary band",  # Replace NA with "no auxiliary band" where necessary
+      TRUE ~ acraftType  # Keep other values unchanged
+    )
+  ) %>%
+  ungroup()  # Remove grouping after applying the changes
+```
+
+```{some facts about edits, echo = FALSE}
+#there are only 3 bands found that started as unbanded and were given a acraft band late.
+#there are several acraft birds that do not have USGS bands.
+#there are several birds from umatilla that were also no band, 2017.
+#939-90924 is should be 934-90924 fixed within excel sheet. MD 10/26/24.
+#0914-58717 had to be removed and replaced as 934-78740. MD 10/26/24
+#0914-56412 had to be removed and replaced as 0914-56414. also had to change the year from 2015 to 2014
+# actually the previous issue could not be resolved so is set aside both bands. MD 10/26/24
+```
+
+```{r acraft export, eval = FALSE, echo = TRUE}
+#filter only the columns we want for ACRAFT bands
+acraft <- practice_band %>% 
+  select(band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, sex) %>% 
+  filter(acraftType != "no auxilary") %>% 
+  filter(acraftType != "no auxiliary band") %>% 
+  filter(acraftType != "plastic") %>% 
+  filter(!is.na(acraftType))
+
+#Remove all duplicate bands from recapture events
+distinct_bands_all_columns <- acraft %>%
+  distinct(band, USGSLeg, acraftColor, acraftFirstCode, acraftType,
+           acraftSecondCode, AcraftLeg, sex)
+
+acraft <- distinct_bands_all_columns %>%
+  mutate(left_leg = case_when(
+    grepl("Left", AcraftLeg, ignore.case = TRUE) ~ "Acraft",    # If "Left" in AcraftLeg, set 'Acraft'
+    grepl("Left", USGSLeg, ignore.case = TRUE) ~ "USGS",         # If "Left" in USGSLeg, set 'USGS'
+    is.na(USGSLeg) ~ NA_character_,                              # Leave NA as NA if USGSLeg is NA
+    TRUE ~ as.character(USGSLeg)                                  # Leave other values unchanged (like "Right")
+  ))
+
+acraft <- acraft %>%
+  mutate(right_leg = case_when(
+    grepl("Right", AcraftLeg, ignore.case = TRUE) ~ "Acraft",    # If "Right" in AcraftLeg, set 'Acraft'
+    grepl("Right", USGSLeg, ignore.case = TRUE) ~ "USGS",         # If "Right" in USGSLeg, set 'USGS'
+    is.na(USGSLeg) ~ NA_character_,                              # Leave NA as NA if USGSLeg is NA
+    TRUE ~ as.character(USGSLeg)                                  # Leave other values unchanged (like "Left")
+  ))
+
+#export the acraft bands as a data frame to be added to database
+export_acraft <- acraft %>% 
+  rename(
+    BUOW_USGS_ID = band,
+    ACRAFT_color = acraftColor,
+    ACRAFT_first_code = acraftFirstCode,
+    ACRAFT_second_code = acraftSecondCode,
+    ACRAFT_layout = acraftType
+  )
+
+export_acraft <- export_acraft %>% 
+  select(
+    BUOW_USGS_ID,                  
+    left_leg,               
+    right_leg,            
+    ACRAFT_color,           
+    ACRAFT_first_code,       
+    ACRAFT_layout,            
+    ACRAFT_second_code,   
+    sex,
+  )
+```
+
+## Color band sorting
+
+```{r color band sorting code, eval = FALSE, echo = TRUE}
+#first select the columns needed for color bands
+color_bands <- practice_band %>% 
+  select(band, USGSLeg, acraftType, right_top, right_bottom, left_top, left_bottom, sex) %>% 
+  filter(acraftType != "no auxilary") %>% 
+  filter(acraftType != "no auxiliary band") %>% 
+  filter(acraftType != "plastic-numeric") %>% 
+  filter(acraftType != "bar") %>% 
+  filter(acraftType != "normal") %>% 
+  filter(acraftType != "over") %>% 
+  filter(acraftType != "vbar") %>% 
+  filter(!is.na(acraftType)
+         )
+
+#next we need to exclude recaptures and get distinct band numbers
+color_bands <- color_bands %>%
+  distinct(band, USGSLeg, acraftType, right_top, right_bottom, left_top,
+           left_bottom, sex)
+
+#next renambe the columns to match the database in SQL
+export_color <- color_bands %>% 
+  rename(
+    BUOW_USGS_ID = band,
+    top_left_band = left_top,
+    bottom_left_band = left_bottom,
+    top_right_band = right_top,
+    bottom_right_band = right_bottom
+  )
+
+#finally pick all columns needed for export
+export_color <- export_color %>% 
+  select(BUOW_USGS_ID,
+         top_left_band,
+         bottom_left_band,
+         top_right_band,
+         bottom_right_band,
+         sex)
+
+```
+
+## Get the rest of the bands that have neither ACRAFT nor Color bands
+
+```{r export all other bands, eval = FALSE, echo = TRUE}
+#select all columns needed for all other bands
+all_other_bands <- practice_band %>%
+  select(band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, sex) %>%
+  filter(!acraftType %in% c("plastic", "plastic-numeric", "bar", "normal", "over", "vbar") | is.na(acraftType))
+
+#remove all recaptures and only get distinct band numbers
+all_other_bands <- all_other_bands %>%
+  distinct(band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, sex)
+
+#code that assigns left or right to indicate which leg the USGS band is placed
+all_other_bands <- all_other_bands %>%
+  mutate(
+    left_leg = case_when(
+      grepl("Left", USGSLeg, ignore.case = TRUE) ~ "USGS",         # If "Left" in USGSLeg, set 'USGS'
+      grepl("Left", AcraftLeg, ignore.case = TRUE) ~ "USGS",        # If "Left" in AcraftLeg, set 'USGS'
+      TRUE ~ NA_character_                                         # Otherwise, set 'NA'
+    ),
+    right_leg = case_when(
+      grepl("Right", USGSLeg, ignore.case = TRUE) ~ "USGS",        # If "Right" in USGSLeg, set 'USGS'
+      grepl("Right", AcraftLeg, ignore.case = TRUE) ~ "USGS",       # If "Right" in AcraftLeg, set 'USGS'
+      TRUE ~ NA_character_                                         # Otherwise, set 'NA'
+    )
+  )
+
+#rename columns to match SQL database
+export_all_other_bands <- all_other_bands %>% 
+  rename(BUOW_USGS_ID = band)
+    
+#select all columns for export to SQL    
+export_all_other_bands <- export_all_other_bands %>% 
+  select(
+    BUOW_USGS_ID,                  
+    left_leg,               
+    right_leg,
+    sex
+  )
+```
+
+## Finally remove all unneccessary dataframes and objects to keep environment tidy
+
+```{r remove objects and values, eval = FALSE, echo = TRUE}
+remove(distinct_bands_all_columns, all_other_bands, test, acraft, bands, BUOW1, color_bands, repeating_values)
+remove(bands_to_change, bands_to_fix, bands_with_both, bands_with_f_u, bands_with_m_u, columns_to_check)
+remove(BUOW1, bands, color_bands, distinct_bands_all_columns, practice_band, repeating_values, test, acraft, all_other_bands)
+```
+
+<!--chapter:end:01-BandCleaningpt.1.Rmd-->
+
+---
+title: "Conway BUOW Band Table Cleaning
+**2020 - August 2024**"
+author: "Matthew Dunning"
+date: "2024-12-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Install and load packages
+
+```{r install packages, eval=FALSE, echo=TRUE}
+install.packages("tidyverse")
+install.packages("readxl")
+```
+
+```{r load packages, eval=FALSE, echo=TRUE}
+library(tidyverse)
+library(readxl)
+```
+
+## Set directory and load data
+
+```{r set directory, eval=FALSE, echo=TRUE}
+ setwd("~/BUOW_Migration-Maps/data")
+BUOW <- read_excel("RecentBUOWDataAdditions.xlsx")
+```
+
+Now select columns needed for cleaning
+
+```{r select columns for cleaning, eval=FALSE, echo=TRUE}
+bands <- select(BUOW, band, right_top, right_bottom, left_top, left_bottom,
+                BandCombo, sex)
+```
+
+## Add hyphens where needed
+
+```{r add criteria, eval=FALSE, echo=TRUE}
+criteria1 <- "934" #some bands already had a dash so now there is --
+criteria2 <- "914"
+criteria3 <- "804"
+criteriax <- c(criteria1, criteria2, criteria3)
+
+practice_band <- bands%>% 
+mutate(band = case_when(
+  substr(band, 1, 3) %in% criteriax ~ {
+    # Remove existing hyphen if it exists
+    clean_band <- gsub("-", "", band)
+    # Ensure you're using the clean version
+    paste0(substr(clean_band, 1, 3), "-", substr(clean_band, 4, nchar(clean_band)))
+  },
+  TRUE ~ band)) # Keep original band if no criteria match
+
+remove(criteria1, criteria2, criteria3, criteriax)
+```
+
+Before moving on we want to add a unique key to each capture event
+
+```{r add a unique key, eval=FALSE, echo=TRUE}
+practice_band <- practice_band %>% 
+  mutate(unique_key = row_number()) %>%     # Adds a sequence number starting from 1
+  select(unique_key, everything()) 
+```
+
+## Move colors into correct columns
+First extract the colors and place in correct columns
+```{r extract color combos, eval=FALSE, echo=TRUE}
+practice_band <- practice_band %>%
+  mutate(
+    top_left_band = str_extract(BandCombo, "^[^/]+"),                          # Extract top left part (before first "/")
+    bottom_left_band = str_extract(BandCombo, "(?<=/)[^:]+"),                   # Extract bottom left part (between "/" and ":")
+    top_right_band = str_extract(BandCombo, "(?<=:)[^/]+"),                     # Extract top right part (between ":" and "/")
+    bottom_right_band = str_extract(BandCombo, "(?<=/)[^/]+$")                  # Extract bottom right part (after last "/")
+  )
+```
+Next only select bands that have a color combo
+```{r select color combos, echo=TRUE, eval=FALSE}
+practice_band <- practice_band %>% 
+  mutate(right_top = ifelse(is.na(right_top), top_right_band, right_top),
+         right_bottom = ifelse(is.na(right_bottom), bottom_right_band, right_bottom),
+         left_top = ifelse(is.na(left_top), top_left_band, left_top),
+         left_bottom = ifelse(is.na(left_bottom), bottom_left_band, left_bottom))
+```
+Next change the abbreviations to full spelling of colors
+```{r spell out abbreviations, eval=FALSE, echo=TRUE}
+practice_band <- practice_band %>%
+  mutate(
+    left_top = gsub("Re", "Red", left_top),
+    left_top = gsub("NB", "No Band", left_top),
+    left_top = gsub("Bk", "Black", left_top),
+    left_top = gsub("Wh", "White", left_top),
+    left_top = gsub("Ye", "Yellow", left_top),
+    left_top = gsub("MBl", "Medium Blue", left_top),
+    left_top = gsub("MGr", "Medium Green", left_top),
+    left_top = gsub("Or", "Orange", left_top),
+    left_top = gsub("LBl", "Light Blue", left_top),
+    left_top = gsub("Gy", "Gray", left_top),
+    left_top = gsub("AL", "USGS", left_top)
+  )
+
+practice_band <- practice_band %>%
+  mutate(
+    right_top = gsub("Re", "Red", right_top),
+    right_top = gsub("NB", "No Band", right_top),
+    right_top = gsub("Bk", "Black", right_top),
+    right_top = gsub("Wh", "White", right_top),
+    right_top = gsub("Ye", "Yellow", right_top),
+    right_top = gsub("MBl", "Medium Blue", right_top),
+    right_top = gsub("MGr", "Medium Green", right_top),
+    right_top = gsub("Or", "Orange", right_top),
+    right_top = gsub("LBl", "Light Blue", right_top),
+    right_top = gsub("Gy", "Gray", right_top),
+    right_top = gsub("AL", "USGS", right_top)
+  )
+
+practice_band <- practice_band %>%
+  mutate(
+    left_bottom = gsub("Re", "Red", left_bottom),
+    left_bottom = gsub("NB", "No Band", left_bottom),
+    left_bottom = gsub("Bk", "Black", left_bottom),
+    left_bottom = gsub("Wh", "White", left_bottom),
+    left_bottom = gsub("Ye", "Yellow", left_bottom),
+    left_bottom = gsub("MBl", "Medium Blue", left_bottom),
+    left_bottom = gsub("MGr", "Medium Green", left_bottom),
+    left_bottom = gsub("Or", "Orange", left_bottom),
+    left_bottom = gsub("LBl", "Light Blue", left_bottom),
+    left_bottom = gsub("Gy", "Gray", left_bottom),
+    left_bottom = gsub("ACGr", "ACRAFT Green", left_bottom),
+    left_bottom = gsub("AL", "USGS", left_bottom)
+  )
+
+practice_band <- practice_band %>%
+  mutate(
+    right_bottom = gsub("Re", "Red", right_bottom),
+    right_bottom = gsub("NB", "No Band", right_bottom),
+    right_bottom = gsub("Bk", "Black", right_bottom),
+    right_bottom = gsub("Wh", "White", right_bottom),
+    right_bottom = gsub("Ye", "Yellow", right_bottom),
+    right_bottom = gsub("MBl", "Medium Blue", right_bottom),
+    right_bottom = gsub("MGr", "Medium Green", right_bottom),
+    right_bottom = gsub("Or", "Orange", right_bottom),
+    right_bottom = gsub("LBl", "Light Blue", right_bottom),
+    right_bottom = gsub("Gy", "Gray", right_bottom),
+    right_bottom = gsub("AL", "USGS", right_bottom)
+  )
+```
+Remove some columns that are no longer needed
+```{r remove band columns not needed, eval=FALSE, echo=TRUE}
+practice_band <- select(practice_band,
+                        -BandCombo,
+                        -top_right_band,
+                        -top_left_band,
+                        -bottom_right_band,
+                        -bottom_left_band)
+```
+
+## Proof and Edit the sex column
+First standardize all variables in the sex column
+```{r standardize sex columns, eval=FALSE, echo=TRUE}
+practice_band <- practice_band %>% 
+  mutate(sex = gsub("female", "F", sex),
+         sex = gsub("male", "M", sex),
+         sex = gsub("unknown", "U", sex),
+         sex = gsub("Unk", "U", sex),
+         sex = gsub("J", "U", sex),
+         sex = gsub("hy", "U", sex),
+         sex = gsub("X", NA, sex))
+```
+
+There are a few cases where there are conflicting sex variables for the same bird. There can only be one value in the band table so all
+these values need to be changed to C to reflect this conflict.
+
+```{r filter and change all conflicting sex variables, eval=FALSE, echo=TRUE}
+#Make all bands that contain both M and F into C. This also makes U a C in these cases.
+bands_with_both <- practice_band %>%
+  filter(sex %in% c("M", "F")) %>%  # Filter rows with "M" or "F"
+  group_by(band) %>%                # Group by band
+  filter(n_distinct(sex) == 2) %>%  # Ensure the band contains both "M" and "F"
+  ungroup() %>%                     # Ungroup after filtering
+  pull(band)                        # Extract the band names
+
+# Step 2: Replace "M", "F", and "U" with "C" only for bands that contain both "M" and "F"
+practice_band <- practice_band %>%
+  mutate(
+    sex = case_when(
+      band %in% bands_with_both & sex %in% c("M", "F", "U") ~ "C",  # Replace "M", "F", "U" with "C" if band has both "M" and "F"
+      TRUE ~ sex  # Leave all other values unchanged
+    )
+  )
+
+```
+
+There are some cases where a bird was caught as a HY so sex was unknown and it was later
+caught as an adult and the sex was known. All these U values should be changed to M or F
+because there can only be one value per band.
+
+```{r change unknown to male or female, eval=FALSE, echo=TRUE}
+#changes MU and FU combos to M or F
+bands_with_m_u <- practice_band %>%
+  filter(sex %in% c("M", "U")) %>%  # Focus on "M" and "U"
+  group_by(band) %>%
+  filter(any(sex == "M") & any(sex == "U")) %>%  # Band must have both "M" and "U"
+  ungroup() %>%
+  pull(band)  # Extract the band names
+
+bands_with_f_u <- practice_band %>%
+  filter(sex %in% c("F", "U")) %>%  # Focus on "F" and "U"
+  group_by(band) %>%
+  filter(any(sex == "F") & any(sex == "U")) %>%  # Band must have both "F" and "U"
+  ungroup() %>%
+  pull(band)  # Extract the band names
+
+# Step 2: Mutate the sex column to replace "U" with "M" or "F" based on the logic above
+practice_band <- practice_band %>%
+  mutate(
+    sex = case_when(
+      band %in% bands_with_m_u & sex == "U" ~ "M",  # If band has both "M" and "U", change "U" to "M"
+      band %in% bands_with_f_u & sex == "U" ~ "F",  # If band has both "F" and "U", change "U" to "F"
+      TRUE ~ sex  # Otherwise, keep the original value of sex
+    )
+  )
+
+```
+## Export data and remove objects
+```{r export data, eval=FALSE, echo=TRUE}
+export_recentBUOWtable <- select(practice_band,
+                 BUOW_USGS_ID = band,
+                 top_left_band = left_top,
+                 bottom_left_band = left_bottom,
+                 top_right_band = right_top,
+                 bottom_right_band = right_bottom,
+                 sex)
+
+remove(bands, BUOW, practice_band, bands_with_both, bands_with_f_u, bands_with_m_u)
+```
+
+
+<!--chapter:end:02-BandCleaningpt.2.Rmd-->
+
+---
+title: "Database Cleaning Captures Table
+**2000-2019**"
+author: "Matthew Dunning"
+date: "2024-12-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load libraries
+
+
+```{r install libraries, echo=TRUE, eval=FALSE}
+library(oce)
+library(sf)
+library(tidyverse)
+library(elevatr)
+library(terra)
+library(tools)
+```
+
+## Set directory and load data
+
+```{r set directory and load data, echo=TRUE, eval=FALSE}
+setwd("~/BUOW_Migration-Maps/data")
+
+BUOW1 <- read_csv("BUOW_Data2000-2019.csv")
+
+bands <- BUOW1 %>%
+  select(band, Obs, dateBanded, site, Country, State, Elevation, 
+         'Lat Deg', 'Lat Min', 'Lat Sec', 'Long Deg', 'Long Min', 'Long Sec', recap,
+         sex, Age, UTM_e,	UTM_n, UTM_zone, 'fleas/ecto-parasites', parasites_1,
+         parasites_2, fat, muscle, broodPatch, brood_patch, HowSex, how_sexed,
+         bird_wt, `weight_1_(g)`, `weight_2_(g)`, left_wing, right_wing,
+         `left_metatarsus_(mm)`, `right_metatarsus_(mm)`, tail, `skull length`,
+         `skull width`, culmen, `toe_1_(mm)`, `toe_2_(mm)`, `toe_3_(mm)`,
+         `toe_4_(mm)`, `claw_1_(mm)`, `claw_2_(mm)`, `claw_3_(mm)`,
+         `claw_4_(mm)`, time_at_release, estimated_age_at_banding, juvieage,
+         `tarsus_(mm)`, comments...103, meas_date_1) %>%
+  mutate(unique_key = row_number()) %>%     # Adds a sequence number starting from 1
+  select(unique_key, everything())
+```
+
+Capitalize all letters in the observer column before moving forward
+```{r capitialize obs, eval=FALSE, echo=TRUE}
+bands <- bands %>%
+  mutate(Obs = toupper(Obs))
+```
+
+## Fix the hyphens
+```{r hypen code, eval=FALSE, echo=TRUE}
+#first need to add several criterias and conditions
+criteria1 <- "0844"
+criteria2 <- "0934" #some bands already had a dash so now there is --
+criteria3 <- "0804"
+criteria4 <- "1204"
+criteria5 <- "0764"
+criteria6 <- "0544"
+criteria7 <- "0574"
+criteria8 <- "0594"
+criteria9 <- "0914"
+criteria10 <- "1005"
+criteria11 <- "934" #some bands already had a dash so now there is --
+criteria12 <- "844"
+Condition1 <- grepl("^AL-", bands$band)
+criteria <- c(criteria1, criteria2, criteria3, criteria4, criteria5, criteria6, criteria7,
+              criteria8, criteria9, criteria10)
+criteriax <- c(criteria11, criteria12)
+
+bands <- bands %>%
+  mutate(band = case_when(
+    substr(band, 1, 4) %in% criteria ~ {
+      # Remove existing hyphen if it exists
+      clean_band <- gsub("-", "", band)
+      # Ensure you're using the clean version
+      paste0(substr(clean_band, 1, 4), "-", substr(clean_band, 5, nchar(clean_band)))
+    },
+    TRUE ~ band  # Keep original band if no criteria match
+  )) %>% 
+  mutate(band = case_when(
+    substr(band, 1, 3) %in% criteriax ~ {
+      # Remove existing hyphen if it exists
+      clean_band <- gsub("-", "", band)
+      # Ensure you're using the clean version
+      paste0(substr(clean_band, 1, 3), "-", substr(clean_band, 4, nchar(clean_band)))
+    },
+    TRUE ~ band # Keep original band if no criteria match
+  )) %>%
+  mutate(band =ifelse(Condition1, substr(band, 4, nchar(band)), band))
+
+remove(criteria, criteria1, criteria2, criteria3, criteria4, criteria5, criteria6,
+       criteria7, criteria8, criteria9, criteria10, criteria11, criteria12,
+       criteriax, Condition1)
+```
+
+## Convert latitude and longitude from UTM
+```{r lat and long coverstion, eval=FALSE, echo=TRUE}
+bandsutm <- select(bands, unique_key, band, UTM_e, UTM_n, UTM_zone)  # Select existing columns
+bandsutm <- bandsutm[bandsutm$band != "0914-56283", ]
+
+#Get LatLon from UTM####
+
+#extract LatLong for zone 11
+bandsutm11 <- bandsutm %>%
+  filter(UTM_zone == 11)
+utm_converted <- utm2lonlat(bandsutm11$UTM_e, bandsutm11$UTM_n, zone = 11, hemisphere = "N")
+bandsutm11$Longitude <- utm_converted$lon  # Extract longitude
+bandsutm11$Latitude <- utm_converted$lat   # Extract latitude
+
+#extract LatLong for zone 12
+bandsutm12 <- bandsutm %>% 
+  filter(UTM_zone == 12)
+utm_converted <- utm2lonlat(bandsutm12$UTM_e, bandsutm12$UTM_n, zone = 12, hemisphere = "N")
+bandsutm12$Longitude <- utm_converted$lon  # Extract longitude
+bandsutm12$Latitude <- utm_converted$lat   # Extract latitude
+
+#extract LatLong for zone 13
+bandsutm13 <- bandsutm %>% 
+  filter(UTM_zone == 13)
+utm_converted <- utm2lonlat(bandsutm13$UTM_e, bandsutm13$UTM_n, zone = 13, hemisphere = "N")
+bandsutm13$Longitude <- utm_converted$lon  # Extract longitude
+bandsutm13$Latitude <- utm_converted$lat   # Extract latitude
+
+# Combine all the UTM zone data into a single dataframe
+bandsutm_combined <- bind_rows(bandsutm11, bandsutm12, bandsutm13)
+
+# Merge the combined UTM data back into the original bands dataframe
+bands_final <- bands %>%
+  left_join(bandsutm_combined, by = "unique_key")
+bands <- select(bands_final, -UTM_e.x, -UTM_n.x, -UTM_zone.x, -band.y, -UTM_e.y, -UTM_n.y, -UTM_zone.y)
+
+# remove objects
+remove(bands_final, bandsutm, bandsutm_combined, bandsutm11, bandsutm12, 
+       bandsutm13, utm_converted)
+
+
+#Now convert latlon deg ####
+latlong <- bands
+latlong$Latitude <- bands$`Lat Deg` + (bands$`Lat Min` / 60) + (bands$`Lat Sec` / 3600)
+latlong$Longitude <- (bands$`Long Deg` + (bands$`Long Min` / 60) + (bands$`Long Sec` / 3600)) * -1
+
+# Select only the columns that we need from 'latlong'
+latlong_selected <- latlong %>%
+  select(unique_key, Latitude_latlong = Latitude, Longitude_latlong = Longitude
+         )
+
+# Perform the left join by 'unique_key'
+merged_data <- bands %>%
+  left_join(latlong_selected, by = "unique_key"
+            )
+
+# Combine Latitude and Longitude columns from both dataframes using coalesce()
+bands <- merged_data %>%
+  mutate(
+    Latitude = coalesce(Latitude, Latitude_latlong),  # Combine latitudes
+    Longitude = coalesce(Longitude, Longitude_latlong) # Combine longitudes
+  ) %>%
+  select(-Latitude_latlong, -Longitude_latlong
+         )  # Drop the redundant lat/long columns
+bands <- bands %>% 
+  rename(band = band.x) %>% 
+  select(-`Lat Deg`, -`Lat Min`, -`Lat Sec`, -`Long Deg`, -`Long Min`, -`Long Sec`
+         )
+```
+
+## Filter and clean data
+Some data from Umatilla had multiple capture events on the same row. I had to exclude these and 
+process them later.
+```{r exlude Umatilla, eval=FALSE, echo=TRUE}
+newbands <- bands %>% 
+  filter(is.na(meas_date_1))
+```
+### Filter and clean parasite column
+```{r filter parasite, eval=FALSE, echo=TRUE}
+parasite <- select(newbands,
+                   unique_key,
+                   'fleas/ecto-parasites'
+                   )
+parasite <- parasite %>%
+  mutate('fleas/ecto-parasites' = gsub("y", "Y", `fleas/ecto-parasites`),
+         'fleas/ecto-parasites' = gsub("x", NA, `fleas/ecto-parasites`),
+         'fleas/ecto-parasites' = gsub("-", NA, `fleas/ecto-parasites`),
+         'fleas/ecto-parasites' = gsub("none", "0", `fleas/ecto-parasites`),
+         'fleas/ecto-parasites' = gsub("N", "0", `fleas/ecto-parasites`)
+         )
+parasite <- select(parasite,
+                   unique_key,
+                   number_of_ectoparasites_categorical = 'fleas/ecto-parasites',
+                   )
+newbands <- newbands %>% 
+  left_join(parasite, by = "unique_key"
+            )
+newbands <- select(newbands,
+                   -'fleas/ecto-parasites'
+                   )
+```
+### Filter and clean brood patch column
+```{r filter broodpatch, eval=FALSE, echo=TRUE}
+broodpatch <- select(newbands, unique_key, sex, broodPatch, brood_patch
+                     )
+broodpatch <- broodpatch %>% 
+mutate(broodPatch = ifelse(is.na(broodPatch), brood_patch, broodPatch))
+broodpatch <- broodpatch %>% 
+  mutate(broodPatch = gsub("f", "F", broodPatch),
+         broodPatch = gsub("Yes", "P", broodPatch),
+         broodPatch = gsub("YES", "P", broodPatch),
+         broodPatch = gsub("p", "P", broodPatch),
+         broodPatch = gsub("Y", "P", broodPatch),
+         broodPatch = gsub("y", "P", broodPatch),
+         broodPatch = gsub("v", "V", broodPatch),
+         broodPatch = gsub("r", "R", broodPatch),
+         broodPatch = gsub("w", "W", broodPatch),
+         broodPatch = gsub("s", "S", broodPatch),
+         broodPatch = gsub("NO", "0", broodPatch),
+         broodPatch = gsub("No", "0", broodPatch),
+         broodPatch = gsub("X", NA, broodPatch),
+         broodPatch = gsub("x", NA, broodPatch),
+         broodPatch = gsub("-", NA, broodPatch),
+         broodPatch = gsub("N/A", NA, broodPatch),
+         broodPatch = gsub("j", NA, broodPatch),
+         broodPatch = gsub("n", "0", broodPatch),
+         broodPatch = gsub("U", NA, broodPatch),
+         broodPatch = gsub("N", "0", broodPatch),
+         broodPatch = gsub("V YES", "V", broodPatch),
+         broodPatch = gsub("O", "0", broodPatch),
+         broodPatch = gsub("V P", "V", broodPatch),
+         broodPatch = gsub("V\\?", "V", broodPatch),  # 'V?' matches 'V' or 'V?'
+         broodPatch = gsub("P/V", "V", broodPatch) # Replaces 'P/V' with 'V'
+         )  
+
+
+broodpatch <- select(broodpatch, 
+                     unique_key,
+                     BROODPATCH = broodPatch
+                     )
+newbands <- newbands %>% 
+  left_join(broodpatch, by = "unique_key")
+newbands <- select(newbands,
+                   -broodPatch,
+                   -brood_patch
+                   )
+```
+### Filter and clean sex column
+```{r Filter sex, eval=FALSE, echo=TRUE}
+howsexed <- select(newbands, unique_key, sex, HowSex, how_sexed
+                   )
+howsexed <- howsexed %>% 
+  mutate(HowSex = ifelse(is.na(HowSex), how_sexed, HowSex)
+         )
+howsexed <- select(howsexed,
+                   unique_key,
+                   how_sexedID = HowSex
+                   )
+
+newbands <- newbands %>% 
+  left_join(howsexed, by = "unique_key")
+newbands <- select(newbands,
+                   -HowSex,
+                   -how_sexed
+                   )
+
+```
+### Filter and clean HY day old age
+```{r filter HY age, eval=FALSE, echo=TRUE}
+juvage <- select(newbands, unique_key, juvieage, estimated_age_at_banding
+                 )
+juvage <- juvage %>% 
+  mutate(juvieage = ifelse(is.na(juvieage), estimated_age_at_banding, juvieage)
+         )
+juvage <- juvage %>% 
+  mutate(juvieage = gsub("13-Nov", "11-13", juvieage),
+         juvieage = gsub("13-Dec", "12-13", juvieage),
+         juvieage = gsub("12-Sep", "11-12", juvieage),
+         juvieage = gsub("12-Oct", "12", juvieage),
+         juvieage = gsub("15-Sep", "11-15", juvieage),
+         juvieage = gsub("11-Aug", "9-11", juvieage),
+         juvieage = gsub("10-Aug", "8-10", juvieage),
+         juvieage = gsub("11-Sep", "11", juvieage),
+         juvieage = gsub("15-Dec", "12-15", juvieage),
+         juvieage = gsub("14-Dec", "12-14", juvieage),
+         juvieage = gsub("x", NA, juvieage),
+         juvieage = gsub("X", NA, juvieage),
+         juvieage = gsub("~", "", juvieage),
+         juvieage = gsub(" d", "", juvieage),
+         juvieage = gsub("(\\d+)\\+", ">\\1", juvieage)
+  )
+unique(juvage$juvieage)
+juvage <- select(juvage,
+                 unique_key,
+                 "juvenile_estimated_usage(days)" = juvieage
+                 )
+newbands <- newbands %>% 
+  left_join(juvage, by = "unique_key"
+            )
+
+newbands <- select(newbands,
+                   -juvieage,
+                   -estimated_age_at_banding
+                   )
+```
+
+### Standardize values
+```{r standardize values, eval=FALSE, echo=TRUE}
+newbands <- newbands %>% 
+  mutate(
+    fat = gsub("NA", NA, fat),
+    fat = gsub("X", NA, fat),
+    muscle = gsub("NA", NA, muscle),
+    muscle = gsub("X", NA, muscle),
+    right_wing = gsub("NA", NA, right_wing),
+    right_wing = gsub("X", NA, right_wing),
+    `tarsus_(mm)` = gsub("NA", NA, `tarsus_(mm)`),
+    `tarsus_(mm)` = gsub("X", NA, `tarsus_(mm)`),
+    tail = gsub("X", NA, tail),
+    tail = gsub("NA", NA, tail),
+    `skull length` = gsub("X", NA, `skull length`),
+    `skull length` = gsub("NA", NA, `skull length`),
+    `skull width` = gsub("X", NA, `skull width`),
+    `skull width` = gsub("NA", NA, `skull width`),
+    culmen = gsub("X", NA, culmen),
+    culmen = gsub("NA", NA, culmen),
+    time_at_release = gsub("~", "", time_at_release),
+    time_at_release = gsub(":", "", time_at_release),
+    recap = gsub("yes", "Y", recap),
+    recap = gsub("no", "N", recap),
+    Country =gsub("MX", "Mexico", Country)
+  )
+```
+### Change site to abbreviations to full names
+```{r change site names, eval=FALSE, echo=TRUE}
+newbands <- newbands %>% 
+  mutate(
+    site = gsub("KAFB", "Kirtland Air Force Base", site),
+    site = gsub("DESERET CHEMICAL DEPOT (TEAD)", "Tooele Army Depot", site),
+    site = gsub("TEAD", "Tooele Army Depot", site),
+    site = gsub("\\bTHUNDER\\b(?!\\s+\\w+)", "Thunder Basin", site, perl = TRUE),
+    site = gsub("PUEBLOCD", "Pueblo Chemical Depot", site),
+    site = gsub("SSNWR", "Salton Sea National Wildlife Refuge", site),
+    site = gsub("SFC", "Salmon Falls Creek", site),
+    site = gsub("NELLISAFB", "Nellis Air Force Base", site),
+    site = gsub("DIXNRS", "Dixon Naval Radio Transmitter Facility", site),
+    site = gsub("ML", "Moses Lake", site),
+    site = gsub("YTC", "Yakima Training Center", site),
+    site = gsub("\\bTC\\b", "Tri-Cities", site),
+    site = gsub("NEVTS", "Nevada National Security Site", site),
+    site = gsub("NASLEM", "Naval Air Station Lemoore ", site),
+    site = gsub("LAS CIENEGAS NCA", "Las Cienegas National Conservation Area", site),
+    site = gsub("DUGWAYPG", "Dugway Proving Ground", site),
+    site = gsub("ANTELOPEISLAND", "Antelope Island", site),
+    site = gsub("WSMRNM", "White Sands Missile Range", site),
+    site = gsub("CG", "Casa Grande", site),
+    site = gsub("NASNI", "Naval Air Station North Island", site),
+    site = gsub("NAFELCEN", "Naval Air Facility El Centro", site),
+    site = gsub("EDWARDSAFB", "Edwards Air Force Base", site),
+    site = gsub("MARCHARB", "March Air Reserve Base", site),
+    site = gsub("PINIONCMS", "Piñon Canyon Maneuver Site", site),
+    site = gsub("FTCARSON", "Fort Carson", site),
+    site = gsub("BUCKLEYAFB", "Buckley Space Force Base", site),
+    site = gsub("SCHRIEAFB", "Schriever Space Force Base", site),
+    site = gsub("RCKYMNTARS", "Rocky Mountain Arsenal", site),
+    site = gsub("YPGYAZ", "Yuma Proving Ground", site),
+    site = gsub("YMCAS", "Yuma Marine Corps Air Station", site),
+    site = gsub("MTHOMEAFB", "Mountain Home Air Force Base", site),
+    site = gsub("CROOKCRRNCH", "Crooked Creek Ranch", site),
+    site = gsub("BLACKFT", "Hwy 26/Blackfoot ", site),
+    site = gsub("HILLAFB", "Hill Air Force Base", site),
+    site = gsub("MATAMORAS", "Matamoros", site),
+    site = gsub("KENMINCO", "Kennecott Mining Co., Saltair", site),
+    site = gsub("STGEORGE", "St. George", site),
+    site = gsub("SHARPEDEP", "Sharpe Depot", site),
+    site = gsub("TRAVISAFB", "Travis Air Force Base", site),
+    site = gsub("ELMORE", "Elmore County", site),
+    site = gsub("UTTR", "Utah Test and Training Range", site),
+    site = gsub("MOUNTAIN HOME", "Mountain Home Air Force Base", site),
+    site = gsub("MHAFB", "Mountain Home Air Force Base", site),
+    site = gsub("Grand View", "Grand View", site),
+    site = gsub("PUEBLO CHEM DEPOT", "Pueblo Chemical Depot", site),
+    site = gsub("UAD", "Umatilla Army Depot", site),
+    site = gsub("OTR", "Orchard Combat Training Center", site),
+    site = gsub("BOARDBR", "Boardman Bombing Range", site),
+    # Step 1: Convert all text to lowercase first
+    site = tolower(site),
+    # Step 2: Capitalize the first letter of each word
+    site = gsub("\\b(\\w)", "\\U\\1", site, perl = TRUE)
+  )
+```
+
+## Prepare data for export
+```{r select export, eval=FALSE, echo=TRUE}
+exportcapturesall <- select(newbands,
+                 band,
+                 observer = Obs,
+                 date = dateBanded,
+                 site,
+                 country = Country,
+                 state = State,
+                 elevation_ft = Elevation,
+                 lat = Latitude,
+                 long = Longitude,
+                 recapture = recap,
+                 `juvenile_estimated_age(days)` = "juvenile_estimated_usage(days)",
+                 age_at_capture = Age,
+                 sex_at_capture = sex,
+                 how_sexedID,
+                 brood_patch = BROODPATCH,
+                 number_of_ectoparasites_categorical,
+                 fat_score = fat,
+                 muscle_score = muscle,
+                 weight_g = bird_wt,
+                 left_wing_cord_mm = left_wing,
+                 righ_wing_cord_mm = right_wing,
+                 tail_length_mm = tail,
+                 tarsus_mm = `tarsus_(mm)`,
+                 left_tarsus_mm = `left_metatarsus_(mm)`, 
+                 right_tarsus_mm = `right_metatarsus_(mm)`,
+                 head_length_mm = `skull length`,
+                 head_width_mm = `skull width`, 
+                 culmen,
+                 toe_1_mm = `toe_1_(mm)`,
+                 toe_2_mm = `toe_2_(mm)`,
+                 toe_3_mm = `toe_3_(mm)`,
+                 toe_4_mm = `toe_4_(mm)`,
+                 claw_1_mm = `claw_1_(mm)`,
+                 claw_2_mm = `claw_2_(mm)`,
+                 claw_3_mm = `claw_3_(mm)`,
+                 claw_4_mm = `claw_4_(mm)`,
+                 time_released = time_at_release,
+                 comments = comments...103)
+```
+Sometimes the sex and age can be inferred from one another so this code makes those inferences
+and standardizes values
+```{r age and sex switch, eval=FALSE, echo=TRUE}
+exportcapturesall <- exportcapturesall %>%
+  mutate(
+    age_at_capture = if_else(sex_at_capture == "J" & is.na(age_at_capture), "HY",
+                             age_at_capture),
+    age_at_capture = if_else(sex_at_capture == "F" & is.na(age_at_capture), "AHY",
+                             age_at_capture),
+    age_at_capture = if_else(sex_at_capture == "M" & is.na(age_at_capture), "AHY",
+                             age_at_capture),
+    sex_at_capture = if_else(age_at_capture == "HY" & is.na(sex_at_capture), "J",
+                             sex_at_capture),
+    sex_at_capture = if_else(age_at_capture == "L" & is.na(sex_at_capture), "J",
+                             sex_at_capture),
+    sex_at_capture = gsub("J", "U", sex_at_capture))
+
+```
+Some of the column data structures need to be changed for final import into SQL
+```{r change data str, eval=FALSE, echo=TRUE}
+exportcapturesall$date <- as.Date(exportcapturesall$date, format = "%d-%b-%y")
+exportcapturesall$righ_wing_cord_mm <- as.double(exportcapturesall$righ_wing_cord_mm)
+exportcapturesall$tail_length_mm <- as.double(exportcapturesall$tail_length_mm)
+exportcapturesall$tarsus_mm <- as.double(exportcapturesall$tarsus_mm)
+
+exportcapturesall[c("righ_wing_cord_mm", "tail_length_mm", "tarsus_mm", 
+                    "head_length_mm", "head_width_mm", "right_tarsus_mm", "culmen")] <- lapply(
+                      exportcapturesall[c("righ_wing_cord_mm", "tail_length_mm", "tarsus_mm", 
+                                          "head_length_mm", "head_width_mm", "right_tarsus_mm", "culmen")], 
+                      function(x) round(as.double(x), 1)
+                    )
+
+exportcapturesall$time_released <- strptime(exportcapturesall$time_released, format="%H%M%S")
+
+# Remove date, timezone, and seconds, keeping only HH:MM format
+exportcapturesall$time_released <- format(exportcapturesall$time_released, format="%H:%M")
+
+
+remove(bands, broodpatch, BUOW1, howsexed, juvage, latlong, latlong_selected, merged_data, newbands, parasite)
+
+
+```
+
+
+<!--chapter:end:03-CaptureCleaningpt.1.Rmd-->
+
+---
+title: "Database Cleaning Captures Table
+**Doubled Entried Rows**"
+author: "Matthew Dunning"
+date: "2024-12-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import Data
+This is a continuation of the from the previous chapter. This code is to seperate the multiple
+capture evetns in a row to make new rows.
+```{r load data, eval=FALSE, echo=TRUE}
+setwd("~/BUOW_Migration-Maps/data")
+
+BUOW1 <- read_csv("BUOW_Data2000-2019.csv")
+```
+We need to select the rows with that have multiple entries. We then make two seperate
+data frame to prepare the data.
+```{r select data, eval=FALSE, echo=TRUE}
+buow1_with_date <- BUOW1 %>%
+  filter(!is.na(meas_date_1))  # Keep only rows where 'meas_date_1' is not NA
+  
+row1 <- buow1_with_date
+row2 <- buow1_with_date
+
+row1 <- select(row1, 
+               -`meas_date_2`, 
+               -`est_age_2_(days)`, 
+               -`tarsometatarsus_length_2_(mm)`,
+               -`weight_2_(g)`,
+               -`wing_2_(mm)`,
+               -`tail_2_(mm)`,
+               -`parasites_2`,
+               -`comments...103`,
+               -eggs,
+               -chicks)
+row1 <- row1 %>% 
+  mutate(unique_key = row_number())
+row1 <- row1 %>% 
+  rename(
+    meas_date = `meas_date_1`,
+    est_age = `est_age_1_(days)`,
+    tarsometatarsus_length = `tarsometatarsus_length_1_(mm)`,
+    weight_g = `weight_1_(g)`,
+    wing_mm = `wing_1_(mm)`,
+    tail_mm = `tail_1_(mm)`,
+    parasites = `parasites_1`,
+    comments = `comments...93`
+  )
+
+row2 <- select(row2,
+               -`meas_date_1`,
+               -`est_age_1_(days)`,
+               -`tarsometatarsus_length_1_(mm)`,
+               -`weight_1_(g)`,
+               -`wing_1_(mm)`,
+               -`tail_1_(mm)`,
+               -`parasites_1`,
+               -`comments...93`,
+               -eggs,
+               -chicks)
+row2 <- row2 %>%
+  mutate(unique_key = row_number() + 4999)
+row2 <- row2 %>% 
+  rename(
+    meas_date = `meas_date_2`,
+    est_age = `est_age_2_(days)`,
+    tarsometatarsus_length = `tarsometatarsus_length_2_(mm)`,
+    weight_g = `weight_2_(g)`,
+    wing_mm = `wing_2_(mm)`,
+    tail_mm = `tail_2_(mm)`,
+    parasites = `parasites_2`,
+    comments = `comments...103`
+  )
+```
+This code is to turn specific columns to numeric for future cleaning and filtering
+```{r turn columns numeric, eval=FALSE, echo=TRUE}
+row1 <- row1 %>%
+  mutate_at(vars(tarsometatarsus_length, weight_g, wing_mm, tail_mm, parasites), as.numeric)
+
+row2 <- row2 %>%
+  mutate_at(vars(tarsometatarsus_length, weight_g, wing_mm, tail_mm, parasites), as.numeric)
+
+#Now combine the rows into a single data frame.
+combined_rows <- bind_rows(row1, row2)
+```
+## Clean data
+```{r code for cleaning, eval=FALSE, echo=TRUE}
+#clean HY days
+juvage <- select(combined_rows,
+                 unique_key,
+                 est_age)
+
+juvage <- juvage %>% 
+  mutate(est_age = gsub(" days", "", est_age),
+         est_age = gsub("not found", NA, est_age),
+         est_age = gsub("not present", NA, est_age),
+         est_age = gsub("UNB", NA, est_age),
+         est_age = gsub("(\\d+)\\+", ">\\1", est_age),
+         est_age = gsub(" ", "", est_age),
+         est_age = gsub("6orless", "<6", est_age)
+  )
+juvage <- select(juvage,
+                 unique_key,
+                 "juvenile_estimated_age(days)" = est_age)
+
+combined_rows <- combined_rows %>% 
+  left_join(juvage, by = "unique_key")
+
+combined_rows <- select(combined_rows,
+                   -est_age)
+
+
+#clean site names
+combined_rows <- combined_rows %>% 
+  mutate(
+    site = gsub("TEAD", "Tooele Army Depot", site),
+    site = gsub("UAD", "Umatilla Army Depot", site),
+    site = gsub("SSNWR", "Salton Sea National Wildlife Refuge", site)
+  )
+```
+## Prepare data for export
+```{r export data, eval=FALSE, echo=TRUE}
+exportumatillacaptures <- select(combined_rows,
+                 band,
+                 date = `meas_date`,
+                 site,
+                 country = Country,
+                 state = State,
+                 "juvenile_estimated_age(days)",
+                 number_of_ectoparasites_categorical = parasites,
+                 weight_g,
+                 wing_cord_mm = wing_mm,
+                 tail_length_mm = tail_mm,
+                 tarsus_mm = tarsometatarsus_length,
+                 comments)
+
+exportumatillacaptures$date <- as.Date(exportumatillacaptures$date, format = "%d-%b-%y")
+exportumatillacaptures$number_of_ectoparasites_categorical <- as.character(exportumatillacaptures$number_of_ectoparasites_categorical)
+
+
+remove(BUOW1, buow1_with_date, combined_rows, juvage, row1, row2)
+
+```
+
+
+<!--chapter:end:04-CaptureCleaningpt.2.Rmd-->
+
+---
+title: "Database Cleaning Captures Table
+**2020-August2024**"
+author: "Matthew Dunning"
+date: "2024-12-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages and data
+```{r install packages, eval=FALSE, echo=FALSE}
+library(oce)
+library(sf)
+library(tidyverse)
+library(elevatr)
+library(terra)
+library(readxl)
+```
+```{r load data, eval=FALSE, echo=TRUE}
+setwd("~/BUOW_Migration-Maps/data")
+BUOW <- read_excel("RecentBUOWDataAdditions.xlsx")
+
+bands <- BUOW %>%
+  select(
+    band, Obs, dateBanded, site, Country, State, recap,
+    sex, HowSex, broodPatch, brood_patch, Age,
+    'fleas/ecto-parasites', fat, muscle, bird_wt,
+    wing, left_wing, right_wing,
+    `tarsus_(mm)`, `left_metatarsus_(mm)`, `right_metatarsus_(mm)`,
+    tail, `skull length`, `skull width`, culmen, time_at_release, 
+    juvieage, AgeHY_days, P9Length_mm, comments,
+    easting, northing, UTM_zone, latitude, longitude) %>%
+  mutate(unique_key = row_number()) %>%     # Adds a sequence number starting from 1
+  select(unique_key, everything()
+         )
+```
+## Preapare data
+Some of the dates were serial numbers in excel so this code coverts it to a readable
+date
+```{r correct dates, eval=FALSE, echo=TRUE}
+bands <- bands %>%
+  mutate(
+    dateBanded = case_when(
+      # Handle Excel serial numbers (numeric as character)
+      grepl("^\\d+$", dateBanded) ~ as.Date(as.numeric(dateBanded), origin = "1899-12-30"),  # Convert serial numbers to dates
+      # Handle mm/dd/yyyy date strings
+      grepl("^\\d{1,2}/\\d{1,2}/\\d{4}$", dateBanded) ~ mdy(dateBanded),  
+      # Handle yyyy-mm-dd date strings
+      grepl("^\\d{4}-\\d{2}-\\d{2}$", dateBanded) ~ ymd(dateBanded),  
+      # If it doesn't match any of the above, return NA
+      TRUE ~ NA_Date_
+    )
+  )
+```
+```{r hyphens, eval=FALSE, echo=TRUE}
+criteria1 <- "934" #some bands already had a dash so now there is --
+criteria2 <- "914"
+criteria3 <- "804"
+
+criteriax <- c(criteria1, criteria2, criteria3)
+
+practice_band <- bands%>% 
+  mutate(band = case_when(
+    substr(band, 1, 3) %in% criteriax ~ {
+      # Remove existing hyphen if it exists
+      clean_band <- gsub("-", "", band)
+      # Ensure you're using the clean version
+      paste0(substr(clean_band, 1, 3), "-", substr(clean_band, 4, nchar(clean_band)))
+    },
+    TRUE ~ band)) # Keep original band if no criteria match
+
+remove(criteria1, criteria2, criteria3, criteriax
+       )
+practice_band <- practice_band %>% 
+  mutate(unique_key = row_number()) %>%     # Adds a sequence number starting from 1
+  select(unique_key, everything()
+         )  
+```
+## Latitude and Longitude from UTMs
+```{r Lat Long from UTM, eval=FALSE, echo=TRUE}
+#Get LatLon from UTM####
+bandsutm <- select(bands, unique_key, band, northing, easting, UTM_zone)  # Select existing columns
+bandsutm$easting <- as.numeric(as.character(bandsutm$easting))
+bandsutm$northing <- as.numeric(as.character(bandsutm$northing))
+
+#extract LatLong for zone 10
+bandsutm10 <- bandsutm %>%
+  filter(UTM_zone == 10)
+utm_converted <- utm2lonlat(bandsutm10$easting, bandsutm10$northing, zone = 10, hemisphere = "N")
+bandsutm10$Longitude <- utm_converted$lon  # Extract longitude
+bandsutm10$Latitude <- utm_converted$lat   # Extract latitude
+
+#extract LatLong for zone 11
+bandsutm11 <- bandsutm %>%
+  filter(UTM_zone == 11)
+utm_converted <- utm2lonlat(bandsutm11$easting, bandsutm11$northing, zone = 11, hemisphere = "N")
+bandsutm11$Longitude <- utm_converted$lon  # Extract longitude
+bandsutm11$Latitude <- utm_converted$lat   # Extract latitude
+
+#extract LatLong for zone 12
+bandsutm12 <- bandsutm %>% 
+  filter(UTM_zone == 12)
+utm_converted <- utm2lonlat(bandsutm12$easting, bandsutm12$northing, zone = 12, hemisphere = "N")
+bandsutm12$Longitude <- utm_converted$lon  # Extract longitude
+bandsutm12$Latitude <- utm_converted$lat   # Extract latitude
+
+#extract LatLong for zone 13
+bandsutm13 <- bandsutm %>% 
+  filter(UTM_zone == 13)
+utm_converted <- utm2lonlat(bandsutm13$easting, bandsutm13$northing, zone = 13, hemisphere = "N")
+bandsutm13$Longitude <- utm_converted$lon  # Extract longitude
+bandsutm13$Latitude <- utm_converted$lat   # Extract latitude
+
+# Combine all the UTM zone data into a single dataframe
+bandsutm_combined <- bind_rows(bandsutm10, bandsutm11, bandsutm12, bandsutm13)
+
+# Merge the combined UTM data back into the original bands dataframe
+practice_band <- practice_band %>%
+  left_join(bandsutm_combined, by = "unique_key")
+
+practice_band <- select(practice_band, -easting.x, -northing.x, -UTM_zone.x,
+                -band.y, -easting.y, -northing.y, -UTM_zone.y
+                )
+practice_band <- rename(practice_band,
+                        band = band.x
+                        )
+
+practice_band <- practice_band %>%
+  mutate(
+    Latitude = coalesce(as.numeric(Latitude), as.numeric(latitude)),  # Convert both to numeric and combine
+    Longitude = coalesce(as.numeric(Longitude), as.numeric(longitude))  # Same for longitude
+  ) %>%
+  select(-latitude, -longitude)  # Drop the redundant lat/long columns
+```
+## Cleaning data
+
+```{r data cleanup, eval=FALSE, echo=TRUE}
+# Recaptures
+practice_band <- practice_band %>% 
+  mutate(recap = gsub("no", "N", recap),
+         recap = gsub("yes", "Y", recap),
+         recap = gsub("R", "Y", recap)
+         )
+# Sex
+practice_band <- practice_band %>% 
+  mutate(sex = gsub("female", "F", sex),
+         sex = gsub("male", "M", sex),
+         sex = gsub("unknown", "U", sex),
+         sex = gsub("Unk", "U", sex),
+         sex = gsub("X", "U", sex),
+         sex = gsub("hy", "J", sex)
+         )
+
+# How Sex         
+practice_band <- practice_band %>% 
+  mutate(HowSex = gsub("^P$", "PL", HowSex),
+         HowSex = gsub("PL/BP", "BP/PL", HowSex),
+         HowSex = gsub("Brood Patch, Plumage", "BP/PL", HowSex),
+         HowSex = gsub("Plumage, Brood Patch", "BP/PL", HowSex),
+         HowSex = gsub("Plumage", "PL", HowSex),
+         HowSex = gsub("X", NA, HowSex),
+         HowSex = gsub("NA", NA, HowSex)
+         )
+
+# Broodpatch         
+broodpatch <- select(practice_band, unique_key, sex, broodPatch, brood_patch)
+broodpatch <- broodpatch %>% 
+  mutate(broodPatch = ifelse(is.na(broodPatch), brood_patch, broodPatch)
+         )
+broodpatch <- broodpatch %>% 
+  mutate(
+         broodPatch = gsub("Y", "P", broodPatch),
+         broodPatch = gsub("v", "V", broodPatch),
+         broodPatch = gsub("r", "R", broodPatch),
+         broodPatch = gsub("w", "W", broodPatch),
+         broodPatch = gsub("s", "S", broodPatch),
+         broodPatch = gsub("NO", "0", broodPatch),
+         broodPatch = gsub("No", "0", broodPatch),
+         broodPatch = gsub("X", NA, broodPatch),
+         broodPatch = gsub("x", NA, broodPatch),
+         broodPatch = gsub("-", NA, broodPatch),
+         broodPatch = gsub("N/A", NA, broodPatch),
+         broodPatch = gsub("j", NA, broodPatch),
+         broodPatch = gsub("n", "0", broodPatch),
+         broodPatch = gsub("U", NA, broodPatch),
+         broodPatch = gsub("N", "0", broodPatch),
+         broodPatch = gsub("V YES", "V", broodPatch),
+         broodPatch = gsub("O", "0", broodPatch),
+         broodPatch = gsub("V P", "V", broodPatch),
+         broodPatch = gsub("V\\?", "V", broodPatch),  # 'V?' matches 'V' or 'V?'
+         broodPatch = gsub("P/V", "V", broodPatch)
+  )
+
+broodpatch <- select(broodpatch, 
+                     unique_key,
+                     BROODPATCH = broodPatch
+                     )
+practice_band <- practice_band %>% 
+  left_join(broodpatch, by = "unique_key"
+            )
+practice_band <- select(practice_band,
+                   -broodPatch,
+                   -brood_patch
+                   )        
+
+# Parasites
+practice_band <- practice_band %>% 
+  mutate(
+    `fleas/ecto-parasites` = gsub("greater", ">", `fleas/ecto-parasites`),
+    `fleas/ecto-parasites` = gsub("NA", NA, `fleas/ecto-parasites`),
+    `fleas/ecto-parasites` = gsub("none", "0", `fleas/ecto-parasites`)
+  )
+
+# Age
+practice_band <- practice_band %>% 
+  mutate(
+    Age = gsub("NA", NA, Age),
+    Age = gsub("Ahy", "AHY", Age),
+    Age = gsub(">40d ", "", Age),
+    Age = gsub("~33d ", "", Age),
+    Age = gsub("~36d HY", "HY", Age),
+    Age = gsub("HY>60", "HY", Age),
+    Age = gsub("L33", "L", Age),
+    Age = gsub("L34", "L", Age),
+    Age = gsub("UNK", "U", Age),
+    Age = gsub("L32", "L", Age)
+  )
+
+# Juvenile age in days
+juvage <- select(practice_band, unique_key, juvieage, AgeHY_days)
+juvage <- juvage %>% 
+  mutate(juvieage = ifelse(is.na(juvieage), AgeHY_days, juvieage)
+         )
+juvage <- juvage %>% 
+  mutate(
+    juvieage = gsub("35\\+", ">35", juvieage),
+    juvieage = gsub("X", NA, juvieage),
+    juvieage = gsub("NA", NA, juvieage)
+  )
+juvage <- select(juvage, 
+                 unique_key,
+                 "juvenile_estimated_usage(days)" = juvieage
+                 )
+
+practice_band <- practice_band %>% 
+  left_join(juvage, by = "unique_key"
+            )
+practice_band <- select(practice_band,
+                        -juvieage,
+                        -AgeHY_days
+                        ) 
+
+# Fat
+practice_band <- practice_band %>% 
+  mutate(
+    fat = gsub("NA", NA, fat),
+    fat = gsub("X", NA, fat),
+    muscle = gsub("NA", NA, muscle),
+    muscle = gsub("X", NA, muscle),
+    wing = gsub("NA", NA, wing),
+    wing = gsub("X", NA, wing),
+    `tarsus_(mm)` = gsub("NA", NA, `tarsus_(mm)`),
+    `tarsus_(mm)` = gsub("X", NA, `tarsus_(mm)`),
+    tail = gsub("X", NA, tail),
+    tail = gsub("NA", NA, tail),
+    `skull length` = gsub("X", NA, `skull length`),
+    `skull length` = gsub("NA", NA, `skull length`),
+    `skull width` = gsub("X", NA, `skull width`),
+    `skull width` = gsub("NA", NA, `skull width`),
+    culmen = gsub("X", NA, culmen),
+    culmen = gsub("NA", NA, culmen),
+    time_at_release = gsub("~", "", time_at_release),
+    time_at_release = gsub(":", "", time_at_release),
+    sex
+  )
+
+# Release Time
+practice_band <- practice_band %>%
+  mutate(
+    time_at_release = case_when(
+      
+      # Case 1: Handle time with AM/PM (like "91300 AM", "51800 PM")
+      grepl("\\d{4,5} [APM]{2}", time_at_release) ~ {
+        time_str <- gsub("([0-9]+)([APM]+)", "\\1 \\2", time_at_release)
+        as.character(format(strptime(time_str, format = "%I%M%p"), "%H:%M"))
+      },
+      
+      # Case 2: Handle 4-digit format (hhmm)
+      grepl("^\\d{4}$", time_at_release) ~ {
+        time_str <- as.character(time_at_release)
+        # Add colon if missing
+        formatted_time <- paste0(substr(time_str, 1, 2), ":", substr(time_str, 3, 4))
+        as.character(format(strptime(formatted_time, format = "%H:%M"), "%H:%M"))
+      },
+      
+      # Case 3: Handle 3-digit format (e.g., "930", "45" --> "09:30", "00:45")
+      grepl("^\\d{3}$", time_at_release) ~ {
+        time_str <- as.character(time_at_release)
+        formatted_time <- paste0("0", substr(time_str, 1, 1), ":", substr(time_str, 2, 3))
+        as.character(format(strptime(formatted_time, format = "%H:%M"), "%H:%M"))
+      },
+      
+      # Case 4: Handle numeric values (e.g., "30" --> "00:30")
+      grepl("^\\d{2,3}$", time_at_release) ~ {
+        time_str <- as.character(time_at_release)
+        formatted_time <- paste0("00:", str_pad(time_str, width = 2, pad = "0"))
+        as.character(format(strptime(formatted_time, format = "%H:%M"), "%H:%M"))
+      },
+      
+      # Case 5: Handle any other values, set to NA
+      TRUE ~ NA_character_
+    )
+  )
+
+# Site Names
+practice_band <- practice_band %>% 
+  mutate(
+    site = gsub("KAFB", "Kirtland Air Force Base", site),
+    site = gsub("Umatilla", "Umatilla Army Depot", site),
+    site = gsub("YTC", "Yakima Training Center", site),
+    site = gsub("TBNG", "Thunder Basin", site),
+    site = gsub("ALE", "Arid Lands Ecology Reserve", site),
+    site = gsub("NASL", "Naval Air Station Lemoore ", site),
+    # Step 1: Convert all text to lowercase first
+    site = tolower(site),
+    # Step 2: Capitalize the first letter of each word
+    site = gsub("\\b(\\w)", "\\U\\1", site, perl = TRUE)
+  )
+```
+
+## Export Data
+```{r prepare export data, eval=FALSE, echo=TRUE}
+exportcaptures2020_2024 <- select(practice_band,
+                         band,
+                         observer = Obs,
+                         date = dateBanded,
+                         site,
+                         country = Country,
+                         state = State,
+                         lat = Latitude,
+                         long = Longitude,
+                         recapture = recap,
+                         age_at_capture = Age,
+                         `juvenile_estimated_age(days)` = `juvenile_estimated_usage(days)`,
+                         sex_at_capture = sex,
+                         how_sexedID = HowSex,
+                         brood_patch = BROODPATCH,
+                         number_of_ectoparasites_categorical = `fleas/ecto-parasites`,
+                         fat_score = fat,
+                         muscle_score = muscle,
+                         weight_g = bird_wt,
+                         wing_cord_mm = wing,
+                         left_wing_cord_mm = left_wing,
+                         righ_wing_cord_mm = right_wing,
+                         tail_length_mm = tail,
+                         tarsus_mm = `tarsus_(mm)`,
+                         left_tarsus_mm = `left_metatarsus_(mm)`, 
+                         right_tarsus_mm = `right_metatarsus_(mm)`,
+                         head_length_mm = `skull length`,
+                         head_width_mm = `skull width`, 
+                         culmen,
+                         P9Length_mm,
+                         time_released = time_at_release,
+                         comments
+                         )
+```
+Infering the age and sex from one another and standardizing columns
+```{r age sex standardizing, eval=FALSE, echo=TRUE}
+exportcaptures2020_2024 <- exportcaptures2020_2024 %>%
+  mutate(
+    age_at_capture = if_else(sex_at_capture == "J" & is.na(age_at_capture), "HY",
+                             age_at_capture),
+    age_at_capture = if_else(sex_at_capture == "F" & is.na(age_at_capture), "AHY",
+                             age_at_capture),
+    age_at_capture = if_else(sex_at_capture == "M" & is.na(age_at_capture), "AHY",
+                             age_at_capture),
+    sex_at_capture = if_else(age_at_capture == "HY" & is.na(sex_at_capture), "J",
+                             sex_at_capture),
+    sex_at_capture = if_else(age_at_capture == "L" & is.na(sex_at_capture), "J",
+                             sex_at_capture),
+    sex_at_capture = gsub("J", "U", sex_at_capture))
+```
+Now fix the column structures for export to SQL
+```{r final export prepare, eval=FALSE, echo=TRUE}
+exportcaptures2020_2024[c("wing_cord_mm", "righ_wing_cord_mm", "tail_length_mm", "tarsus_mm", 
+                    "head_length_mm", "head_width_mm", "culmen")] <- lapply(
+                      exportcaptures2020_2024[c("wing_cord_mm", "righ_wing_cord_mm", "tail_length_mm", "tarsus_mm", 
+                                          "head_length_mm", "head_width_mm", "culmen")], 
+                      function(x) round(as.double(x), 1)
+                    )
+
+remove(bands, bandsutm, bandsutm_combined, bandsutm10, bandsutm11, bandsutm12,
+       bandsutm13, broodpatch, BUOW, juvage, practice_band, utm_converted)
+
+```
+
+
+<!--chapter:end:05-CaptureCleaningpt.3.Rmd-->
+
+---
+title: "SQL Database Creation"
+author: "Matthew Dunning"
+date: "2024-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Create SQLlite Database
+First load packages in r
+```{r load packages, eval=FALSE, echo=TRUE}
+library(DBI)
+library(RSQLite)
+```
+
+Next run the code to create the database
+```{r create tables, eval=FALSE, echo=TRUE}
+Burrowing_Owls <- dbConnect(RSQLite::SQLite(), "Burrowing_Owls.db")
+
+dbExecute(Burrowing_Owls, "
+CREATE TABLE Burrowing_Owls (
+    BUOW_USGS_ID VARCHAR(30) NOT NULL,
+    top_left_band VARCHAR(30) CHECK (top_left_band IN ('USGS', 'Black', 'Blue', 'Brown', 'Dark Blue', 'Gray', 'Green', 'Light Blue', 'Light Green', 'Orange', 'Pink', 'Purple', 'Red', 'White', 'Yellow', 'No Band', 'Medium Green', 'Medium Blue', 'ACRAFT Green')),
+    bottom_left_band VARCHAR(30) CHECK (bottom_left_band IN ('USGS', 'Black', 'Blue', 'Brown', 'Dark Blue', 'Gray', 'Green', 'Light Blue', 'Light Green', 'Orange', 'Pink', 'Purple', 'Red', 'White', 'Yellow', 'No Band', 'Medium Green', 'Medium Blue', 'ACRAFT Green')),
+    top_right_band VARCHAR(30) CHECK (top_right_band IN ('USGS', 'Black', 'Blue', 'Brown', 'Dark Blue', 'Gray', 'Green', 'Light Blue', 'Light Green', 'Orange', 'Pink', 'Purple', 'Red', 'White', 'Yellow', 'No Band', 'Medium Green', 'Medium Blue', 'ACRAFT Green')),
+    bottom_right_band VARCHAR(30) CHECK (bottom_right_band IN ('USGS', 'Black', 'Brown', 'Blue', 'Dark Blue', 'Gray', 'Green', 'Light Blue', 'Light Green', 'Orange', 'Pink', 'Purple', 'Red', 'White', 'Yellow', 'No Band', 'Medium Green', 'Medium Blue', 'ACRAFT Green')),
+    left_leg VARCHAR(30) CHECK (left_leg IN ('USGS', 'ACRAFT')),
+    right_leg VARCHAR(30) CHECK (right_leg IN ('USGS', 'ACRAFT')),
+    ACRAFT_color VARCHAR(20) CHECK (ACRAFT_color IN ('Black', 'Red', 'White', 'Red/Black', 'Purple', 'Orange', 'Green', 'Brown', 'Blue')),
+    ACRAFT_first_code VARCHAR(20),
+    ACRAFT_layout VARCHAR(20),
+    ACRAFT_second_code VARCHAR(10),
+    sex CHAR(1) CHECK (sex IN ('M', 'F', 'U', 'C')),
+    PRIMARY KEY (BUOW_USGS_ID)
+);")
+
+dbExecute(Burrowing_Owls, "CREATE TABLE tags (
+    tag_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    brand VARCHAR(50),
+    version VARCHAR(50)
+);")
+
+dbExecute(Burrowing_Owls, "
+CREATE TABLE captures (
+    capture_event INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    BUOW_USGS_ID VARCHAR(30),
+    observer VARCHAR(20),
+    date TEXT,
+    site VARCHAR(100),
+    country VARCHAR(50),
+    state VARCHAR(50),
+    elevation_m INTEGER,
+    lat REAL,
+    long REAL,
+    recapture CHAR(1) CHECK (recapture IN ('Y', 'N', 'U', 'I')),
+    age_at_capture VARCHAR(10),
+    juvenile_estimated_age_days VARCHAR(10),
+    sex_at_capture VARCHAR(2) CHECK (sex_at_capture IN ('U', 'M', 'F', 'UA')),
+    how_sexedID VARCHAR(10),
+    brood_patch CHAR(1) CHECK (brood_patch IN ('0', 'W/R', 'W', 'R', 'P', 'V', 'W/V', 'F', 'S')),
+    number_of_ectoparasites_categorical VARCHAR(5),
+    fat_score INTEGER CHECK (fat_score IN (1, 2, 3, 4, 5, 0)),
+    muscle_score INTEGER CHECK (muscle_score IN (1, 2, 3, 4, 5, 0)),
+    weight_g REAL,
+    wing_cord_mm REAL,
+    left_wing_cord_mm REAL,
+    right_wing_cord_mm REAL,
+    tail_length_mm REAL,
+    tarsus_mm REAL,
+    right_metatarsus_mm REAL,
+    left_metatarsus_mm REAL,
+    head_length_mm REAL,
+    head_width_mm REAL,
+    culmen_mm REAL,
+    P9_length_mm REAL,
+    toe_1_mm REAL,
+    toe_2_mm REAL,
+    toe_3_mm REAL,
+    toe_4_mm REAL,
+    claw_1_mm REAL,
+    claw_2_mm REAL,
+    claw_3_mm REAL,
+    claw_4_mm REAL,
+    time_released TIME,
+    comments VARCHAR(300),
+    FOREIGN KEY (BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)
+);")
+
+dbExecute(Burrowing_Owls, "CREATE TABLE deployments (
+    deployment_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    tag_ID INTEGER,
+    BUOW_USGS_ID VARCHAR(30),
+    start_deployment DATE,
+    end_deployment DATE,
+    tag_status VARCHAR(50),
+    associated_project VARCHAR(50),
+    FOREIGN KEY(tag_ID) REFERENCES tags(tag_ID),
+    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)
+);")
+
+dbExecute(Burrowing_Owls, "CREATE TABLE mortality (
+    mortality_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    BUOW_USGS_ID VARCHAR(30),
+    death_date DATE,
+    probable_cause VARCHAR(50),
+    recovered CHAR(1) CHECK (recovered IN ('Y', 'N')),
+    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)
+);")
+
+dbExecute(Burrowing_Owls, "CREATE TABLE sites (
+    site_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    site VARCHAR(100),
+    country VARCHAR(10),
+    state VARCHAR(20),
+    lat REAL,
+    long REAL,
+    elevation_m INTEGER,
+    abbreviation_1 VARCHAR(30),
+    abbreviation_2 VARCHAR(30),
+    comments VARCHAR(300),
+    FOREIGN KEY(site) REFERENCES captures(site)
+);")
+
+# Enable Foreign Key Constraints
+dbExecute(Burrowing_Owls, "PRAGMA foreign_keys = ON;")
+
+```
+
+
+<!--chapter:end:06-DatabaseCreation.Rmd-->
+
+---
+title: "Combining export files to send to SQL"
+author: "Matthew Dunning"
+date: "2024-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Combine All Band Tables
+
+
+```{r combine all export band, eval=FALSE, echo=TRUE}
+combineallbands <- bind_rows(export_acraft, export_all_other_bands, export_color,
+                         export_recentBUOWtable)
+```
+
+We only want to select unique bands to import to sql database
+```{r only select unique bands, eval=FALSE, echo=TRUE}
+unique_combineallbands <- combineallbands[!duplicated(combineallbands$BUOW_USGS_ID), ]
+```
+
+```{R fix issue for import, eval=FALSE, echo=TRUE}
+unique_combineallbands <- unique_combineallbands %>%
+  mutate(left_leg = ifelse(tolower(left_leg) == "acraft", "ACRAFT", left_leg))
+
+unique_combineallbands <- unique_combineallbands %>%
+  mutate(right_leg = ifelse(tolower(right_leg) == "acraft", "ACRAFT", right_leg))
+
+unique_combineallbands <- unique_combineallbands %>%
+  mutate(left_leg = ifelse(left_leg == "Right", NA, left_leg))
+
+unique_combineallbands <- unique_combineallbands %>%
+  mutate(right_leg = ifelse(right_leg == "Left", NA, right_leg))
+
+```
+## Combine All Capture Tables
+
+```{r combine all export captures, eval=FALSE, echo=TRUE}
+combineallcaptures <- bind_rows(exportcaptures2020_2024, exportcapturesall, exportumatillacaptures)
+```
+
+Just need to make a quick units conversion before importing into the database
+```{r convert elevation ft to meters, eval=FALSE, echo=TRUE}
+combineallcaptures <- combineallcaptures %>%
+  mutate(elevation_m = elevation_ft * 0.3048)
+
+combineallcaptures <- combineallcaptures %>% 
+  select(-elevation_ft)
+```
+
+We need to rename the columns for the import step to work later
+```{r rename capture columns, eval=FALSE, echo=TRUE}
+combineallcaptures <- combineallcaptures %>% 
+  rename(
+    BUOW_USGS_ID = band,
+    right_wing_cord_mm = righ_wing_cord_mm,
+    left_metatarsus_mm = left_tarsus_mm,
+    right_metatarsus_mm = right_tarsus_mm,
+    culmen_mm = culmen,
+    P9_length_mm = P9Length_mm
+  )
+
+
+```
+
+
+
+## Load Sites table
+```{r load sites, eval=FALSE, echo=TRUE}
+sites <- read_excel(sites_kmo.xlsx)
+
+```
+## Start import to SQL
+```{r establish connection, eval=FALSE, echo=TRUE}
+Burrowing_Owls <- dbConnect(RSQLite::SQLite(), "Burrowing_Owls.db")
+```
+### Import band table
+First import the Band table. Every value has to match the set constratints and there 
+can not be any repeating band numbers.
+
+```{r write band table, eval=FALSE, echo=TRUE}
+dbWriteTable(Burrowing_Owls, "Burrowing_Owls", unique_combineallbands, append = TRUE, row.names = FALSE)
+```
+### Import Capture Table
+Next import the captures data. To do this we have to do a few extra steps because there
+are several unknown/unbanded birds that do not have a corresponding value in the band
+table. A foreign key is required to mainain data intergertiy.
+
+```{r turn keys off, eval=FALSE, echo=TRUE}
+dbExecute(Burrowing_Owls, "PRAGMA foreign_keys = OFF;")
+```
+```{r write the captures table, eval=FALSE, echo=TRUE}
+dbWriteTable(Burrowing_Owls, "captures", combineallcaptures, append = TRUE, row.names = FALSE)
+```
+
+```{r insert missing values, eval=FALSE, echo=TRUE}
+# 3. Insert missing BUOW_USGS_ID values into the parent table (Burrowing_Owls)
+dbExecute(Burrowing_Owls, "
+  INSERT INTO Burrowing_Owls (BUOW_USGS_ID)
+  SELECT DISTINCT BUOW_USGS_ID
+  FROM captures
+  WHERE BUOW_USGS_ID NOT IN (SELECT BUOW_USGS_ID FROM Burrowing_Owls);
+")
+```
+```{r turn on foreign keys, eval=FALSE, echo=TRUE}
+dbExecute(Burrowing_Owls, "PRAGMA foreign_keys = ON;")
+```
+
+```{r update captures, eval=FALSE, echo=TRUE}
+dbExecute(Burrowing_Owls, "
+  UPDATE captures
+  SET BUOW_USGS_ID = (SELECT BUOW_USGS_ID FROM Burrowing_Owls WHERE Burrowing_Owls.BUOW_USGS_ID = captures.BUOW_USGS_ID)
+  WHERE BUOW_USGS_ID IS NOT NULL;
+")
+```
+
+
+
+<!--chapter:end:07-SendDataToSQL.Rmd-->
+

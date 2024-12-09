@@ -1,0 +1,131 @@
+---
+title: "SQL Database Creation"
+author: "Matthew Dunning"
+date: "2024-12-07"
+output: html_document
+---
+# Create SQLlite Database Structure
+```{r setup6, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Create SQLlite Database
+First load packages in r
+```{r load packages, eval=FALSE, echo=TRUE}
+library(DBI)
+library(RSQLite)
+```
+
+Next run the code to create the database
+```{r create tables, eval=FALSE, echo=TRUE}
+Burrowing_Owls <- dbConnect(RSQLite::SQLite(), "Burrowing_Owls.db")
+
+dbExecute(Burrowing_Owls, "
+CREATE TABLE Burrowing_Owls (
+    BUOW_USGS_ID VARCHAR(30) NOT NULL,
+    top_left_band VARCHAR(30) CHECK (top_left_band IN ('USGS', 'Black', 'Blue', 'Brown', 'Dark Blue', 'Gray', 'Green', 'Light Blue', 'Light Green', 'Orange', 'Pink', 'Purple', 'Red', 'White', 'Yellow', 'No Band', 'Medium Green', 'Medium Blue', 'ACRAFT Green')),
+    bottom_left_band VARCHAR(30) CHECK (bottom_left_band IN ('USGS', 'Black', 'Blue', 'Brown', 'Dark Blue', 'Gray', 'Green', 'Light Blue', 'Light Green', 'Orange', 'Pink', 'Purple', 'Red', 'White', 'Yellow', 'No Band', 'Medium Green', 'Medium Blue', 'ACRAFT Green')),
+    top_right_band VARCHAR(30) CHECK (top_right_band IN ('USGS', 'Black', 'Blue', 'Brown', 'Dark Blue', 'Gray', 'Green', 'Light Blue', 'Light Green', 'Orange', 'Pink', 'Purple', 'Red', 'White', 'Yellow', 'No Band', 'Medium Green', 'Medium Blue', 'ACRAFT Green')),
+    bottom_right_band VARCHAR(30) CHECK (bottom_right_band IN ('USGS', 'Black', 'Brown', 'Blue', 'Dark Blue', 'Gray', 'Green', 'Light Blue', 'Light Green', 'Orange', 'Pink', 'Purple', 'Red', 'White', 'Yellow', 'No Band', 'Medium Green', 'Medium Blue', 'ACRAFT Green')),
+    left_leg VARCHAR(30) CHECK (left_leg IN ('USGS', 'ACRAFT')),
+    right_leg VARCHAR(30) CHECK (right_leg IN ('USGS', 'ACRAFT')),
+    ACRAFT_color VARCHAR(20) CHECK (ACRAFT_color IN ('Black', 'Red', 'White', 'Red/Black', 'Purple', 'Orange', 'Green', 'Brown', 'Blue')),
+    ACRAFT_first_code VARCHAR(20),
+    ACRAFT_layout VARCHAR(20),
+    ACRAFT_second_code VARCHAR(10),
+    sex CHAR(1) CHECK (sex IN ('M', 'F', 'U', 'C')),
+    PRIMARY KEY (BUOW_USGS_ID)
+);")
+
+dbExecute(Burrowing_Owls, "CREATE TABLE tags (
+    tag_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    brand VARCHAR(50),
+    version VARCHAR(50)
+);")
+
+dbExecute(Burrowing_Owls, "
+CREATE TABLE captures (
+    capture_event INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    BUOW_USGS_ID VARCHAR(30),
+    observer VARCHAR(20),
+    date TEXT,
+    site VARCHAR(100),
+    country VARCHAR(50),
+    state VARCHAR(50),
+    elevation_m INTEGER,
+    lat REAL,
+    long REAL,
+    recapture CHAR(1) CHECK (recapture IN ('Y', 'N', 'U', 'I')),
+    age_at_capture VARCHAR(10),
+    juvenile_estimated_age_days VARCHAR(10),
+    sex_at_capture VARCHAR(2) CHECK (sex_at_capture IN ('U', 'M', 'F', 'UA')),
+    how_sexedID VARCHAR(10),
+    brood_patch CHAR(1) CHECK (brood_patch IN ('0', 'W/R', 'W', 'R', 'P', 'V', 'W/V', 'F', 'S')),
+    number_of_ectoparasites_categorical VARCHAR(5),
+    fat_score INTEGER CHECK (fat_score IN (1, 2, 3, 4, 5, 0)),
+    muscle_score INTEGER CHECK (muscle_score IN (1, 2, 3, 4, 5, 0)),
+    weight_g REAL,
+    wing_cord_mm REAL,
+    left_wing_cord_mm REAL,
+    right_wing_cord_mm REAL,
+    tail_length_mm REAL,
+    tarsus_mm REAL,
+    right_metatarsus_mm REAL,
+    left_metatarsus_mm REAL,
+    head_length_mm REAL,
+    head_width_mm REAL,
+    culmen_mm REAL,
+    P9_length_mm REAL,
+    toe_1_mm REAL,
+    toe_2_mm REAL,
+    toe_3_mm REAL,
+    toe_4_mm REAL,
+    claw_1_mm REAL,
+    claw_2_mm REAL,
+    claw_3_mm REAL,
+    claw_4_mm REAL,
+    time_released TIME,
+    comments VARCHAR(300),
+    FOREIGN KEY (BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)
+);")
+
+dbExecute(Burrowing_Owls, "CREATE TABLE deployments (
+    deployment_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    tag_ID INTEGER,
+    BUOW_USGS_ID VARCHAR(30),
+    start_deployment DATE,
+    end_deployment DATE,
+    tag_status VARCHAR(50),
+    associated_project VARCHAR(50),
+    FOREIGN KEY(tag_ID) REFERENCES tags(tag_ID),
+    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)
+);")
+
+dbExecute(Burrowing_Owls, "CREATE TABLE mortality (
+    mortality_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    BUOW_USGS_ID VARCHAR(30),
+    death_date DATE,
+    probable_cause VARCHAR(50),
+    recovered CHAR(1) CHECK (recovered IN ('Y', 'N')),
+    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)
+);")
+
+dbExecute(Burrowing_Owls, "CREATE TABLE sites (
+    site_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    site VARCHAR(100),
+    country VARCHAR(10),
+    state VARCHAR(20),
+    lat REAL,
+    long REAL,
+    elevation_m INTEGER,
+    abbreviation_1 VARCHAR(30),
+    abbreviation_2 VARCHAR(30),
+    comments VARCHAR(300),
+    FOREIGN KEY(site) REFERENCES captures(site)
+);")
+
+# Enable Foreign Key Constraints
+dbExecute(Burrowing_Owls, "PRAGMA foreign_keys = ON;")
+
+```
+

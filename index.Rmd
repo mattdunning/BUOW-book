@@ -1,0 +1,35 @@
+--- 
+title: "Conway BUOW Data Managment"
+author: "Matthew Dunning"
+date: "12/9/2024"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  This is a minimal example of using the bookdown package to write a book.
+  The HTML output format for this example is bookdown::gitbook,
+  set in the _output.yml file.
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+---
+
+# About
+
+This book was originally written to document efforts taken to proof and consolidate all 
+burrowing owl data from the Conway lab. Future uses will include generating figures and maps.
+
+## Usage 
+
+Each **bookdown** chapter includes the steps taken to clean data sheets and then import into SQLlite.
+The code only needs to be run once so the purpose of publishing it is to reference how a task was completed
+for future database cleaning projects. 
+
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```

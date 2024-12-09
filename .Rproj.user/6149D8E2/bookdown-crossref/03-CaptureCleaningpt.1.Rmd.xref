@@ -1,0 +1,14 @@
+h1:cleaning-capture-data-2000-2019 Cleaning Capture Data 2000-2019
+h2:load-libraries Load libraries
+h2:set-directory-and-load-data Set directory and load data
+h2:fix-the-hyphens Fix the hyphens
+h2:convert-latitude-and-longitude-from-utm Convert latitude and longitude from UTM
+h2:filter-and-clean-data Filter and clean data
+h3:filter-and-clean-parasite-column Filter and clean parasite column
+h3:filter-and-clean-brood-patch-column Filter and clean brood patch column
+h3:filter-and-clean-sex-column Filter and clean sex column
+h3:filter-and-clean-hy-day-old-age Filter and clean HY day old age
+h3:standardize-values Standardize values
+h3:change-site-to-abbreviations-to-full-names Change site to abbreviations to full names
+h2:prepare-data-for-export Prepare data for export
+
