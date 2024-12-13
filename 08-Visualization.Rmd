@@ -1,0 +1,136 @@
+---
+title: "BUOW Data Visualizations"
+author: "Matthew Dunning"
+date: "2024-12-10"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data Visualization
+
+## Capture Locations
+
+### Use ggplot to create a map of every site burrowing owls have been captured
+
+```{r load packages for data visualization, eval=TRUE, echo=TRUE}
+library(DBI)
+library(ggplot2)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+library(tidyverse)
+con <- dbConnect(RSQLite::SQLite(), "C:/Users/mldunning/Documents/BUOW_Book/Burrowing_Owls.db")
+```
+
+```{r prepare base layer for map, eval=TRUE, echo=TRUE}
+# Get map data for countries and states
+world <- ne_countries(scale = "medium", returnclass = "sf")
+us_states <- ne_states(country = "United States of America", returnclass = "sf")
+mexico_states <- ne_states(country = "Mexico", returnclass = "sf")
+canada_provinces <- ne_states(country = "Canada", returnclass = "sf")
+
+# Filter for lower 48 states
+lower_48 <- subset(us_states, !name %in% c("Alaska", "Hawaii"))
+```
+
+```{r pull data from SQLlite database, eval=TRUE, echo=TRUE}
+query <- "SELECT site, lat, long FROM sites"
+
+site_data <- dbGetQuery(con, query)
+
+captures_sites <- "
+SELECT 
+  captures.*,  -- Select all columns from captures
+  sites.site AS site_from_sites,  -- Rename 'site' from sites table to avoid conflict
+  sites.lat AS lat_from_sites,  -- Rename 'lat' from sites table to avoid conflict
+  sites.long AS long_from_sites  -- Rename 'long' from sites table to avoid conflict
+FROM captures
+LEFT JOIN sites
+ON captures.site = sites.site;
+"
+
+captures_sites <- dbGetQuery(con, captures_sites)
+
+captures_sites <- captures_sites %>%
+  mutate(
+    latitude = if_else(is.na(lat) & !is.na(lat_from_sites), lat_from_sites, lat),
+    longitude = if_else(is.na(long) & !is.na(long_from_sites), long_from_sites, long)
+  )
+```
+
+```{r plot just site locations, eval=TRUE, echo=TRUE}
+# Plot the map
+ggplot() +
+  # Plot Lower 48 states
+  geom_sf(data = lower_48, fill = "whitesmoke", color = "black") +
+  # Plot Mexico states
+  geom_sf(data = mexico_states, fill = "whitesmoke", color = "black") +
+  # Plot Canada provinces
+  geom_sf(data = canada_provinces, fill = "whitesmoke", color = "black") +
+  geom_point(data = captures_sites, aes(x = longitude, y = latitude), color = "red", size = 2) +
+  coord_sf(xlim = c(-130, -60), ylim = c(20, 50), expand = FALSE) +
+  labs(title = "Lower 48 States and Mexico") +
+  theme_minimal()
+```
+
+```{r add observational values to site, eval=TRUE, echo=TRUE}
+# Step 1: Count the number of observations at each location (latitude, longitude)
+site_data_count <- captures_sites %>%
+  mutate(
+    latitude = coalesce(lat, lat_from_sites),
+    longitude = coalesce(long, long_from_sites)
+  ) %>%
+  group_by(latitude, longitude) %>%
+  summarize(observations_count = n())  # Count the number of occurrences
+```
+
+```{r plot weighted site locations, eval=TRUE, echo=TRUE}
+ggplot() +
+  # Plot Lower 48 states
+  geom_sf(data = lower_48, fill = "whitesmoke", color = "black") +
+  # Plot Mexico states
+  geom_sf(data = mexico_states, fill = "whitesmoke", color = "black") +
+  # Plot Canada provinces
+  geom_sf(data = canada_provinces, fill = "whitesmoke", color = "black") +
+  # Plot the points from site_data_count with size representing observation count
+  geom_point(data = site_data_count, aes(x = longitude, y = latitude, size = observations_count), color = "red", alpha = 0.6) +
+  # Adjust map limits
+  coord_sf(xlim = c(-130, -60), ylim = c(20, 55)) +  
+  # Set title and theme
+  labs(title = NULL) +
+  theme_minimal() +
+  # Scale size of points based on the number of observations
+  scale_size_continuous(name = "Number of Captures", range = c(3, 20)) +
+  theme(   panel.grid = element_blank(),
+           axis.text = element_blank(),
+           axis.title = element_blank(),
+           axis.ticks = element_blank(),
+           legend.position = "none")
+```
+
+## Sex breakdown of captured owls
+
+```{r prepare data for visualize sex ratio, eval=TRUE, echo=TRUE}
+bands <- dbGetQuery(con, "SELECT * FROM Burrowing_Owls")
+sex_counts <- bands %>% 
+  count(sex)
+
+sex_counts_clean <- sex_counts %>%
+  filter(sex != "C" & !is.na(sex))
+```
+
+
+
+```{r plot sex ratio, eval=TRUE, echo=TRUE}
+# Plot the filtered data
+ggplot(sex_counts_clean, aes(x = sex, y = n, fill = sex)) +
+  geom_bar(stat = "identity", show.legend = FALSE) +
+  labs(title = "Counts of M, F, and U", x = "Sex", y = "Count") +
+  theme_minimal()
+```

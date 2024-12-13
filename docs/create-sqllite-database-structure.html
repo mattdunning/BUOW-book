@@ -4,13 +4,13 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 6 Create SQLlite Database Structure | Combining export files to send to SQL</title>
+  <title>Chapter 6 Create SQLlite Database Structure | BUOW Data Visualizations</title>
   <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
 set in the _output.yml file.</p>" />
   <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 6 Create SQLlite Database Structure | Combining export files to send to SQL" />
+  <meta property="og:title" content="Chapter 6 Create SQLlite Database Structure | BUOW Data Visualizations" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
@@ -19,7 +19,7 @@ set in the _output.yml file.</p>" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 6 Create SQLlite Database Structure | Combining export files to send to SQL" />
+  <meta name="twitter:title" content="Chapter 6 Create SQLlite Database Structure | BUOW Data Visualizations" />
   
   <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
@@ -29,7 +29,7 @@ set in the _output.yml file.</p>" />
 <meta name="author" content="Matthew Dunning" />
 
 
-<meta name="date" content="2024-12-07" />
+<meta name="date" content="2024-12-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -217,7 +217,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="7.4.1" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-band-table"><i class="fa fa-check"></i><b>7.4.1</b> Import band table</a></li>
 <li class="chapter" data-level="7.4.2" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-capture-table"><i class="fa fa-check"></i><b>7.4.2</b> Import Capture Table</a></li>
+<li class="chapter" data-level="7.4.3" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-site-table"><i class="fa fa-check"></i><b>7.4.3</b> Import Site Table</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="data-visualization.html"><a href="data-visualization.html"><i class="fa fa-check"></i><b>8</b> Data Visualization</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="data-visualization.html"><a href="data-visualization.html#capture-locations"><i class="fa fa-check"></i><b>8.1</b> Capture Locations</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="data-visualization.html"><a href="data-visualization.html#use-ggplot-to-create-a-map-of-every-site-burrowing-owls-have-been-captured"><i class="fa fa-check"></i><b>8.1.1</b> Use ggplot to create a map of every site burrowing owls have been captured</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="data-visualization.html"><a href="data-visualization.html#sex-breakdown-of-captured-owls"><i class="fa fa-check"></i><b>8.2</b> Sex breakdown of captured owls</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -231,7 +240,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Combining export files to send to SQL</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">BUOW Data Visualizations</a>
           </h1>
         </div>
 
@@ -241,120 +250,127 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="create-sqllite-database-structure" class="section level1 hasAnchor" number="6">
 <h1><span class="header-section-number">Chapter 6</span> Create SQLlite Database Structure<a href="create-sqllite-database-structure.html#create-sqllite-database-structure" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="create-sqllite-database-structure.html#cb106-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;C:/Users/mldunning/Documents/BUOW_Book/BUOW db schema .png&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:image"></span>
+<img src="BUOW%20db%20schema%20.png" alt="Orginal schema for the burrowing owl database" width="100%" />
+<p class="caption">
+Figure 6.1: Orginal schema for the burrowing owl database
+</p>
+</div>
 <div id="create-sqllite-database" class="section level2 hasAnchor" number="6.1">
 <h2><span class="header-section-number">6.1</span> Create SQLlite Database<a href="create-sqllite-database-structure.html#create-sqllite-database" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>First load packages in r</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="create-sqllite-database-structure.html#cb58-1" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
-<span id="cb58-2"><a href="create-sqllite-database-structure.html#cb58-2" tabindex="-1"></a><span class="fu">library</span>(RSQLite)</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="create-sqllite-database-structure.html#cb107-1" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb107-2"><a href="create-sqllite-database-structure.html#cb107-2" tabindex="-1"></a><span class="fu">library</span>(RSQLite)</span></code></pre></div>
 <p>Next run the code to create the database</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="create-sqllite-database-structure.html#cb59-1" tabindex="-1"></a>Burrowing_Owls <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), <span class="st">&quot;Burrowing_Owls.db&quot;</span>)</span>
-<span id="cb59-2"><a href="create-sqllite-database-structure.html#cb59-2" tabindex="-1"></a></span>
-<span id="cb59-3"><a href="create-sqllite-database-structure.html#cb59-3" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;</span></span>
-<span id="cb59-4"><a href="create-sqllite-database-structure.html#cb59-4" tabindex="-1"></a><span class="st">CREATE TABLE Burrowing_Owls (</span></span>
-<span id="cb59-5"><a href="create-sqllite-database-structure.html#cb59-5" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30) NOT NULL,</span></span>
-<span id="cb59-6"><a href="create-sqllite-database-structure.html#cb59-6" tabindex="-1"></a><span class="st">    top_left_band VARCHAR(30) CHECK (top_left_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
-<span id="cb59-7"><a href="create-sqllite-database-structure.html#cb59-7" tabindex="-1"></a><span class="st">    bottom_left_band VARCHAR(30) CHECK (bottom_left_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
-<span id="cb59-8"><a href="create-sqllite-database-structure.html#cb59-8" tabindex="-1"></a><span class="st">    top_right_band VARCHAR(30) CHECK (top_right_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
-<span id="cb59-9"><a href="create-sqllite-database-structure.html#cb59-9" tabindex="-1"></a><span class="st">    bottom_right_band VARCHAR(30) CHECK (bottom_right_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Brown&#39;, &#39;Blue&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
-<span id="cb59-10"><a href="create-sqllite-database-structure.html#cb59-10" tabindex="-1"></a><span class="st">    left_leg VARCHAR(30) CHECK (left_leg IN (&#39;USGS&#39;, &#39;ACRAFT&#39;)),</span></span>
-<span id="cb59-11"><a href="create-sqllite-database-structure.html#cb59-11" tabindex="-1"></a><span class="st">    right_leg VARCHAR(30) CHECK (right_leg IN (&#39;USGS&#39;, &#39;ACRAFT&#39;)),</span></span>
-<span id="cb59-12"><a href="create-sqllite-database-structure.html#cb59-12" tabindex="-1"></a><span class="st">    ACRAFT_color VARCHAR(20) CHECK (ACRAFT_color IN (&#39;Black&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Red/Black&#39;, &#39;Purple&#39;, &#39;Orange&#39;, &#39;Green&#39;, &#39;Brown&#39;, &#39;Blue&#39;)),</span></span>
-<span id="cb59-13"><a href="create-sqllite-database-structure.html#cb59-13" tabindex="-1"></a><span class="st">    ACRAFT_first_code VARCHAR(20),</span></span>
-<span id="cb59-14"><a href="create-sqllite-database-structure.html#cb59-14" tabindex="-1"></a><span class="st">    ACRAFT_layout VARCHAR(20),</span></span>
-<span id="cb59-15"><a href="create-sqllite-database-structure.html#cb59-15" tabindex="-1"></a><span class="st">    ACRAFT_second_code VARCHAR(10),</span></span>
-<span id="cb59-16"><a href="create-sqllite-database-structure.html#cb59-16" tabindex="-1"></a><span class="st">    sex CHAR(1) CHECK (sex IN (&#39;M&#39;, &#39;F&#39;, &#39;U&#39;, &#39;C&#39;)),</span></span>
-<span id="cb59-17"><a href="create-sqllite-database-structure.html#cb59-17" tabindex="-1"></a><span class="st">    PRIMARY KEY (BUOW_USGS_ID)</span></span>
-<span id="cb59-18"><a href="create-sqllite-database-structure.html#cb59-18" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
-<span id="cb59-19"><a href="create-sqllite-database-structure.html#cb59-19" tabindex="-1"></a></span>
-<span id="cb59-20"><a href="create-sqllite-database-structure.html#cb59-20" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE tags (</span></span>
-<span id="cb59-21"><a href="create-sqllite-database-structure.html#cb59-21" tabindex="-1"></a><span class="st">    tag_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
-<span id="cb59-22"><a href="create-sqllite-database-structure.html#cb59-22" tabindex="-1"></a><span class="st">    brand VARCHAR(50),</span></span>
-<span id="cb59-23"><a href="create-sqllite-database-structure.html#cb59-23" tabindex="-1"></a><span class="st">    version VARCHAR(50)</span></span>
-<span id="cb59-24"><a href="create-sqllite-database-structure.html#cb59-24" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
-<span id="cb59-25"><a href="create-sqllite-database-structure.html#cb59-25" tabindex="-1"></a></span>
-<span id="cb59-26"><a href="create-sqllite-database-structure.html#cb59-26" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;</span></span>
-<span id="cb59-27"><a href="create-sqllite-database-structure.html#cb59-27" tabindex="-1"></a><span class="st">CREATE TABLE captures (</span></span>
-<span id="cb59-28"><a href="create-sqllite-database-structure.html#cb59-28" tabindex="-1"></a><span class="st">    capture_event INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
-<span id="cb59-29"><a href="create-sqllite-database-structure.html#cb59-29" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
-<span id="cb59-30"><a href="create-sqllite-database-structure.html#cb59-30" tabindex="-1"></a><span class="st">    observer VARCHAR(20),</span></span>
-<span id="cb59-31"><a href="create-sqllite-database-structure.html#cb59-31" tabindex="-1"></a><span class="st">    date TEXT,</span></span>
-<span id="cb59-32"><a href="create-sqllite-database-structure.html#cb59-32" tabindex="-1"></a><span class="st">    site VARCHAR(100),</span></span>
-<span id="cb59-33"><a href="create-sqllite-database-structure.html#cb59-33" tabindex="-1"></a><span class="st">    country VARCHAR(50),</span></span>
-<span id="cb59-34"><a href="create-sqllite-database-structure.html#cb59-34" tabindex="-1"></a><span class="st">    state VARCHAR(50),</span></span>
-<span id="cb59-35"><a href="create-sqllite-database-structure.html#cb59-35" tabindex="-1"></a><span class="st">    elevation_m INTEGER,</span></span>
-<span id="cb59-36"><a href="create-sqllite-database-structure.html#cb59-36" tabindex="-1"></a><span class="st">    lat REAL,</span></span>
-<span id="cb59-37"><a href="create-sqllite-database-structure.html#cb59-37" tabindex="-1"></a><span class="st">    long REAL,</span></span>
-<span id="cb59-38"><a href="create-sqllite-database-structure.html#cb59-38" tabindex="-1"></a><span class="st">    recapture CHAR(1) CHECK (recapture IN (&#39;Y&#39;, &#39;N&#39;, &#39;U&#39;, &#39;I&#39;)),</span></span>
-<span id="cb59-39"><a href="create-sqllite-database-structure.html#cb59-39" tabindex="-1"></a><span class="st">    age_at_capture VARCHAR(10),</span></span>
-<span id="cb59-40"><a href="create-sqllite-database-structure.html#cb59-40" tabindex="-1"></a><span class="st">    juvenile_estimated_age_days VARCHAR(10),</span></span>
-<span id="cb59-41"><a href="create-sqllite-database-structure.html#cb59-41" tabindex="-1"></a><span class="st">    sex_at_capture VARCHAR(2) CHECK (sex_at_capture IN (&#39;U&#39;, &#39;M&#39;, &#39;F&#39;, &#39;UA&#39;)),</span></span>
-<span id="cb59-42"><a href="create-sqllite-database-structure.html#cb59-42" tabindex="-1"></a><span class="st">    how_sexedID VARCHAR(10),</span></span>
-<span id="cb59-43"><a href="create-sqllite-database-structure.html#cb59-43" tabindex="-1"></a><span class="st">    brood_patch CHAR(1) CHECK (brood_patch IN (&#39;0&#39;, &#39;W/R&#39;, &#39;W&#39;, &#39;R&#39;, &#39;P&#39;, &#39;V&#39;, &#39;W/V&#39;, &#39;F&#39;, &#39;S&#39;)),</span></span>
-<span id="cb59-44"><a href="create-sqllite-database-structure.html#cb59-44" tabindex="-1"></a><span class="st">    number_of_ectoparasites_categorical VARCHAR(5),</span></span>
-<span id="cb59-45"><a href="create-sqllite-database-structure.html#cb59-45" tabindex="-1"></a><span class="st">    fat_score INTEGER CHECK (fat_score IN (1, 2, 3, 4, 5, 0)),</span></span>
-<span id="cb59-46"><a href="create-sqllite-database-structure.html#cb59-46" tabindex="-1"></a><span class="st">    muscle_score INTEGER CHECK (muscle_score IN (1, 2, 3, 4, 5, 0)),</span></span>
-<span id="cb59-47"><a href="create-sqllite-database-structure.html#cb59-47" tabindex="-1"></a><span class="st">    weight_g REAL,</span></span>
-<span id="cb59-48"><a href="create-sqllite-database-structure.html#cb59-48" tabindex="-1"></a><span class="st">    wing_cord_mm REAL,</span></span>
-<span id="cb59-49"><a href="create-sqllite-database-structure.html#cb59-49" tabindex="-1"></a><span class="st">    left_wing_cord_mm REAL,</span></span>
-<span id="cb59-50"><a href="create-sqllite-database-structure.html#cb59-50" tabindex="-1"></a><span class="st">    right_wing_cord_mm REAL,</span></span>
-<span id="cb59-51"><a href="create-sqllite-database-structure.html#cb59-51" tabindex="-1"></a><span class="st">    tail_length_mm REAL,</span></span>
-<span id="cb59-52"><a href="create-sqllite-database-structure.html#cb59-52" tabindex="-1"></a><span class="st">    tarsus_mm REAL,</span></span>
-<span id="cb59-53"><a href="create-sqllite-database-structure.html#cb59-53" tabindex="-1"></a><span class="st">    right_metatarsus_mm REAL,</span></span>
-<span id="cb59-54"><a href="create-sqllite-database-structure.html#cb59-54" tabindex="-1"></a><span class="st">    left_metatarsus_mm REAL,</span></span>
-<span id="cb59-55"><a href="create-sqllite-database-structure.html#cb59-55" tabindex="-1"></a><span class="st">    head_length_mm REAL,</span></span>
-<span id="cb59-56"><a href="create-sqllite-database-structure.html#cb59-56" tabindex="-1"></a><span class="st">    head_width_mm REAL,</span></span>
-<span id="cb59-57"><a href="create-sqllite-database-structure.html#cb59-57" tabindex="-1"></a><span class="st">    culmen_mm REAL,</span></span>
-<span id="cb59-58"><a href="create-sqllite-database-structure.html#cb59-58" tabindex="-1"></a><span class="st">    P9_length_mm REAL,</span></span>
-<span id="cb59-59"><a href="create-sqllite-database-structure.html#cb59-59" tabindex="-1"></a><span class="st">    toe_1_mm REAL,</span></span>
-<span id="cb59-60"><a href="create-sqllite-database-structure.html#cb59-60" tabindex="-1"></a><span class="st">    toe_2_mm REAL,</span></span>
-<span id="cb59-61"><a href="create-sqllite-database-structure.html#cb59-61" tabindex="-1"></a><span class="st">    toe_3_mm REAL,</span></span>
-<span id="cb59-62"><a href="create-sqllite-database-structure.html#cb59-62" tabindex="-1"></a><span class="st">    toe_4_mm REAL,</span></span>
-<span id="cb59-63"><a href="create-sqllite-database-structure.html#cb59-63" tabindex="-1"></a><span class="st">    claw_1_mm REAL,</span></span>
-<span id="cb59-64"><a href="create-sqllite-database-structure.html#cb59-64" tabindex="-1"></a><span class="st">    claw_2_mm REAL,</span></span>
-<span id="cb59-65"><a href="create-sqllite-database-structure.html#cb59-65" tabindex="-1"></a><span class="st">    claw_3_mm REAL,</span></span>
-<span id="cb59-66"><a href="create-sqllite-database-structure.html#cb59-66" tabindex="-1"></a><span class="st">    claw_4_mm REAL,</span></span>
-<span id="cb59-67"><a href="create-sqllite-database-structure.html#cb59-67" tabindex="-1"></a><span class="st">    time_released TIME,</span></span>
-<span id="cb59-68"><a href="create-sqllite-database-structure.html#cb59-68" tabindex="-1"></a><span class="st">    comments VARCHAR(300),</span></span>
-<span id="cb59-69"><a href="create-sqllite-database-structure.html#cb59-69" tabindex="-1"></a><span class="st">    FOREIGN KEY (BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
-<span id="cb59-70"><a href="create-sqllite-database-structure.html#cb59-70" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
-<span id="cb59-71"><a href="create-sqllite-database-structure.html#cb59-71" tabindex="-1"></a></span>
-<span id="cb59-72"><a href="create-sqllite-database-structure.html#cb59-72" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE deployments (</span></span>
-<span id="cb59-73"><a href="create-sqllite-database-structure.html#cb59-73" tabindex="-1"></a><span class="st">    deployment_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
-<span id="cb59-74"><a href="create-sqllite-database-structure.html#cb59-74" tabindex="-1"></a><span class="st">    tag_ID INTEGER,</span></span>
-<span id="cb59-75"><a href="create-sqllite-database-structure.html#cb59-75" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
-<span id="cb59-76"><a href="create-sqllite-database-structure.html#cb59-76" tabindex="-1"></a><span class="st">    start_deployment DATE,</span></span>
-<span id="cb59-77"><a href="create-sqllite-database-structure.html#cb59-77" tabindex="-1"></a><span class="st">    end_deployment DATE,</span></span>
-<span id="cb59-78"><a href="create-sqllite-database-structure.html#cb59-78" tabindex="-1"></a><span class="st">    tag_status VARCHAR(50),</span></span>
-<span id="cb59-79"><a href="create-sqllite-database-structure.html#cb59-79" tabindex="-1"></a><span class="st">    associated_project VARCHAR(50),</span></span>
-<span id="cb59-80"><a href="create-sqllite-database-structure.html#cb59-80" tabindex="-1"></a><span class="st">    FOREIGN KEY(tag_ID) REFERENCES tags(tag_ID),</span></span>
-<span id="cb59-81"><a href="create-sqllite-database-structure.html#cb59-81" tabindex="-1"></a><span class="st">    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
-<span id="cb59-82"><a href="create-sqllite-database-structure.html#cb59-82" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
-<span id="cb59-83"><a href="create-sqllite-database-structure.html#cb59-83" tabindex="-1"></a></span>
-<span id="cb59-84"><a href="create-sqllite-database-structure.html#cb59-84" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE mortality (</span></span>
-<span id="cb59-85"><a href="create-sqllite-database-structure.html#cb59-85" tabindex="-1"></a><span class="st">    mortality_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
-<span id="cb59-86"><a href="create-sqllite-database-structure.html#cb59-86" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
-<span id="cb59-87"><a href="create-sqllite-database-structure.html#cb59-87" tabindex="-1"></a><span class="st">    death_date DATE,</span></span>
-<span id="cb59-88"><a href="create-sqllite-database-structure.html#cb59-88" tabindex="-1"></a><span class="st">    probable_cause VARCHAR(50),</span></span>
-<span id="cb59-89"><a href="create-sqllite-database-structure.html#cb59-89" tabindex="-1"></a><span class="st">    recovered CHAR(1) CHECK (recovered IN (&#39;Y&#39;, &#39;N&#39;)),</span></span>
-<span id="cb59-90"><a href="create-sqllite-database-structure.html#cb59-90" tabindex="-1"></a><span class="st">    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
-<span id="cb59-91"><a href="create-sqllite-database-structure.html#cb59-91" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
-<span id="cb59-92"><a href="create-sqllite-database-structure.html#cb59-92" tabindex="-1"></a></span>
-<span id="cb59-93"><a href="create-sqllite-database-structure.html#cb59-93" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE sites (</span></span>
-<span id="cb59-94"><a href="create-sqllite-database-structure.html#cb59-94" tabindex="-1"></a><span class="st">    site_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
-<span id="cb59-95"><a href="create-sqllite-database-structure.html#cb59-95" tabindex="-1"></a><span class="st">    site VARCHAR(100),</span></span>
-<span id="cb59-96"><a href="create-sqllite-database-structure.html#cb59-96" tabindex="-1"></a><span class="st">    country VARCHAR(10),</span></span>
-<span id="cb59-97"><a href="create-sqllite-database-structure.html#cb59-97" tabindex="-1"></a><span class="st">    state VARCHAR(20),</span></span>
-<span id="cb59-98"><a href="create-sqllite-database-structure.html#cb59-98" tabindex="-1"></a><span class="st">    lat REAL,</span></span>
-<span id="cb59-99"><a href="create-sqllite-database-structure.html#cb59-99" tabindex="-1"></a><span class="st">    long REAL,</span></span>
-<span id="cb59-100"><a href="create-sqllite-database-structure.html#cb59-100" tabindex="-1"></a><span class="st">    elevation_m INTEGER,</span></span>
-<span id="cb59-101"><a href="create-sqllite-database-structure.html#cb59-101" tabindex="-1"></a><span class="st">    abbreviation_1 VARCHAR(30),</span></span>
-<span id="cb59-102"><a href="create-sqllite-database-structure.html#cb59-102" tabindex="-1"></a><span class="st">    abbreviation_2 VARCHAR(30),</span></span>
-<span id="cb59-103"><a href="create-sqllite-database-structure.html#cb59-103" tabindex="-1"></a><span class="st">    comments VARCHAR(300),</span></span>
-<span id="cb59-104"><a href="create-sqllite-database-structure.html#cb59-104" tabindex="-1"></a><span class="st">    FOREIGN KEY(site) REFERENCES captures(site)</span></span>
-<span id="cb59-105"><a href="create-sqllite-database-structure.html#cb59-105" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
-<span id="cb59-106"><a href="create-sqllite-database-structure.html#cb59-106" tabindex="-1"></a></span>
-<span id="cb59-107"><a href="create-sqllite-database-structure.html#cb59-107" tabindex="-1"></a><span class="co"># Enable Foreign Key Constraints</span></span>
-<span id="cb59-108"><a href="create-sqllite-database-structure.html#cb59-108" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;PRAGMA foreign_keys = ON;&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="create-sqllite-database-structure.html#cb108-1" tabindex="-1"></a>Burrowing_Owls <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), <span class="st">&quot;Burrowing_Owls.db&quot;</span>)</span>
+<span id="cb108-2"><a href="create-sqllite-database-structure.html#cb108-2" tabindex="-1"></a></span>
+<span id="cb108-3"><a href="create-sqllite-database-structure.html#cb108-3" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;</span></span>
+<span id="cb108-4"><a href="create-sqllite-database-structure.html#cb108-4" tabindex="-1"></a><span class="st">CREATE TABLE Burrowing_Owls (</span></span>
+<span id="cb108-5"><a href="create-sqllite-database-structure.html#cb108-5" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30) NOT NULL,</span></span>
+<span id="cb108-6"><a href="create-sqllite-database-structure.html#cb108-6" tabindex="-1"></a><span class="st">    top_left_band VARCHAR(30) CHECK (top_left_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
+<span id="cb108-7"><a href="create-sqllite-database-structure.html#cb108-7" tabindex="-1"></a><span class="st">    bottom_left_band VARCHAR(30) CHECK (bottom_left_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
+<span id="cb108-8"><a href="create-sqllite-database-structure.html#cb108-8" tabindex="-1"></a><span class="st">    top_right_band VARCHAR(30) CHECK (top_right_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Blue&#39;, &#39;Brown&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
+<span id="cb108-9"><a href="create-sqllite-database-structure.html#cb108-9" tabindex="-1"></a><span class="st">    bottom_right_band VARCHAR(30) CHECK (bottom_right_band IN (&#39;USGS&#39;, &#39;Black&#39;, &#39;Brown&#39;, &#39;Blue&#39;, &#39;Dark Blue&#39;, &#39;Gray&#39;, &#39;Green&#39;, &#39;Light Blue&#39;, &#39;Light Green&#39;, &#39;Orange&#39;, &#39;Pink&#39;, &#39;Purple&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Yellow&#39;, &#39;No Band&#39;, &#39;Medium Green&#39;, &#39;Medium Blue&#39;, &#39;ACRAFT Green&#39;)),</span></span>
+<span id="cb108-10"><a href="create-sqllite-database-structure.html#cb108-10" tabindex="-1"></a><span class="st">    left_leg VARCHAR(30) CHECK (left_leg IN (&#39;USGS&#39;, &#39;ACRAFT&#39;)),</span></span>
+<span id="cb108-11"><a href="create-sqllite-database-structure.html#cb108-11" tabindex="-1"></a><span class="st">    right_leg VARCHAR(30) CHECK (right_leg IN (&#39;USGS&#39;, &#39;ACRAFT&#39;)),</span></span>
+<span id="cb108-12"><a href="create-sqllite-database-structure.html#cb108-12" tabindex="-1"></a><span class="st">    ACRAFT_color VARCHAR(20) CHECK (ACRAFT_color IN (&#39;Black&#39;, &#39;Red&#39;, &#39;White&#39;, &#39;Red/Black&#39;, &#39;Purple&#39;, &#39;Orange&#39;, &#39;Green&#39;, &#39;Brown&#39;, &#39;Blue&#39;)),</span></span>
+<span id="cb108-13"><a href="create-sqllite-database-structure.html#cb108-13" tabindex="-1"></a><span class="st">    ACRAFT_first_code VARCHAR(20),</span></span>
+<span id="cb108-14"><a href="create-sqllite-database-structure.html#cb108-14" tabindex="-1"></a><span class="st">    ACRAFT_layout VARCHAR(20),</span></span>
+<span id="cb108-15"><a href="create-sqllite-database-structure.html#cb108-15" tabindex="-1"></a><span class="st">    ACRAFT_second_code VARCHAR(10),</span></span>
+<span id="cb108-16"><a href="create-sqllite-database-structure.html#cb108-16" tabindex="-1"></a><span class="st">    sex CHAR(1) CHECK (sex IN (&#39;M&#39;, &#39;F&#39;, &#39;U&#39;, &#39;C&#39;)),</span></span>
+<span id="cb108-17"><a href="create-sqllite-database-structure.html#cb108-17" tabindex="-1"></a><span class="st">    PRIMARY KEY (BUOW_USGS_ID)</span></span>
+<span id="cb108-18"><a href="create-sqllite-database-structure.html#cb108-18" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb108-19"><a href="create-sqllite-database-structure.html#cb108-19" tabindex="-1"></a></span>
+<span id="cb108-20"><a href="create-sqllite-database-structure.html#cb108-20" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE tags (</span></span>
+<span id="cb108-21"><a href="create-sqllite-database-structure.html#cb108-21" tabindex="-1"></a><span class="st">    tag_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb108-22"><a href="create-sqllite-database-structure.html#cb108-22" tabindex="-1"></a><span class="st">    brand VARCHAR(50),</span></span>
+<span id="cb108-23"><a href="create-sqllite-database-structure.html#cb108-23" tabindex="-1"></a><span class="st">    version VARCHAR(50)</span></span>
+<span id="cb108-24"><a href="create-sqllite-database-structure.html#cb108-24" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb108-25"><a href="create-sqllite-database-structure.html#cb108-25" tabindex="-1"></a></span>
+<span id="cb108-26"><a href="create-sqllite-database-structure.html#cb108-26" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;</span></span>
+<span id="cb108-27"><a href="create-sqllite-database-structure.html#cb108-27" tabindex="-1"></a><span class="st">CREATE TABLE captures (</span></span>
+<span id="cb108-28"><a href="create-sqllite-database-structure.html#cb108-28" tabindex="-1"></a><span class="st">    capture_event INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb108-29"><a href="create-sqllite-database-structure.html#cb108-29" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
+<span id="cb108-30"><a href="create-sqllite-database-structure.html#cb108-30" tabindex="-1"></a><span class="st">    observer VARCHAR(20),</span></span>
+<span id="cb108-31"><a href="create-sqllite-database-structure.html#cb108-31" tabindex="-1"></a><span class="st">    date TEXT,</span></span>
+<span id="cb108-32"><a href="create-sqllite-database-structure.html#cb108-32" tabindex="-1"></a><span class="st">    site VARCHAR(100),</span></span>
+<span id="cb108-33"><a href="create-sqllite-database-structure.html#cb108-33" tabindex="-1"></a><span class="st">    country VARCHAR(50),</span></span>
+<span id="cb108-34"><a href="create-sqllite-database-structure.html#cb108-34" tabindex="-1"></a><span class="st">    state VARCHAR(50),</span></span>
+<span id="cb108-35"><a href="create-sqllite-database-structure.html#cb108-35" tabindex="-1"></a><span class="st">    elevation_m INTEGER,</span></span>
+<span id="cb108-36"><a href="create-sqllite-database-structure.html#cb108-36" tabindex="-1"></a><span class="st">    lat REAL,</span></span>
+<span id="cb108-37"><a href="create-sqllite-database-structure.html#cb108-37" tabindex="-1"></a><span class="st">    long REAL,</span></span>
+<span id="cb108-38"><a href="create-sqllite-database-structure.html#cb108-38" tabindex="-1"></a><span class="st">    recapture CHAR(1) CHECK (recapture IN (&#39;Y&#39;, &#39;N&#39;, &#39;U&#39;, &#39;I&#39;)),</span></span>
+<span id="cb108-39"><a href="create-sqllite-database-structure.html#cb108-39" tabindex="-1"></a><span class="st">    age_at_capture VARCHAR(10),</span></span>
+<span id="cb108-40"><a href="create-sqllite-database-structure.html#cb108-40" tabindex="-1"></a><span class="st">    juvenile_estimated_age(days) VARCHAR(10),</span></span>
+<span id="cb108-41"><a href="create-sqllite-database-structure.html#cb108-41" tabindex="-1"></a><span class="st">    sex_at_capture VARCHAR(2) CHECK (sex_at_capture IN (&#39;U&#39;, &#39;M&#39;, &#39;F&#39;, &#39;UA&#39;)),</span></span>
+<span id="cb108-42"><a href="create-sqllite-database-structure.html#cb108-42" tabindex="-1"></a><span class="st">    how_sexedID VARCHAR(10),</span></span>
+<span id="cb108-43"><a href="create-sqllite-database-structure.html#cb108-43" tabindex="-1"></a><span class="st">    brood_patch CHAR(1) CHECK (brood_patch IN (&#39;0&#39;, &#39;W/R&#39;, &#39;W&#39;, &#39;R&#39;, &#39;P&#39;, &#39;V&#39;, &#39;W/V&#39;, &#39;F&#39;, &#39;S&#39;)),</span></span>
+<span id="cb108-44"><a href="create-sqllite-database-structure.html#cb108-44" tabindex="-1"></a><span class="st">    number_of_ectoparasites_categorical VARCHAR(5),</span></span>
+<span id="cb108-45"><a href="create-sqllite-database-structure.html#cb108-45" tabindex="-1"></a><span class="st">    fat_score INTEGER CHECK (fat_score IN (1, 2, 3, 4, 5, 0)),</span></span>
+<span id="cb108-46"><a href="create-sqllite-database-structure.html#cb108-46" tabindex="-1"></a><span class="st">    muscle_score INTEGER CHECK (muscle_score IN (1, 2, 3, 4, 5, 0)),</span></span>
+<span id="cb108-47"><a href="create-sqllite-database-structure.html#cb108-47" tabindex="-1"></a><span class="st">    weight_g REAL,</span></span>
+<span id="cb108-48"><a href="create-sqllite-database-structure.html#cb108-48" tabindex="-1"></a><span class="st">    wing_cord_mm REAL,</span></span>
+<span id="cb108-49"><a href="create-sqllite-database-structure.html#cb108-49" tabindex="-1"></a><span class="st">    left_wing_cord_mm REAL,</span></span>
+<span id="cb108-50"><a href="create-sqllite-database-structure.html#cb108-50" tabindex="-1"></a><span class="st">    right_wing_cord_mm REAL,</span></span>
+<span id="cb108-51"><a href="create-sqllite-database-structure.html#cb108-51" tabindex="-1"></a><span class="st">    tail_length_mm REAL,</span></span>
+<span id="cb108-52"><a href="create-sqllite-database-structure.html#cb108-52" tabindex="-1"></a><span class="st">    tarsus_mm REAL,</span></span>
+<span id="cb108-53"><a href="create-sqllite-database-structure.html#cb108-53" tabindex="-1"></a><span class="st">    right_metatarsus_mm REAL,</span></span>
+<span id="cb108-54"><a href="create-sqllite-database-structure.html#cb108-54" tabindex="-1"></a><span class="st">    left_metatarsus_mm REAL,</span></span>
+<span id="cb108-55"><a href="create-sqllite-database-structure.html#cb108-55" tabindex="-1"></a><span class="st">    head_length_mm REAL,</span></span>
+<span id="cb108-56"><a href="create-sqllite-database-structure.html#cb108-56" tabindex="-1"></a><span class="st">    head_width_mm REAL,</span></span>
+<span id="cb108-57"><a href="create-sqllite-database-structure.html#cb108-57" tabindex="-1"></a><span class="st">    culmen_mm REAL,</span></span>
+<span id="cb108-58"><a href="create-sqllite-database-structure.html#cb108-58" tabindex="-1"></a><span class="st">    P9_length_mm REAL,</span></span>
+<span id="cb108-59"><a href="create-sqllite-database-structure.html#cb108-59" tabindex="-1"></a><span class="st">    toe_1_mm REAL,</span></span>
+<span id="cb108-60"><a href="create-sqllite-database-structure.html#cb108-60" tabindex="-1"></a><span class="st">    toe_2_mm REAL,</span></span>
+<span id="cb108-61"><a href="create-sqllite-database-structure.html#cb108-61" tabindex="-1"></a><span class="st">    toe_3_mm REAL,</span></span>
+<span id="cb108-62"><a href="create-sqllite-database-structure.html#cb108-62" tabindex="-1"></a><span class="st">    toe_4_mm REAL,</span></span>
+<span id="cb108-63"><a href="create-sqllite-database-structure.html#cb108-63" tabindex="-1"></a><span class="st">    claw_1_mm REAL,</span></span>
+<span id="cb108-64"><a href="create-sqllite-database-structure.html#cb108-64" tabindex="-1"></a><span class="st">    claw_2_mm REAL,</span></span>
+<span id="cb108-65"><a href="create-sqllite-database-structure.html#cb108-65" tabindex="-1"></a><span class="st">    claw_3_mm REAL,</span></span>
+<span id="cb108-66"><a href="create-sqllite-database-structure.html#cb108-66" tabindex="-1"></a><span class="st">    claw_4_mm REAL,</span></span>
+<span id="cb108-67"><a href="create-sqllite-database-structure.html#cb108-67" tabindex="-1"></a><span class="st">    time_released TIME,</span></span>
+<span id="cb108-68"><a href="create-sqllite-database-structure.html#cb108-68" tabindex="-1"></a><span class="st">    comments VARCHAR(300),</span></span>
+<span id="cb108-69"><a href="create-sqllite-database-structure.html#cb108-69" tabindex="-1"></a><span class="st">    FOREIGN KEY (BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
+<span id="cb108-70"><a href="create-sqllite-database-structure.html#cb108-70" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb108-71"><a href="create-sqllite-database-structure.html#cb108-71" tabindex="-1"></a></span>
+<span id="cb108-72"><a href="create-sqllite-database-structure.html#cb108-72" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE deployments (</span></span>
+<span id="cb108-73"><a href="create-sqllite-database-structure.html#cb108-73" tabindex="-1"></a><span class="st">    deployment_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb108-74"><a href="create-sqllite-database-structure.html#cb108-74" tabindex="-1"></a><span class="st">    tag_ID INTEGER,</span></span>
+<span id="cb108-75"><a href="create-sqllite-database-structure.html#cb108-75" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
+<span id="cb108-76"><a href="create-sqllite-database-structure.html#cb108-76" tabindex="-1"></a><span class="st">    start_deployment DATE,</span></span>
+<span id="cb108-77"><a href="create-sqllite-database-structure.html#cb108-77" tabindex="-1"></a><span class="st">    end_deployment DATE,</span></span>
+<span id="cb108-78"><a href="create-sqllite-database-structure.html#cb108-78" tabindex="-1"></a><span class="st">    tag_status VARCHAR(50),</span></span>
+<span id="cb108-79"><a href="create-sqllite-database-structure.html#cb108-79" tabindex="-1"></a><span class="st">    associated_project VARCHAR(50),</span></span>
+<span id="cb108-80"><a href="create-sqllite-database-structure.html#cb108-80" tabindex="-1"></a><span class="st">    FOREIGN KEY(tag_ID) REFERENCES tags(tag_ID),</span></span>
+<span id="cb108-81"><a href="create-sqllite-database-structure.html#cb108-81" tabindex="-1"></a><span class="st">    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
+<span id="cb108-82"><a href="create-sqllite-database-structure.html#cb108-82" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb108-83"><a href="create-sqllite-database-structure.html#cb108-83" tabindex="-1"></a></span>
+<span id="cb108-84"><a href="create-sqllite-database-structure.html#cb108-84" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE mortality (</span></span>
+<span id="cb108-85"><a href="create-sqllite-database-structure.html#cb108-85" tabindex="-1"></a><span class="st">    mortality_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,</span></span>
+<span id="cb108-86"><a href="create-sqllite-database-structure.html#cb108-86" tabindex="-1"></a><span class="st">    BUOW_USGS_ID VARCHAR(30),</span></span>
+<span id="cb108-87"><a href="create-sqllite-database-structure.html#cb108-87" tabindex="-1"></a><span class="st">    death_date DATE,</span></span>
+<span id="cb108-88"><a href="create-sqllite-database-structure.html#cb108-88" tabindex="-1"></a><span class="st">    probable_cause VARCHAR(50),</span></span>
+<span id="cb108-89"><a href="create-sqllite-database-structure.html#cb108-89" tabindex="-1"></a><span class="st">    recovered CHAR(1) CHECK (recovered IN (&#39;Y&#39;, &#39;N&#39;)),</span></span>
+<span id="cb108-90"><a href="create-sqllite-database-structure.html#cb108-90" tabindex="-1"></a><span class="st">    FOREIGN KEY(BUOW_USGS_ID) REFERENCES Burrowing_Owls(BUOW_USGS_ID)</span></span>
+<span id="cb108-91"><a href="create-sqllite-database-structure.html#cb108-91" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb108-92"><a href="create-sqllite-database-structure.html#cb108-92" tabindex="-1"></a></span>
+<span id="cb108-93"><a href="create-sqllite-database-structure.html#cb108-93" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;CREATE TABLE sites (</span></span>
+<span id="cb108-94"><a href="create-sqllite-database-structure.html#cb108-94" tabindex="-1"></a><span class="st">    site VARCHAR(100) PRIMARY KEY NOT NULL,</span></span>
+<span id="cb108-95"><a href="create-sqllite-database-structure.html#cb108-95" tabindex="-1"></a><span class="st">    country VARCHAR(10),</span></span>
+<span id="cb108-96"><a href="create-sqllite-database-structure.html#cb108-96" tabindex="-1"></a><span class="st">    state VARCHAR(20),</span></span>
+<span id="cb108-97"><a href="create-sqllite-database-structure.html#cb108-97" tabindex="-1"></a><span class="st">    lat REAL,</span></span>
+<span id="cb108-98"><a href="create-sqllite-database-structure.html#cb108-98" tabindex="-1"></a><span class="st">    long REAL,</span></span>
+<span id="cb108-99"><a href="create-sqllite-database-structure.html#cb108-99" tabindex="-1"></a><span class="st">    elevation_m INTEGER,</span></span>
+<span id="cb108-100"><a href="create-sqllite-database-structure.html#cb108-100" tabindex="-1"></a><span class="st">    abbreviation_1 VARCHAR(30),</span></span>
+<span id="cb108-101"><a href="create-sqllite-database-structure.html#cb108-101" tabindex="-1"></a><span class="st">    abbreviation_2 VARCHAR(30),</span></span>
+<span id="cb108-102"><a href="create-sqllite-database-structure.html#cb108-102" tabindex="-1"></a><span class="st">    abbreviation_3 VARCHAR(30),</span></span>
+<span id="cb108-103"><a href="create-sqllite-database-structure.html#cb108-103" tabindex="-1"></a><span class="st">    comments VARCHAR(300),</span></span>
+<span id="cb108-104"><a href="create-sqllite-database-structure.html#cb108-104" tabindex="-1"></a><span class="st">    FOREIGN KEY(site) REFERENCES captures(site)</span></span>
+<span id="cb108-105"><a href="create-sqllite-database-structure.html#cb108-105" tabindex="-1"></a><span class="st">);&quot;</span>)</span>
+<span id="cb108-106"><a href="create-sqllite-database-structure.html#cb108-106" tabindex="-1"></a></span>
+<span id="cb108-107"><a href="create-sqllite-database-structure.html#cb108-107" tabindex="-1"></a><span class="co"># Enable Foreign Key Constraints</span></span>
+<span id="cb108-108"><a href="create-sqllite-database-structure.html#cb108-108" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;PRAGMA foreign_keys = ON;&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

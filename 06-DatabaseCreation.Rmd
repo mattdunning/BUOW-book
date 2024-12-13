@@ -9,6 +9,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r image, fig.cap="Orginal schema for the burrowing owl database", fig.align='center', out.width='100%'}
+knitr::include_graphics("C:/Users/mldunning/Documents/BUOW_Book/BUOW db schema .png")
+```
 ## Create SQLlite Database
 First load packages in r
 ```{r load packages, eval=FALSE, echo=TRUE}
@@ -57,7 +60,7 @@ CREATE TABLE captures (
     long REAL,
     recapture CHAR(1) CHECK (recapture IN ('Y', 'N', 'U', 'I')),
     age_at_capture VARCHAR(10),
-    juvenile_estimated_age_days VARCHAR(10),
+    juvenile_estimated_age(days) VARCHAR(10),
     sex_at_capture VARCHAR(2) CHECK (sex_at_capture IN ('U', 'M', 'F', 'UA')),
     how_sexedID VARCHAR(10),
     brood_patch CHAR(1) CHECK (brood_patch IN ('0', 'W/R', 'W', 'R', 'P', 'V', 'W/V', 'F', 'S')),
@@ -111,8 +114,7 @@ dbExecute(Burrowing_Owls, "CREATE TABLE mortality (
 );")
 
 dbExecute(Burrowing_Owls, "CREATE TABLE sites (
-    site_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    site VARCHAR(100),
+    site VARCHAR(100) PRIMARY KEY NOT NULL,
     country VARCHAR(10),
     state VARCHAR(20),
     lat REAL,
@@ -120,6 +122,7 @@ dbExecute(Burrowing_Owls, "CREATE TABLE sites (
     elevation_m INTEGER,
     abbreviation_1 VARCHAR(30),
     abbreviation_2 VARCHAR(30),
+    abbreviation_3 VARCHAR(30),
     comments VARCHAR(300),
     FOREIGN KEY(site) REFERENCES captures(site)
 );")

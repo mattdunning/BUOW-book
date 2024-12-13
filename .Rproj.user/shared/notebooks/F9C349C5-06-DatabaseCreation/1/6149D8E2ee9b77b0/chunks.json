@@ -1,1 +1,1 @@
-{"chunk_definitions":[],"doc_write_time":1733775322}
+{"chunk_definitions":[{"row":16,"row_count":1,"visible":true,"expansion_state":0,"options":{"engine":"r","label":"load packages","eval":false,"echo":true,"dev":"png"},"document_id":"41A44D24","chunk_id":"c3qxv5wxa09lq","chunk_label":"load packages"},{"row":129,"row_count":1,"visible":true,"expansion_state":0,"options":{"engine":"r","label":"create tables","eval":false,"echo":true,"dev":"png"},"document_id":"41A44D24","chunk_id":"cch3jlnxuomq9","chunk_label":"create tables"}],"doc_write_time":1733792266}

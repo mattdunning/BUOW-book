@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Load libraries
 
 
-```{r install libraries3, echo=TRUE, eval=FALSE}
+```{r install libraries3, echo=TRUE, eval=TRUE}
 library(oce)
 library(sf)
 library(tidyverse)
@@ -24,10 +24,9 @@ library(tools)
 
 ## Set directory and load data
 
-```{r set directory and load data3, echo=TRUE, eval=FALSE}
-setwd("~/BUOW_Migration-Maps/data")
+```{r set directory and load data3, echo=TRUE, eval=TRUE}
+BUOW1 <- read_csv("C:/Users/mldunning/Documents/BUOW_Migration-Maps/data/BUOW_Data2000-2019.csv")
 
-BUOW1 <- read_csv("BUOW_Data2000-2019.csv")
 
 bands <- BUOW1 %>%
   select(band, Obs, dateBanded, site, Country, State, Elevation, 
@@ -45,30 +44,30 @@ bands <- BUOW1 %>%
 ```
 
 Capitalize all letters in the observer column before moving forward
-```{r capitialize obs, eval=FALSE, echo=TRUE}
+```{r capitialize obs, eval=TRUE, echo=TRUE}
 bands <- bands %>%
   mutate(Obs = toupper(Obs))
 ```
 
 ## Fix the hyphens
-```{r hypen code, eval=FALSE, echo=TRUE}
+```{r hypen code, eval=TRUE, echo=TRUE}
 #first need to add several criterias and conditions
 criteria1 <- "0844"
 criteria2 <- "0934" #some bands already had a dash so now there is --
-criteria3 <- "0804"
+criteria3 <- "804"
 criteria4 <- "1204"
-criteria5 <- "0764"
-criteria6 <- "0544"
-criteria7 <- "0574"
-criteria8 <- "0594"
+criteria5 <- "764"
+criteria6 <- "544"
+criteria7 <- "574"
+criteria8 <- "594"
 criteria9 <- "0914"
 criteria10 <- "1005"
 criteria11 <- "934" #some bands already had a dash so now there is --
 criteria12 <- "844"
 Condition1 <- grepl("^AL-", bands$band)
-criteria <- c(criteria1, criteria2, criteria3, criteria4, criteria5, criteria6, criteria7,
-              criteria8, criteria9, criteria10)
-criteriax <- c(criteria11, criteria12)
+criteria <- c(criteria1, criteria2, criteria4,  
+               criteria9, criteria10)
+criteriax <- c(criteria11, criteria12, criteria3, criteria5, criteria8, criteria6, criteria7)
 
 bands <- bands %>%
   mutate(band = case_when(
@@ -97,7 +96,7 @@ remove(criteria, criteria1, criteria2, criteria3, criteria4, criteria5, criteria
 ```
 
 ## Convert latitude and longitude from UTM
-```{r lat and long coverstion, eval=FALSE, echo=TRUE}
+```{r lat and long coverstion, eval=TRUE, echo=TRUE}
 bandsutm <- select(bands, unique_key, band, UTM_e, UTM_n, UTM_zone)  # Select existing columns
 bandsutm <- bandsutm[bandsutm$band != "0914-56283", ]
 
@@ -169,12 +168,12 @@ bands <- bands %>%
 ## Filter and clean data
 Some data from Umatilla had multiple capture events on the same row. I had to exclude these and 
 process them later.
-```{r exlude Umatilla, eval=FALSE, echo=TRUE}
+```{r exlude Umatilla, eval=TRUE, echo=TRUE}
 newbands <- bands %>% 
   filter(is.na(meas_date_1))
 ```
 ### Filter and clean parasite column
-```{r filter parasite, eval=FALSE, echo=TRUE}
+```{r filter parasite, eval=TRUE, echo=TRUE}
 parasite <- select(newbands,
                    unique_key,
                    'fleas/ecto-parasites'
@@ -198,7 +197,7 @@ newbands <- select(newbands,
                    )
 ```
 ### Filter and clean brood patch column
-```{r filter broodpatch, eval=FALSE, echo=TRUE}
+```{r filter broodpatch, eval=TRUE, echo=TRUE}
 broodpatch <- select(newbands, unique_key, sex, broodPatch, brood_patch
                      )
 broodpatch <- broodpatch %>% 
@@ -244,7 +243,7 @@ newbands <- select(newbands,
                    )
 ```
 ### Filter and clean sex column
-```{r Filter sex, eval=FALSE, echo=TRUE}
+```{r Filter sex, eval=TRUE, echo=TRUE}
 howsexed <- select(newbands, unique_key, sex, HowSex, how_sexed
                    )
 howsexed <- howsexed %>% 
@@ -264,7 +263,7 @@ newbands <- select(newbands,
 
 ```
 ### Filter and clean HY day old age
-```{r filter HY age, eval=FALSE, echo=TRUE}
+```{r filter HY age, eval=TRUE, echo=TRUE}
 juvage <- select(newbands, unique_key, juvieage, estimated_age_at_banding
                  )
 juvage <- juvage %>% 
@@ -303,7 +302,7 @@ newbands <- select(newbands,
 ```
 
 ### Standardize values
-```{r standardize values, eval=FALSE, echo=TRUE}
+```{r standardize values, eval=TRUE, echo=TRUE}
 newbands <- newbands %>% 
   mutate(
     fat = gsub("NA", NA, fat),
@@ -330,7 +329,7 @@ newbands <- newbands %>%
   )
 ```
 ### Change site to abbreviations to full names
-```{r change site names, eval=FALSE, echo=TRUE}
+```{r change site names, eval=TRUE, echo=TRUE}
 newbands <- newbands %>% 
   mutate(
     site = gsub("KAFB", "Kirtland Air Force Base", site),
@@ -389,7 +388,7 @@ newbands <- newbands %>%
 ```
 
 ## Prepare data for export
-```{r select export, eval=FALSE, echo=TRUE}
+```{r select export, eval=TRUE, echo=TRUE}
 exportcapturesall <- select(newbands,
                  band,
                  observer = Obs,
@@ -432,7 +431,7 @@ exportcapturesall <- select(newbands,
 ```
 Sometimes the sex and age can be inferred from one another so this code makes those inferences
 and standardizes values
-```{r age and sex switch, eval=FALSE, echo=TRUE}
+```{r age and sex switch, eval=TRUE, echo=TRUE}
 exportcapturesall <- exportcapturesall %>%
   mutate(
     age_at_capture = if_else(sex_at_capture == "J" & is.na(age_at_capture), "HY",
@@ -449,7 +448,7 @@ exportcapturesall <- exportcapturesall %>%
 
 ```
 Some of the column data structures need to be changed for final import into SQL
-```{r change data str, eval=FALSE, echo=TRUE}
+```{r change data str, eval=TRUE, echo=TRUE}
 exportcapturesall$date <- as.Date(exportcapturesall$date, format = "%d-%b-%y")
 exportcapturesall$righ_wing_cord_mm <- as.double(exportcapturesall$righ_wing_cord_mm)
 exportcapturesall$tail_length_mm <- as.double(exportcapturesall$tail_length_mm)

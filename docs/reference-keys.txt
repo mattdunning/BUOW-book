@@ -1,3 +1,4 @@
+fig:image
 about
 usage
 cleaning-band-data-2000-2019
@@ -51,3 +52,8 @@ load-sites-table
 start-import-to-sql
 import-band-table
 import-capture-table
+import-site-table
+data-visualization
+capture-locations
+use-ggplot-to-create-a-map-of-every-site-burrowing-owls-have-been-captured
+sex-breakdown-of-captured-owls

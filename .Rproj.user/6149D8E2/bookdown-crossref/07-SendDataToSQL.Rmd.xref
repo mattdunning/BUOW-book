@@ -5,4 +5,5 @@ h2:load-sites-table Load Sites table
 h2:start-import-to-sql Start import to SQL
 h3:import-band-table Import band table
 h3:import-capture-table Import Capture Table
+h3:import-site-table Import Site Table
 

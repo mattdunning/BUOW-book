@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 This section is to clean all burrowing data from 2000 - July 2024. This section is only focused on getting
 
 ```{r install r packages1, eval = FALSE, echo = TRUE}
+options(repos = c(CRAN = "https://cran.rstudio.com/"))
 install.packages("tidyverse")
 install.packages("readxl")
 install.packages()
@@ -25,14 +26,14 @@ install.packages()
 
 load packages needed
 
-```{r load libraries1, eval = FALSE, echo = TRUE}
+```{r load libraries1, eval = TRUE, echo = TRUE}
 library(tidyverse)
 library(readxl)
 ```
 
 First lets clean the data from 2000-2019. First lets import the data into r and then create a new data frame with only the needed columns.
 
-```{r import 2000-2029 data, eval = FALSE, echo = TRUE}
+```{r import 2000-2029 data, eval = TRUE, echo = TRUE}
 setwd("~/BUOW_Migration-Maps/data")
 BUOW1 <- read_csv("BUOW_Data2000-2019.csv")
 bands <- select(BUOW1, band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, right_top, right_bottom, left_top, left_bottom, sex)
@@ -42,7 +43,7 @@ bands <- select(BUOW1, band, USGSLeg, acraftColor, acraftFirstCode, acraftType, 
 
 First we need to add some criteria and conditions
 
-```{r add several criteria and conditions, eval = FALSE, echo = TRUE}
+```{r add several criteria and conditions, eval = TRUE, echo = TRUE}
 #first need to add several criteria and conditions
 criteria1 <- "0844"
 criteria2 <- "0934" #some bands already had a dash so now there is --
@@ -64,7 +65,7 @@ criteriax <- c(criteria11, criteria12, criteria3, criteria5, criteria6, criteria
 
 Next run the code
 
-```{r code to fix band hyphens, eval = FALSE, echo = TRUE}
+```{r code to fix band hyphens, eval = TRUE, echo = TRUE}
 practice_band <- bands %>%
   mutate(band = case_when(
     substr(band, 1, 4) %in% criteria ~ {
@@ -90,7 +91,7 @@ practice_band <- bands %>%
 
 remove the criteria and conditions to keep the r environment tidy
 
-```{r remove criteria and conditions for band hyphens, eval = FALSE, echo = TRUE}
+```{r remove criteria and conditions for band hyphens, eval = TRUE, echo = TRUE}
 remove(criteria, criteria1, criteria2, criteria3, criteria4, criteria5, criteria6,
        criteria7, criteria8, criteria9, criteria10, criteria11, criteria12,
        criteriax, Condition1)
@@ -98,7 +99,7 @@ remove(criteria, criteria1, criteria2, criteria3, criteria4, criteria5, criteria
 
 ## Fix some capitalization issues
 
-```{r fix spelling in acraft and left_top, eval = FALSE, echo = TRUE}
+```{r fix spelling in acraft and left_top, eval = TRUE, echo = TRUE}
 practice_band <- practice_band %>%
   mutate(acraftSecondCode = str_replace_all(acraftSecondCode, "w", "W")
          )
@@ -111,7 +112,7 @@ practice_band <- practice_band %>%
 ## Proofing resights
 This code can be used to proof the resights
 
-```{r proofing re-sights, eval = FALSE, echo = TRUE}
+```{r proofing re-sights, eval = TRUE, echo = TRUE}
 columns_to_check <- c("USGSLeg", "acraftColor", "acraftFirstCode", 
                       "acraftType", "acraftSecondCode", "AcraftLeg", 
                       "right_top", "right_bottom", "left_top", 
@@ -127,7 +128,7 @@ repeating_values <- practice_band %>%
 
 ## Clean the sex column
 
-```{r Change the Sex column,  eval = FALSE, echo = TRUE}
+```{r Change the Sex column,  eval = TRUE, echo = TRUE}
 #First make all other values U
 practice_band <- practice_band %>%
   mutate(
@@ -183,7 +184,7 @@ practice_band <- practice_band %>%
 
 ## Now clean the USGS band info
 
-```{r Now changing the USGSLeg, eval = FALSE, echo = TRUE}
+```{r Now changing the USGSLeg, eval = TRUE, echo = TRUE}
 # Update the USGSLeg values to "C" if both "Right" and "Left" are present in the same band
 bands_to_change <- practice_band %>%
   group_by(band) %>%
@@ -241,7 +242,7 @@ practice_band <- practice_band %>%
 
 First we only want to pull the bands that have ACRAFT bands associated with them.
 
-```{r pull acraft bands from bands, eval = FALSE, echo = TRUE}
+```{r pull acraft bands from bands, eval = TRUE, echo = TRUE}
 #Lets make all NA values say "no auxiliary band"
 bands_to_fix <- practice_band %>%
   group_by(band) %>%
@@ -270,7 +271,7 @@ practice_band <- practice_band %>%
 # actually the previous issue could not be resolved so is set aside both bands. MD 10/26/24
 ```
 
-```{r acraft export, eval = FALSE, echo = TRUE}
+```{r acraft export, eval = TRUE, echo = TRUE}
 #filter only the columns we want for ACRAFT bands
 acraft <- practice_band %>% 
   select(band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, sex) %>% 
@@ -325,7 +326,7 @@ export_acraft <- export_acraft %>%
 
 ## Color band sorting
 
-```{r color band sorting code, eval = FALSE, echo = TRUE}
+```{r color band sorting code, eval = TRUE, echo = TRUE}
 #first select the columns needed for color bands
 color_bands <- practice_band %>% 
   select(band, USGSLeg, acraftType, right_top, right_bottom, left_top, left_bottom, sex) %>% 
@@ -367,7 +368,7 @@ export_color <- export_color %>%
 
 ## Get the rest of the bands that have neither ACRAFT nor Color bands
 
-```{r export all other bands, eval = FALSE, echo = TRUE}
+```{r export all other bands, eval = TRUE, echo = TRUE}
 #select all columns needed for all other bands
 all_other_bands <- practice_band %>%
   select(band, USGSLeg, acraftColor, acraftFirstCode, acraftType, acraftSecondCode, AcraftLeg, sex) %>%
@@ -408,7 +409,7 @@ export_all_other_bands <- export_all_other_bands %>%
 
 ## Finally remove all unneccessary dataframes and objects to keep environment tidy
 
-```{r remove objects and values, eval = FALSE, echo = TRUE}
+```{r remove objects and values, eval = TRUE, echo = TRUE}
 remove(distinct_bands_all_columns, all_other_bands, test, acraft, bands, BUOW1, color_bands, repeating_values)
 remove(bands_to_change, bands_to_fix, bands_with_both, bands_with_f_u, bands_with_m_u, columns_to_check)
 remove(BUOW1, bands, color_bands, distinct_bands_all_columns, practice_band, repeating_values, test, acraft, all_other_bands)

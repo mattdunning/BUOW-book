@@ -4,13 +4,13 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Combining export files to send to SQL</title>
+  <title>BUOW Data Visualizations</title>
   <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
 set in the _output.yml file.</p>" />
   <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Combining export files to send to SQL" />
+  <meta property="og:title" content="BUOW Data Visualizations" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
@@ -19,7 +19,7 @@ set in the _output.yml file.</p>" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Combining export files to send to SQL" />
+  <meta name="twitter:title" content="BUOW Data Visualizations" />
   
   <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
@@ -29,7 +29,7 @@ set in the _output.yml file.</p>" />
 <meta name="author" content="Matthew Dunning" />
 
 
-<meta name="date" content="2024-12-07" />
+<meta name="date" content="2024-12-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -217,7 +217,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="7.4.1" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-band-table"><i class="fa fa-check"></i><b>7.4.1</b> Import band table</a></li>
 <li class="chapter" data-level="7.4.2" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-capture-table"><i class="fa fa-check"></i><b>7.4.2</b> Import Capture Table</a></li>
+<li class="chapter" data-level="7.4.3" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-site-table"><i class="fa fa-check"></i><b>7.4.3</b> Import Site Table</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="data-visualization.html"><a href="data-visualization.html"><i class="fa fa-check"></i><b>8</b> Data Visualization</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="data-visualization.html"><a href="data-visualization.html#capture-locations"><i class="fa fa-check"></i><b>8.1</b> Capture Locations</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="data-visualization.html"><a href="data-visualization.html#use-ggplot-to-create-a-map-of-every-site-burrowing-owls-have-been-captured"><i class="fa fa-check"></i><b>8.1.1</b> Use ggplot to create a map of every site burrowing owls have been captured</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="data-visualization.html"><a href="data-visualization.html#sex-breakdown-of-captured-owls"><i class="fa fa-check"></i><b>8.2</b> Sex breakdown of captured owls</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -231,7 +240,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Combining export files to send to SQL</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">BUOW Data Visualizations</a>
           </h1>
         </div>
 
@@ -240,9 +249,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">Combining export files to send to SQL</h1>
+<h1 class="title">BUOW Data Visualizations</h1>
 <p class="author"><em>Matthew Dunning</em></p>
-<p class="date"><em>2024-12-07</em></p>
+<p class="date"><em>2024-12-10</em></p>
 </div>
 <div id="about" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">Chapter 1</span> About<a href="index.html#about" class="anchor-section" aria-label="Anchor link to header"></a></h1>

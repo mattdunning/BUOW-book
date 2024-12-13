@@ -17,28 +17,28 @@ install.packages("tidyverse")
 install.packages("readxl")
 ```
 
-```{r load packages2, eval=FALSE, echo=TRUE}
+```{r load packages2, eval=TRUE, echo=TRUE}
 library(tidyverse)
 library(readxl)
 ```
 
 ## Set directory and load data
 
-```{r set directory2, eval=FALSE, echo=TRUE}
+```{r set directory2, eval=TRUE, echo=TRUE}
  setwd("~/BUOW_Migration-Maps/data")
 BUOW <- read_excel("RecentBUOWDataAdditions.xlsx")
 ```
 
 Now select columns needed for cleaning
 
-```{r select columns for cleaning, eval=FALSE, echo=TRUE}
+```{r select columns for cleaning, eval=TRUE, echo=TRUE}
 bands <- select(BUOW, band, right_top, right_bottom, left_top, left_bottom,
                 BandCombo, sex)
 ```
 
 ## Add hyphens where needed
 
-```{r add criteria, eval=FALSE, echo=TRUE}
+```{r add criteria, eval=TRUE, echo=TRUE}
 criteria1 <- "934" #some bands already had a dash so now there is --
 criteria2 <- "914"
 criteria3 <- "804"
@@ -59,7 +59,7 @@ remove(criteria1, criteria2, criteria3, criteriax)
 
 Before moving on we want to add a unique key to each capture event
 
-```{r add a unique key, eval=FALSE, echo=TRUE}
+```{r add a unique key, eval=TRUE, echo=TRUE}
 practice_band <- practice_band %>% 
   mutate(unique_key = row_number()) %>%     # Adds a sequence number starting from 1
   select(unique_key, everything()) 
@@ -67,7 +67,7 @@ practice_band <- practice_band %>%
 
 ## Move colors into correct columns
 First extract the colors and place in correct columns
-```{r extract color combos, eval=FALSE, echo=TRUE}
+```{r extract color combos, eval=TRUE, echo=TRUE}
 practice_band <- practice_band %>%
   mutate(
     top_left_band = str_extract(BandCombo, "^[^/]+"),                          # Extract top left part (before first "/")
@@ -77,7 +77,7 @@ practice_band <- practice_band %>%
   )
 ```
 Next only select bands that have a color combo
-```{r select color combos, echo=TRUE, eval=FALSE}
+```{r select color combos, echo=TRUE, eval=TRUE}
 practice_band <- practice_band %>% 
   mutate(right_top = ifelse(is.na(right_top), top_right_band, right_top),
          right_bottom = ifelse(is.na(right_bottom), bottom_right_band, right_bottom),
@@ -85,7 +85,7 @@ practice_band <- practice_band %>%
          left_bottom = ifelse(is.na(left_bottom), bottom_left_band, left_bottom))
 ```
 Next change the abbreviations to full spelling of colors
-```{r spell out abbreviations, eval=FALSE, echo=TRUE}
+```{r spell out abbreviations, eval=TRUE, echo=TRUE}
 practice_band <- practice_band %>%
   mutate(
     left_top = gsub("Re", "Red", left_top),
@@ -159,7 +159,7 @@ practice_band <- select(practice_band,
 
 ## Proof and Edit the sex column
 First standardize all variables in the sex column
-```{r standardize sex columns, eval=FALSE, echo=TRUE}
+```{r standardize sex columns, eval=TRUE, echo=TRUE}
 practice_band <- practice_band %>% 
   mutate(sex = gsub("female", "F", sex),
          sex = gsub("male", "M", sex),
@@ -173,7 +173,7 @@ practice_band <- practice_band %>%
 There are a few cases where there are conflicting sex variables for the same bird. There can only be one value in the band table so all
 these values need to be changed to C to reflect this conflict.
 
-```{r filter and change all conflicting sex variables, eval=FALSE, echo=TRUE}
+```{r filter and change all conflicting sex variables, eval=TRUE, echo=TRUE}
 #Make all bands that contain both M and F into C. This also makes U a C in these cases.
 bands_with_both <- practice_band %>%
   filter(sex %in% c("M", "F")) %>%  # Filter rows with "M" or "F"
@@ -197,7 +197,7 @@ There are some cases where a bird was caught as a HY so sex was unknown and it w
 caught as an adult and the sex was known. All these U values should be changed to M or F
 because there can only be one value per band.
 
-```{r change unknown to male or female, eval=FALSE, echo=TRUE}
+```{r change unknown to male or female, eval=TRUE, echo=TRUE}
 #changes MU and FU combos to M or F
 bands_with_m_u <- practice_band %>%
   filter(sex %in% c("M", "U")) %>%  # Focus on "M" and "U"
@@ -225,7 +225,7 @@ practice_band <- practice_band %>%
 
 ```
 ## Export data and remove objects
-```{r export recent BUOW Band data, eval=FALSE, echo=TRUE}
+```{r export recent BUOW Band data, eval=TRUE, echo=TRUE}
 export_recentBUOWtable <- select(practice_band,
                  BUOW_USGS_ID = band,
                  top_left_band = left_top,

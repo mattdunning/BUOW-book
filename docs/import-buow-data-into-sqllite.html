@@ -4,13 +4,13 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 7 Import BUOW data into SQLlite | Combining export files to send to SQL</title>
+  <title>Chapter 7 Import BUOW data into SQLlite | BUOW Data Visualizations</title>
   <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
 set in the _output.yml file.</p>" />
   <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 7 Import BUOW data into SQLlite | Combining export files to send to SQL" />
+  <meta property="og:title" content="Chapter 7 Import BUOW data into SQLlite | BUOW Data Visualizations" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
@@ -19,7 +19,7 @@ set in the _output.yml file.</p>" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 7 Import BUOW data into SQLlite | Combining export files to send to SQL" />
+  <meta name="twitter:title" content="Chapter 7 Import BUOW data into SQLlite | BUOW Data Visualizations" />
   
   <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
@@ -29,7 +29,7 @@ set in the _output.yml file.</p>" />
 <meta name="author" content="Matthew Dunning" />
 
 
-<meta name="date" content="2024-12-07" />
+<meta name="date" content="2024-12-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -37,7 +37,7 @@ set in the _output.yml file.</p>" />
   
   
 <link rel="prev" href="create-sqllite-database-structure.html"/>
-
+<link rel="next" href="data-visualization.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -217,7 +217,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="7.4.1" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-band-table"><i class="fa fa-check"></i><b>7.4.1</b> Import band table</a></li>
 <li class="chapter" data-level="7.4.2" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-capture-table"><i class="fa fa-check"></i><b>7.4.2</b> Import Capture Table</a></li>
+<li class="chapter" data-level="7.4.3" data-path="import-buow-data-into-sqllite.html"><a href="import-buow-data-into-sqllite.html#import-site-table"><i class="fa fa-check"></i><b>7.4.3</b> Import Site Table</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="data-visualization.html"><a href="data-visualization.html"><i class="fa fa-check"></i><b>8</b> Data Visualization</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="data-visualization.html"><a href="data-visualization.html#capture-locations"><i class="fa fa-check"></i><b>8.1</b> Capture Locations</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="data-visualization.html"><a href="data-visualization.html#use-ggplot-to-create-a-map-of-every-site-burrowing-owls-have-been-captured"><i class="fa fa-check"></i><b>8.1.1</b> Use ggplot to create a map of every site burrowing owls have been captured</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="data-visualization.html"><a href="data-visualization.html#sex-breakdown-of-captured-owls"><i class="fa fa-check"></i><b>8.2</b> Sex breakdown of captured owls</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -231,7 +240,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Combining export files to send to SQL</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">BUOW Data Visualizations</a>
           </h1>
         </div>
 
@@ -243,75 +252,65 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 7</span> Import BUOW data into SQLlite<a href="import-buow-data-into-sqllite.html#import-buow-data-into-sqllite" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="combine-all-band-tables" class="section level2 hasAnchor" number="7.1">
 <h2><span class="header-section-number">7.1</span> Combine All Band Tables<a href="import-buow-data-into-sqllite.html#combine-all-band-tables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="import-buow-data-into-sqllite.html#cb60-1" tabindex="-1"></a>combineallbands <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(export_acraft, export_all_other_bands, export_color,</span>
-<span id="cb60-2"><a href="import-buow-data-into-sqllite.html#cb60-2" tabindex="-1"></a>                         export_recentBUOWtable)</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="import-buow-data-into-sqllite.html#cb109-1" tabindex="-1"></a>combineallbands <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(export_acraft, export_all_other_bands, export_color,</span>
+<span id="cb109-2"><a href="import-buow-data-into-sqllite.html#cb109-2" tabindex="-1"></a>                         export_recentBUOWtable)</span></code></pre></div>
 <p>We only want to select unique bands to import to sql database</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="import-buow-data-into-sqllite.html#cb61-1" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> combineallbands[<span class="sc">!</span><span class="fu">duplicated</span>(combineallbands<span class="sc">$</span>BUOW_USGS_ID), ]</span></code></pre></div>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="import-buow-data-into-sqllite.html#cb62-1" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands <span class="sc">%&gt;%</span></span>
-<span id="cb62-2"><a href="import-buow-data-into-sqllite.html#cb62-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">left_leg =</span> <span class="fu">ifelse</span>(<span class="fu">tolower</span>(left_leg) <span class="sc">==</span> <span class="st">&quot;acraft&quot;</span>, <span class="st">&quot;ACRAFT&quot;</span>, left_leg))</span>
-<span id="cb62-3"><a href="import-buow-data-into-sqllite.html#cb62-3" tabindex="-1"></a></span>
-<span id="cb62-4"><a href="import-buow-data-into-sqllite.html#cb62-4" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands <span class="sc">%&gt;%</span></span>
-<span id="cb62-5"><a href="import-buow-data-into-sqllite.html#cb62-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">right_leg =</span> <span class="fu">ifelse</span>(<span class="fu">tolower</span>(right_leg) <span class="sc">==</span> <span class="st">&quot;acraft&quot;</span>, <span class="st">&quot;ACRAFT&quot;</span>, right_leg))</span>
-<span id="cb62-6"><a href="import-buow-data-into-sqllite.html#cb62-6" tabindex="-1"></a></span>
-<span id="cb62-7"><a href="import-buow-data-into-sqllite.html#cb62-7" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands <span class="sc">%&gt;%</span></span>
-<span id="cb62-8"><a href="import-buow-data-into-sqllite.html#cb62-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">left_leg =</span> <span class="fu">ifelse</span>(left_leg <span class="sc">==</span> <span class="st">&quot;Right&quot;</span>, <span class="cn">NA</span>, left_leg))</span>
-<span id="cb62-9"><a href="import-buow-data-into-sqllite.html#cb62-9" tabindex="-1"></a></span>
-<span id="cb62-10"><a href="import-buow-data-into-sqllite.html#cb62-10" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands <span class="sc">%&gt;%</span></span>
-<span id="cb62-11"><a href="import-buow-data-into-sqllite.html#cb62-11" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">right_leg =</span> <span class="fu">ifelse</span>(right_leg <span class="sc">==</span> <span class="st">&quot;Left&quot;</span>, <span class="cn">NA</span>, right_leg))</span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="import-buow-data-into-sqllite.html#cb110-1" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> combineallbands[<span class="sc">!</span><span class="fu">duplicated</span>(combineallbands<span class="sc">$</span>BUOW_USGS_ID), ]</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="import-buow-data-into-sqllite.html#cb111-1" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands <span class="sc">%&gt;%</span></span>
+<span id="cb111-2"><a href="import-buow-data-into-sqllite.html#cb111-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">left_leg =</span> <span class="fu">ifelse</span>(<span class="fu">tolower</span>(left_leg) <span class="sc">==</span> <span class="st">&quot;acraft&quot;</span>, <span class="st">&quot;ACRAFT&quot;</span>, left_leg))</span>
+<span id="cb111-3"><a href="import-buow-data-into-sqllite.html#cb111-3" tabindex="-1"></a></span>
+<span id="cb111-4"><a href="import-buow-data-into-sqllite.html#cb111-4" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands <span class="sc">%&gt;%</span></span>
+<span id="cb111-5"><a href="import-buow-data-into-sqllite.html#cb111-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">right_leg =</span> <span class="fu">ifelse</span>(<span class="fu">tolower</span>(right_leg) <span class="sc">==</span> <span class="st">&quot;acraft&quot;</span>, <span class="st">&quot;ACRAFT&quot;</span>, right_leg))</span>
+<span id="cb111-6"><a href="import-buow-data-into-sqllite.html#cb111-6" tabindex="-1"></a></span>
+<span id="cb111-7"><a href="import-buow-data-into-sqllite.html#cb111-7" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands <span class="sc">%&gt;%</span></span>
+<span id="cb111-8"><a href="import-buow-data-into-sqllite.html#cb111-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">left_leg =</span> <span class="fu">ifelse</span>(left_leg <span class="sc">==</span> <span class="st">&quot;Right&quot;</span>, <span class="cn">NA</span>, left_leg))</span>
+<span id="cb111-9"><a href="import-buow-data-into-sqllite.html#cb111-9" tabindex="-1"></a></span>
+<span id="cb111-10"><a href="import-buow-data-into-sqllite.html#cb111-10" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands <span class="sc">%&gt;%</span></span>
+<span id="cb111-11"><a href="import-buow-data-into-sqllite.html#cb111-11" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">right_leg =</span> <span class="fu">ifelse</span>(right_leg <span class="sc">==</span> <span class="st">&quot;Left&quot;</span>, <span class="cn">NA</span>, right_leg))</span>
+<span id="cb111-12"><a href="import-buow-data-into-sqllite.html#cb111-12" tabindex="-1"></a></span>
+<span id="cb111-13"><a href="import-buow-data-into-sqllite.html#cb111-13" tabindex="-1"></a>unique_combineallbands <span class="ot">&lt;-</span> unique_combineallbands[<span class="sc">!</span><span class="fu">is.na</span>(unique_combineallbands<span class="sc">$</span>BUOW_USGS_ID), ]</span></code></pre></div>
 </div>
 <div id="combine-all-capture-tables" class="section level2 hasAnchor" number="7.2">
 <h2><span class="header-section-number">7.2</span> Combine All Capture Tables<a href="import-buow-data-into-sqllite.html#combine-all-capture-tables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="import-buow-data-into-sqllite.html#cb63-1" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(exportcaptures2020_2024, exportcapturesall, exportumatillacaptures)</span></code></pre></div>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="import-buow-data-into-sqllite.html#cb112-1" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(exportcaptures2020_2024, exportcapturesall, exportumatillacaptures)</span></code></pre></div>
 <p>Just need to make a quick units conversion before importing into the database</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="import-buow-data-into-sqllite.html#cb64-1" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> combineallcaptures <span class="sc">%&gt;%</span></span>
-<span id="cb64-2"><a href="import-buow-data-into-sqllite.html#cb64-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">elevation_m =</span> elevation_ft <span class="sc">*</span> <span class="fl">0.3048</span>)</span>
-<span id="cb64-3"><a href="import-buow-data-into-sqllite.html#cb64-3" tabindex="-1"></a></span>
-<span id="cb64-4"><a href="import-buow-data-into-sqllite.html#cb64-4" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> combineallcaptures <span class="sc">%&gt;%</span> </span>
-<span id="cb64-5"><a href="import-buow-data-into-sqllite.html#cb64-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>elevation_ft)</span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="import-buow-data-into-sqllite.html#cb113-1" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> combineallcaptures <span class="sc">%&gt;%</span></span>
+<span id="cb113-2"><a href="import-buow-data-into-sqllite.html#cb113-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">elevation_m =</span> elevation_ft <span class="sc">*</span> <span class="fl">0.3048</span>)</span>
+<span id="cb113-3"><a href="import-buow-data-into-sqllite.html#cb113-3" tabindex="-1"></a></span>
+<span id="cb113-4"><a href="import-buow-data-into-sqllite.html#cb113-4" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> combineallcaptures <span class="sc">%&gt;%</span> </span>
+<span id="cb113-5"><a href="import-buow-data-into-sqllite.html#cb113-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>elevation_ft)</span></code></pre></div>
 <p>We need to rename the columns for the import step to work later</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="import-buow-data-into-sqllite.html#cb65-1" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> combineallcaptures <span class="sc">%&gt;%</span> </span>
-<span id="cb65-2"><a href="import-buow-data-into-sqllite.html#cb65-2" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
-<span id="cb65-3"><a href="import-buow-data-into-sqllite.html#cb65-3" tabindex="-1"></a>    <span class="at">BUOW_USGS_ID =</span> band,</span>
-<span id="cb65-4"><a href="import-buow-data-into-sqllite.html#cb65-4" tabindex="-1"></a>    <span class="at">right_wing_cord_mm =</span> righ_wing_cord_mm,</span>
-<span id="cb65-5"><a href="import-buow-data-into-sqllite.html#cb65-5" tabindex="-1"></a>    <span class="at">left_metatarsus_mm =</span> left_tarsus_mm,</span>
-<span id="cb65-6"><a href="import-buow-data-into-sqllite.html#cb65-6" tabindex="-1"></a>    <span class="at">right_metatarsus_mm =</span> right_tarsus_mm,</span>
-<span id="cb65-7"><a href="import-buow-data-into-sqllite.html#cb65-7" tabindex="-1"></a>    <span class="at">culmen_mm =</span> culmen,</span>
-<span id="cb65-8"><a href="import-buow-data-into-sqllite.html#cb65-8" tabindex="-1"></a>    <span class="at">P9_length_mm =</span> P9Length_mm</span>
-<span id="cb65-9"><a href="import-buow-data-into-sqllite.html#cb65-9" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="import-buow-data-into-sqllite.html#cb114-1" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> combineallcaptures <span class="sc">%&gt;%</span> </span>
+<span id="cb114-2"><a href="import-buow-data-into-sqllite.html#cb114-2" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb114-3"><a href="import-buow-data-into-sqllite.html#cb114-3" tabindex="-1"></a>    <span class="at">BUOW_USGS_ID =</span> band,</span>
+<span id="cb114-4"><a href="import-buow-data-into-sqllite.html#cb114-4" tabindex="-1"></a>    <span class="at">right_wing_cord_mm =</span> righ_wing_cord_mm,</span>
+<span id="cb114-5"><a href="import-buow-data-into-sqllite.html#cb114-5" tabindex="-1"></a>    <span class="at">left_metatarsus_mm =</span> left_tarsus_mm,</span>
+<span id="cb114-6"><a href="import-buow-data-into-sqllite.html#cb114-6" tabindex="-1"></a>    <span class="at">right_metatarsus_mm =</span> right_tarsus_mm,</span>
+<span id="cb114-7"><a href="import-buow-data-into-sqllite.html#cb114-7" tabindex="-1"></a>    <span class="at">culmen_mm =</span> culmen,</span>
+<span id="cb114-8"><a href="import-buow-data-into-sqllite.html#cb114-8" tabindex="-1"></a>    <span class="at">P9_length_mm =</span> P9Length_mm</span>
+<span id="cb114-9"><a href="import-buow-data-into-sqllite.html#cb114-9" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="import-buow-data-into-sqllite.html#cb115-1" tabindex="-1"></a>combineallcaptures <span class="ot">&lt;-</span> combineallcaptures[<span class="sc">!</span><span class="fu">is.na</span>(combineallcaptures<span class="sc">$</span>BUOW_USGS_ID), ]</span></code></pre></div>
 </div>
 <div id="load-sites-table" class="section level2 hasAnchor" number="7.3">
 <h2><span class="header-section-number">7.3</span> Load Sites table<a href="import-buow-data-into-sqllite.html#load-sites-table" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="import-buow-data-into-sqllite.html#cb66-1" tabindex="-1"></a>sites <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(sites_kmo.xlsx)</span></code></pre></div>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="import-buow-data-into-sqllite.html#cb116-1" tabindex="-1"></a>sites <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">&quot;C:/Users/mldunning/Documents/BUOW_Migration-Maps/data/sites_kmo.xlsx&quot;</span>)</span></code></pre></div>
 </div>
 <div id="start-import-to-sql" class="section level2 hasAnchor" number="7.4">
 <h2><span class="header-section-number">7.4</span> Start import to SQL<a href="import-buow-data-into-sqllite.html#start-import-to-sql" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="import-buow-data-into-sqllite.html#cb67-1" tabindex="-1"></a>Burrowing_Owls <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), <span class="st">&quot;Burrowing_Owls.db&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="import-buow-data-into-sqllite.html#cb117-1" tabindex="-1"></a>Burrowing_Owls <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), <span class="st">&quot;Burrowing_Owls.db&quot;</span>)</span></code></pre></div>
 <div id="import-band-table" class="section level3 hasAnchor" number="7.4.1">
 <h3><span class="header-section-number">7.4.1</span> Import band table<a href="import-buow-data-into-sqllite.html#import-band-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>First import the Band table. Every value has to match the set constratints and there
-can not be any repeating band numbers.</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="import-buow-data-into-sqllite.html#cb68-1" tabindex="-1"></a><span class="fu">dbWriteTable</span>(Burrowing_Owls, <span class="st">&quot;Burrowing_Owls&quot;</span>, unique_combineallbands, <span class="at">append =</span> <span class="cn">TRUE</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>First import the Band table. Every value has to match the set constratints and there can not be any repeating band numbers.</p>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="import-buow-data-into-sqllite.html#cb118-1" tabindex="-1"></a><span class="fu">dbWriteTable</span>(Burrowing_Owls, <span class="st">&quot;Burrowing_Owls&quot;</span>, unique_combineallbands, <span class="at">append =</span> <span class="cn">TRUE</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 </div>
 <div id="import-capture-table" class="section level3 hasAnchor" number="7.4.2">
 <h3><span class="header-section-number">7.4.2</span> Import Capture Table<a href="import-buow-data-into-sqllite.html#import-capture-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Next import the captures data. To do this we have to do a few extra steps because there
-are several unknown/unbanded birds that do not have a corresponding value in the band
-table. A foreign key is required to mainain data intergertiy.</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="import-buow-data-into-sqllite.html#cb69-1" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;PRAGMA foreign_keys = OFF;&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="import-buow-data-into-sqllite.html#cb70-1" tabindex="-1"></a><span class="fu">dbWriteTable</span>(Burrowing_Owls, <span class="st">&quot;captures&quot;</span>, combineallcaptures, <span class="at">append =</span> <span class="cn">TRUE</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="import-buow-data-into-sqllite.html#cb71-1" tabindex="-1"></a><span class="co"># 3. Insert missing BUOW_USGS_ID values into the parent table (Burrowing_Owls)</span></span>
-<span id="cb71-2"><a href="import-buow-data-into-sqllite.html#cb71-2" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;</span></span>
-<span id="cb71-3"><a href="import-buow-data-into-sqllite.html#cb71-3" tabindex="-1"></a><span class="st">  INSERT INTO Burrowing_Owls (BUOW_USGS_ID)</span></span>
-<span id="cb71-4"><a href="import-buow-data-into-sqllite.html#cb71-4" tabindex="-1"></a><span class="st">  SELECT DISTINCT BUOW_USGS_ID</span></span>
-<span id="cb71-5"><a href="import-buow-data-into-sqllite.html#cb71-5" tabindex="-1"></a><span class="st">  FROM captures</span></span>
-<span id="cb71-6"><a href="import-buow-data-into-sqllite.html#cb71-6" tabindex="-1"></a><span class="st">  WHERE BUOW_USGS_ID NOT IN (SELECT BUOW_USGS_ID FROM Burrowing_Owls);</span></span>
-<span id="cb71-7"><a href="import-buow-data-into-sqllite.html#cb71-7" tabindex="-1"></a><span class="st">&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="import-buow-data-into-sqllite.html#cb72-1" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;PRAGMA foreign_keys = ON;&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="import-buow-data-into-sqllite.html#cb73-1" tabindex="-1"></a><span class="fu">dbExecute</span>(Burrowing_Owls, <span class="st">&quot;</span></span>
-<span id="cb73-2"><a href="import-buow-data-into-sqllite.html#cb73-2" tabindex="-1"></a><span class="st">  UPDATE captures</span></span>
-<span id="cb73-3"><a href="import-buow-data-into-sqllite.html#cb73-3" tabindex="-1"></a><span class="st">  SET BUOW_USGS_ID = (SELECT BUOW_USGS_ID FROM Burrowing_Owls WHERE Burrowing_Owls.BUOW_USGS_ID = captures.BUOW_USGS_ID)</span></span>
-<span id="cb73-4"><a href="import-buow-data-into-sqllite.html#cb73-4" tabindex="-1"></a><span class="st">  WHERE BUOW_USGS_ID IS NOT NULL;</span></span>
-<span id="cb73-5"><a href="import-buow-data-into-sqllite.html#cb73-5" tabindex="-1"></a><span class="st">&quot;</span>)</span></code></pre></div>
+<p>Next import the captures data. To do this we have to do a few extra steps because there are several unknown/unbanded birds that do not have a corresponding value in the band table. A foreign key is required to mainain data intergertiy.</p>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="import-buow-data-into-sqllite.html#cb119-1" tabindex="-1"></a><span class="fu">dbWriteTable</span>(Burrowing_Owls, <span class="st">&quot;captures&quot;</span>, combineallcaptures, <span class="at">append =</span> <span class="cn">TRUE</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+<div id="import-site-table" class="section level3 hasAnchor" number="7.4.3">
+<h3><span class="header-section-number">7.4.3</span> Import Site Table<a href="import-buow-data-into-sqllite.html#import-site-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="import-buow-data-into-sqllite.html#cb120-1" tabindex="-1"></a><span class="fu">dbWriteTable</span>(Burrowing_Owls, <span class="st">&quot;sites&quot;</span>, sites, <span class="at">append =</span> <span class="cn">TRUE</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 
 </div>
 </div>
@@ -321,8 +320,8 @@ table. A foreign key is required to mainain data intergertiy.</p>
           </div>
         </div>
       </div>
-<a href="create-sqllite-database-structure.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="create-sqllite-database-structure.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="data-visualization.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Load packages and data
-```{r install packages, eval=FALSE, echo=FALSE}
+```{r install packages, eval=TRUE, echo=FALSE}
 library(oce)
 library(sf)
 library(tidyverse)
@@ -19,9 +19,8 @@ library(elevatr)
 library(terra)
 library(readxl)
 ```
-```{r load data, eval=FALSE, echo=TRUE}
-setwd("~/BUOW_Migration-Maps/data")
-BUOW <- read_excel("RecentBUOWDataAdditions.xlsx")
+```{r load data, eval=TRUE, echo=TRUE}
+BUOW <- read_excel("C:/Users/mldunning/Documents/BUOW_Migration-Maps/data/RecentBUOWDataAdditions.xlsx")
 
 bands <- BUOW %>%
   select(
@@ -40,7 +39,7 @@ bands <- BUOW %>%
 ## Preapare data
 Some of the dates were serial numbers in excel so this code coverts it to a readable
 date
-```{r correct dates, eval=FALSE, echo=TRUE}
+```{r correct dates, eval=TRUE, echo=TRUE}
 bands <- bands %>%
   mutate(
     dateBanded = case_when(
@@ -55,7 +54,8 @@ bands <- bands %>%
     )
   )
 ```
-```{r hyphens, eval=FALSE, echo=TRUE}
+
+```{r hyphens, eval=TRUE, echo=TRUE}
 criteria1 <- "934" #some bands already had a dash so now there is --
 criteria2 <- "914"
 criteria3 <- "804"
@@ -80,7 +80,7 @@ practice_band <- practice_band %>%
          )  
 ```
 ## Latitude and Longitude from UTMs
-```{r Lat Long from UTM, eval=FALSE, echo=TRUE}
+```{r Lat Long from UTM, eval=TRUE, echo=TRUE}
 #Get LatLon from UTM####
 bandsutm <- select(bands, unique_key, band, northing, easting, UTM_zone)  # Select existing columns
 bandsutm$easting <- as.numeric(as.character(bandsutm$easting))
@@ -137,7 +137,7 @@ practice_band <- practice_band %>%
 ```
 ## Cleaning data
 
-```{r data cleanup, eval=FALSE, echo=TRUE}
+```{r data cleanup, eval=TRUE, echo=TRUE}
 # Recaptures
 practice_band <- practice_band %>% 
   mutate(recap = gsub("no", "N", recap),
@@ -332,7 +332,7 @@ practice_band <- practice_band %>%
 ```
 
 ## Export Data
-```{r prepare export data, eval=FALSE, echo=TRUE}
+```{r prepare export data, eval=TRUE, echo=TRUE}
 exportcaptures2020_2024 <- select(practice_band,
                          band,
                          observer = Obs,
@@ -368,7 +368,7 @@ exportcaptures2020_2024 <- select(practice_band,
                          )
 ```
 Infering the age and sex from one another and standardizing columns
-```{r age sex standardizing, eval=FALSE, echo=TRUE}
+```{r age sex standardizing, eval=TRUE, echo=TRUE}
 exportcaptures2020_2024 <- exportcaptures2020_2024 %>%
   mutate(
     age_at_capture = if_else(sex_at_capture == "J" & is.na(age_at_capture), "HY",
@@ -384,7 +384,7 @@ exportcaptures2020_2024 <- exportcaptures2020_2024 %>%
     sex_at_capture = gsub("J", "U", sex_at_capture))
 ```
 Now fix the column structures for export to SQL
-```{r final export prepare, eval=FALSE, echo=TRUE}
+```{r final export prepare, eval=TRUE, echo=TRUE}
 exportcaptures2020_2024[c("wing_cord_mm", "righ_wing_cord_mm", "tail_length_mm", "tarsus_mm", 
                     "head_length_mm", "head_width_mm", "culmen")] <- lapply(
                       exportcaptures2020_2024[c("wing_cord_mm", "righ_wing_cord_mm", "tail_length_mm", "tarsus_mm", 

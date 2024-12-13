@@ -13,14 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Import Data
 This is a continuation of the from the previous chapter. This code is to seperate the multiple
 capture evetns in a row to make new rows.
-```{r load data4, eval=FALSE, echo=TRUE}
-setwd("~/BUOW_Migration-Maps/data")
-
-BUOW1 <- read_csv("BUOW_Data2000-2019.csv")
+```{r load data4, eval=TRUE, echo=TRUE}
+BUOW1 <- read_csv("C:/Users/mldunning/Documents/BUOW_Migration-Maps/data/BUOW_Data2000-2019.csv")
 ```
 We need to select the rows with that have multiple entries. We then make two seperate
 data frame to prepare the data.
-```{r select data4, eval=FALSE, echo=TRUE}
+```{r select data4, eval=TRUE, echo=TRUE}
 buow1_with_date <- BUOW1 %>%
   filter(!is.na(meas_date_1))  # Keep only rows where 'meas_date_1' is not NA
   
@@ -78,18 +76,20 @@ row2 <- row2 %>%
   )
 ```
 This code is to turn specific columns to numeric for future cleaning and filtering
-```{r turn columns numeric, eval=FALSE, echo=TRUE}
+```{r turn columns numeric, eval=TRUE, echo=TRUE}
 row1 <- row1 %>%
   mutate_at(vars(tarsometatarsus_length, weight_g, wing_mm, tail_mm, parasites), as.numeric)
 
 row2 <- row2 %>%
   mutate_at(vars(tarsometatarsus_length, weight_g, wing_mm, tail_mm, parasites), as.numeric)
 
+row2$est_age <- as.character(row2$est_age)
+
 #Now combine the rows into a single data frame.
 combined_rows <- bind_rows(row1, row2)
 ```
 ### Clean data
-```{r code for cleaning, eval=FALSE, echo=TRUE}
+```{r code for cleaning, eval=TRUE, echo=TRUE}
 #clean HY days
 juvage <- select(combined_rows,
                  unique_key,
@@ -124,7 +124,7 @@ combined_rows <- combined_rows %>%
   )
 ```
 ## Prepare data for export
-```{r export data, eval=FALSE, echo=TRUE}
+```{r export data, eval=TRUE, echo=TRUE}
 exportumatillacaptures <- select(combined_rows,
                  band,
                  date = `meas_date`,

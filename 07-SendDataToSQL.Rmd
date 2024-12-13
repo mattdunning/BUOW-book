@@ -4,25 +4,27 @@ author: "Matthew Dunning"
 date: "2024-12-07"
 output: html_document
 ---
+
 # Import BUOW data into SQLlite
+
 ```{r setup7, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Combine All Band Tables
 
-
-```{r combine all export band, eval=FALSE, echo=TRUE}
+```{r combine all export band, eval=TRUE, echo=TRUE}
 combineallbands <- bind_rows(export_acraft, export_all_other_bands, export_color,
                          export_recentBUOWtable)
 ```
 
 We only want to select unique bands to import to sql database
-```{r only select unique bands, eval=FALSE, echo=TRUE}
+
+```{r only select unique bands, eval=TRUE, echo=TRUE}
 unique_combineallbands <- combineallbands[!duplicated(combineallbands$BUOW_USGS_ID), ]
 ```
 
-```{R fix issue for import, eval=FALSE, echo=TRUE}
+```{R fix issue for import, eval=TRUE, echo=TRUE}
 unique_combineallbands <- unique_combineallbands %>%
   mutate(left_leg = ifelse(tolower(left_leg) == "acraft", "ACRAFT", left_leg))
 
@@ -35,15 +37,18 @@ unique_combineallbands <- unique_combineallbands %>%
 unique_combineallbands <- unique_combineallbands %>%
   mutate(right_leg = ifelse(right_leg == "Left", NA, right_leg))
 
+unique_combineallbands <- unique_combineallbands[!is.na(unique_combineallbands$BUOW_USGS_ID), ]
 ```
+
 ## Combine All Capture Tables
 
-```{r combine all export captures, eval=FALSE, echo=TRUE}
+```{r combine all export captures, eval=TRUE, echo=TRUE}
 combineallcaptures <- bind_rows(exportcaptures2020_2024, exportcapturesall, exportumatillacaptures)
 ```
 
 Just need to make a quick units conversion before importing into the database
-```{r convert elevation ft to meters, eval=FALSE, echo=TRUE}
+
+```{r convert elevation ft to meters, eval=TRUE, echo=TRUE}
 combineallcaptures <- combineallcaptures %>%
   mutate(elevation_m = elevation_ft * 0.3048)
 
@@ -52,7 +57,8 @@ combineallcaptures <- combineallcaptures %>%
 ```
 
 We need to rename the columns for the import step to work later
-```{r rename capture columns, eval=FALSE, echo=TRUE}
+
+```{r rename capture columns, eval=TRUE, echo=TRUE}
 combineallcaptures <- combineallcaptures %>% 
   rename(
     BUOW_USGS_ID = band,
@@ -66,55 +72,41 @@ combineallcaptures <- combineallcaptures %>%
 
 ```
 
-
+```{r delete NA, eval=TRUE, echo=TRUE}
+combineallcaptures <- combineallcaptures[!is.na(combineallcaptures$BUOW_USGS_ID), ]
+```
 
 ## Load Sites table
+
 ```{r load sites, eval=FALSE, echo=TRUE}
-sites <- read_excel(sites_kmo.xlsx)
+sites <- read_excel("C:/Users/mldunning/Documents/BUOW_Migration-Maps/data/sites_kmo.xlsx")
 
 ```
+
 ## Start import to SQL
+
 ```{r establish connection, eval=FALSE, echo=TRUE}
 Burrowing_Owls <- dbConnect(RSQLite::SQLite(), "Burrowing_Owls.db")
 ```
+
 ### Import band table
-First import the Band table. Every value has to match the set constratints and there 
-can not be any repeating band numbers.
+
+First import the Band table. Every value has to match the set constratints and there can not be any repeating band numbers.
 
 ```{r write band table, eval=FALSE, echo=TRUE}
 dbWriteTable(Burrowing_Owls, "Burrowing_Owls", unique_combineallbands, append = TRUE, row.names = FALSE)
 ```
-### Import Capture Table
-Next import the captures data. To do this we have to do a few extra steps because there
-are several unknown/unbanded birds that do not have a corresponding value in the band
-table. A foreign key is required to mainain data intergertiy.
 
-```{r turn keys off, eval=FALSE, echo=TRUE}
-dbExecute(Burrowing_Owls, "PRAGMA foreign_keys = OFF;")
-```
+### Import Capture Table
+
+Next import the captures data. To do this we have to do a few extra steps because there are several unknown/unbanded birds that do not have a corresponding value in the band table. A foreign key is required to mainain data intergertiy.
+
 ```{r write the captures table, eval=FALSE, echo=TRUE}
 dbWriteTable(Burrowing_Owls, "captures", combineallcaptures, append = TRUE, row.names = FALSE)
 ```
 
-```{r insert missing values, eval=FALSE, echo=TRUE}
-# 3. Insert missing BUOW_USGS_ID values into the parent table (Burrowing_Owls)
-dbExecute(Burrowing_Owls, "
-  INSERT INTO Burrowing_Owls (BUOW_USGS_ID)
-  SELECT DISTINCT BUOW_USGS_ID
-  FROM captures
-  WHERE BUOW_USGS_ID NOT IN (SELECT BUOW_USGS_ID FROM Burrowing_Owls);
-")
+### Import Site Table
+```{r write the sites table, eval=FALSE, echo=TRUE}
+dbWriteTable(Burrowing_Owls, "sites", sites, append = TRUE, row.names = FALSE)
 ```
-```{r turn on foreign keys, eval=FALSE, echo=TRUE}
-dbExecute(Burrowing_Owls, "PRAGMA foreign_keys = ON;")
-```
-
-```{r update captures, eval=FALSE, echo=TRUE}
-dbExecute(Burrowing_Owls, "
-  UPDATE captures
-  SET BUOW_USGS_ID = (SELECT BUOW_USGS_ID FROM Burrowing_Owls WHERE Burrowing_Owls.BUOW_USGS_ID = captures.BUOW_USGS_ID)
-  WHERE BUOW_USGS_ID IS NOT NULL;
-")
-```
-
 
